@@ -13,6 +13,11 @@ routes = [
 [assets]
 directory = "./public"
 binding = "ASSETS"
+# Run the Worker script before asset matching — required so vanity genre
+# hostnames ({genre}.stevepieper.com) hit the 301 redirect logic instead of
+# being served assets directly. The Worker serves assets explicitly for the
+# canonical host via env.ASSETS.fetch().
+run_worker_first = true
 
 # Secrets (set via `wrangler secret put` or the deploy workflow):
 #   SUPABASE_URL            https://mybnrqouoqavmbaywzoa.supabase.co
