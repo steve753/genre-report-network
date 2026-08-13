@@ -1,0 +1,9 @@
+{
+  "genres": [
+    {
+      "slug": "thriller",
+      "display_name": "Thriller",
+      "aliases": ["thrillers", "thriller-and-suspense", "thrillers-and-suspense", "suspense-thriller"]
+    }
+  ]
+}
