@@ -1,0 +1,26 @@
+name: Deploy Worker
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Deploy with Wrangler
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # Worker runtime secrets are set once (or when rotated) via:
+      #   wrangler secret put SUPABASE_URL / SUPABASE_SERVICE_KEY / POSTMARK_TOKEN / DOI_SIGNING_SECRET
+      # or in the Cloudflare dashboard under Workers → genre-reports → Settings → Variables.
