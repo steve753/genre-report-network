@@ -20,6 +20,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.86.0"
 
       # Worker runtime secrets are set once (or when rotated) via:
       #   wrangler secret put SUPABASE_URL / SUPABASE_SERVICE_KEY / POSTMARK_TOKEN / DOI_SIGNING_SECRET
