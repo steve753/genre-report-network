@@ -1,0 +1,21 @@
+name = "genre-reports"
+main = "src/index.js"
+compatibility_date = "2026-08-01"
+account_id = "a3aa29700c8ce88b6777e2b251f0f91b"
+
+# Canonical site + vanity genre hostnames.
+# The wildcard route only sees PROXIED hostnames; unknown ones pass through to origin untouched.
+routes = [
+  { pattern = "reports.stevepieper.com/*", zone_name = "stevepieper.com" },
+  { pattern = "*.stevepieper.com/*", zone_name = "stevepieper.com" }
+]
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# Secrets (set via `wrangler secret put` or the deploy workflow):
+#   SUPABASE_URL            https://mybnrqouoqavmbaywzoa.supabase.co
+#   SUPABASE_SERVICE_KEY    service-role key (server-side only; never in client code)
+#   POSTMARK_TOKEN          Postmark server token (also in Supabase Vault as postmark_server_token)
+#   DOI_SIGNING_SECRET      random 32+ char string for signing confirm links
