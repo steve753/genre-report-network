@@ -228,7 +228,10 @@ async function sb(env, path, method, body, extraHeaders = {}) {
 // ---------------------------------------------------------------------------
 async function sendMetaEvent(env, request, { eventName, eventId, email, customData }) {
   try {
-    if (!env.META_PIXEL_ID || !env.META_CAPI_TOKEN) return;
+    if (!env.META_PIXEL_ID || !env.META_CAPI_TOKEN) {
+      console.log("meta_capi_skipped_no_secrets", eventName);
+      return;
+    }
 
     const cookies = parseCookies(request.headers.get("Cookie") || "");
     const userData = {
@@ -256,9 +259,10 @@ async function sendMetaEvent(env, request, { eventName, eventId, email, customDa
       `https://graph.facebook.com/v23.0/${env.META_PIXEL_ID}/events?access_token=${env.META_CAPI_TOKEN}`,
       { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
     );
-    if (!res.ok) console.error("meta capi", eventName, res.status, await res.text());
+    if (!res.ok) console.error("meta_capi_error", eventName, "pixel_id", env.META_PIXEL_ID, res.status, await res.text());
+    else console.log("meta_capi_sent", eventName, "pixel_id", env.META_PIXEL_ID, "status", res.status);
   } catch (err) {
-    console.error("meta capi error", eventName, err.stack || String(err));
+    console.error("meta_capi_exception", eventName, err.stack || String(err));
   }
 }
 
