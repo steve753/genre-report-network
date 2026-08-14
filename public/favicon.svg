@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#12151a"/>
+  <g fill="#f5f2ea">
+    <!-- pommel -->
+    <circle cx="32" cy="9.5" r="4"/>
+    <!-- grip -->
+    <rect x="29.6" y="12.5" width="4.8" height="8.5" rx="1.8"/>
+    <!-- crossguard -->
+    <rect x="19" y="21" width="26" height="5.5" rx="2.75"/>
+    <!-- blade -->
+    <path d="M26.2 26.5 L37.8 26.5 L32 58 Z"/>
+  </g>
+  <!-- blade midrib shadow for depth -->
+  <path d="M32 26.5 L37.8 26.5 L32 58 Z" fill="#c9c4b8"/>
+</svg>
