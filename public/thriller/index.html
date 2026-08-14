@@ -3,17 +3,275 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Thriller Monthly — Genre Reports</title>
-<meta name="robots" content="noindex">
+<meta name="robots" content="noindex"><!-- remove at public launch -->
+<title>Thriller Monthly — Issue 001 · August 2026</title>
+<meta name="description" content="The business of suspense, for the authors who write it. Audible's royalty deadline, Spotify's new door, the KU math, and what this month's bestselling blurbs are selling.">
+<link rel="canonical" href="https://reports.stevepieper.com/thriller/aug-2026/"><!-- genre home serves latest issue; canonical points to the dated permalink per design §2.7 -->
 <style>
-  body{font-family:system-ui,-apple-system,Georgia,serif;max-width:40rem;margin:18vh auto 0;padding:0 1.25rem;line-height:1.65;color:#1a1d21}
-  h1{font-size:1.6rem}
-  .kicker{font-size:.75rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+  :root{
+    --ink:#1a1d21; --ink-2:#4a4f56; --muted:#6e747c;
+    --paper:#fcfcfb; --panel:#f4f2ee;
+    --mast:#12151a; --mast-ink:#f5f2ec;
+    --accent:#a31621; --accent-dark:#7e0f18;
+    --context:#857e72; --rule:#e2ddd5; --gold:#c1932b;
+    --col:46rem;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+       color:var(--ink);background:var(--paper);line-height:1.7;font-size:1.05rem}
+  a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:2px}
+  a:hover{color:var(--accent)}
+
+  /* ---------- sticky utility bar ---------- */
+  .topbar{position:sticky;top:0;z-index:50;background:var(--mast);color:var(--mast-ink);
+          border-bottom:1px solid var(--gold);padding:.5rem 1rem;
+          display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
+  .topbar .wordmark{font-weight:800;letter-spacing:.22em;font-size:.9rem;text-decoration:none;color:var(--mast-ink);white-space:nowrap}
+  .topbar .grow{flex:1}
+  .topbar select,.topbar input[type=search]{
+    background:#1d222a;color:var(--mast-ink);border:1px solid #333a44;border-radius:4px;
+    padding:.35rem .5rem;font-size:.85rem}
+  .topbar input[type=search]{width:11rem}
+  .btn{display:inline-block;background:var(--accent);color:#fff;border:none;border-radius:4px;
+       padding:.45rem .9rem;font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none}
+  .btn:hover{background:var(--accent-dark);color:#fff}
+
+  /* ---------- masthead hero ---------- */
+  .masthead{background:var(--mast);color:var(--mast-ink);padding:2.2rem 1.2rem 2.4rem;text-align:center}
+  .masthead h1{margin:0;font-size:2rem;letter-spacing:.28em;font-weight:800}
+  .masthead .tag{font-style:italic;opacity:.85;margin:.4rem 0 1.2rem}
+  .capture{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+  .capture input[type=email]{padding:.55rem .8rem;border-radius:4px;border:1px solid #3a414b;
+    background:#fff;color:var(--ink);min-width:16rem;font-size:.95rem}
+  .masthead .cadence{font-style:italic;opacity:.8;font-size:.9rem;margin-top:.8rem}
+
+  /* ---------- article ---------- */
+  main{max-width:var(--col);margin:0 auto;padding:2.4rem 1.2rem 4rem}
+  .fromdesk{font-style:italic;color:var(--ink-2)}
+  .kicker{font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:.9rem 0 .2rem}
+  .title{font-size:2.1rem;line-height:1.2;font-weight:800;margin:.1rem 0 1.4rem}
+  .lede{font-weight:800;text-transform:uppercase;letter-spacing:.02em}
+  h2{font-size:1.25rem;margin:2.6rem 0 .6rem;letter-spacing:.03em}
+  h2 .sec{color:var(--accent)}
+  .src{font-size:.85rem;color:var(--muted)}
+  section{scroll-margin-top:5.5rem}
+
+  /* ---------- offer card (Dangle bundle grammar) ---------- */
+  .offer{margin:2.4rem 0}
+  .offer .label{font-size:.7rem;font-weight:800;letter-spacing:.14em;color:var(--muted);margin-bottom:.5rem}
+  .offer .card{border:1px solid var(--rule);border-left:4px solid var(--accent);border-radius:6px;
+               padding:1.1rem 1.3rem;background:#fff}
+  .offer .hook{font-size:1.15rem;font-weight:800;line-height:1.35;margin:0 0 .8rem}
+  .offer .row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+  .offer .sub{font-size:.9rem;color:var(--ink-2);margin:0}
+
+  /* ---------- chart ---------- */
+  figure.slotshare{margin:1.6rem 0;padding:1.2rem 1.3rem;background:var(--panel);border-radius:6px}
+  figure.slotshare figcaption{font-size:.85rem;color:var(--muted);margin-top:.7rem}
+  .statrow{display:flex;align-items:baseline;gap:.9rem;flex-wrap:wrap;margin-bottom:.6rem}
+  .stat{font-size:2.6rem;font-weight:800;color:var(--accent);line-height:1}
+  .statlab{font-size:.95rem;color:var(--ink-2)}
+  .unitlabels{display:flex;gap:1.4rem;font-size:.85rem;margin-top:.5rem}
+  .swatch{display:inline-block;width:.75rem;height:.75rem;border-radius:2px;margin-right:.35rem;vertical-align:-1px}
+
+  /* ---------- bottom CTA & footer ---------- */
+  .bottomcta{margin:3rem 0 0;padding:1.6rem;background:var(--mast);color:var(--mast-ink);
+             border-radius:6px;text-align:center}
+  .bottomcta p{font-weight:700;font-size:1.1rem;margin:0 0 1rem}
+  .bottomcta .btn.ghost{background:transparent;border:1px solid var(--gold);color:var(--mast-ink)}
+  footer{border-top:1px solid var(--rule);margin-top:3rem;padding:1.6rem 1.2rem 3rem;
+         max-width:var(--col);margin-left:auto;margin-right:auto;font-size:.85rem;color:var(--muted)}
+  footer details{margin-top:1rem}
+  footer summary{cursor:pointer;font-weight:700}
+  footer ul{margin:.5rem 0 0 1.1rem;padding:0}
+  footer li{margin:.25rem 0}
+  .hidden{display:none}
+  mark{background:#f6e3a1}
 </style>
 </head>
 <body>
-  <p class="kicker">Thriller Monthly</p>
-  <h1>The August 2026 edition is on its way.</h1>
-  <p>Deployment placeholder — the inaugural issue publishes here. (If you can read this, the Worker, DNS, and deploy pipeline are all live.)</p>
+
+<!-- sticky utility bar -->
+<nav class="topbar" aria-label="Thriller Monthly">
+  <a class="wordmark" href="/thriller/">THRILLER&nbsp;MONTHLY</a>
+  <span class="grow"></span>
+  <input type="search" id="issuesearch" placeholder="Search this issue…" aria-label="Search this issue">
+  <select id="archive" aria-label="Past issues">
+    <option value="">Archive</option>
+    <option value="/thriller/aug-2026/">August 2026 — Issue 001</option>
+  </select>
+  <a class="btn" href="#subscribe">Subscribe</a>
+</nav>
+
+<!-- masthead hero -->
+<header class="masthead" id="subscribe">
+  <h1>THRILLER MONTHLY</h1>
+  <p class="tag">The business of suspense, for the authors who write it.</p>
+  <form class="capture" id="subform">
+    <input type="email" name="email" required placeholder="you@example.com" aria-label="Email address">
+    <button class="btn" type="submit" id="subbtn">Subscribe free</button>
+  </form>
+  <p class="cadence">Every claim cited. Every figure sourced. New issue on the 1st.</p>
+</header>
+
+<main>
+  <p class="fromdesk">from the desk of Steve Pieper, Polymath Consulting &amp; Publishing.</p>
+  <p class="kicker">Issue of August 2026 · Nº 001</p>
+  <h1 class="title">Audible Moves Your Cheese, Spotify Opens a Door, and the Blurbs All Promise a Storm</h1>
+
+  <p class="lede">If you have audiobooks on ACX, you have a decision to make by December 31 — and doing nothing is not the safe option.</p>
+  <p>More on that below, along with the door Spotify just cracked open, the number to plug into your fall Kindle Unlimited math, a Reacher-sized comp window, and what this month's bestselling book descriptions are actually selling. But first: your royalties.</p>
+
+  <section id="s1">
+    <h2><span class="sec">THE HEADLINE:</span> Audible Is Rewriting Your Audiobook Royalties — Act Before December 31</h2>
+    <p>As of May 26, Audible opened enrollment in its new "engagement-based" royalty model to all ACX creators, and the legacy per-sale model (40% exclusive / 25% non-exclusive) shuts off <strong>December 31, 2026</strong> (<a href="https://kindlepreneur.com/audible-royalty-changes/">Kindlepreneur's explainer, updated July 11</a>; <a href="https://1mkwilliams.com/2026/07/08/new-acx-royalty-model-and-next-steps-audible-announces-new-payment-model-for-indie-authors/">MK Williams' breakdown, July 8</a>). The headline rates look better (50%/30%), but payouts are computed from pooled "member value" and listener engagement rather than your individual sales — binge-friendly, long-listen thrillers may fare differently than the old per-unit math, and predictability drops either way.</p>
+    <p>The mechanics matter: <strong>titles newly claimed since May 26 are auto-enrolled</strong>, but per both sources above, <strong>existing titles must be actively enrolled by year-end — or be removed from Audible</strong>; MK Williams reads it as "adopt the new model or lose ACX distribution." For backlist authors, doing nothing is not a safe default — it risks distribution. The three real options: enroll deliberately, go wide in audio, or exit — chosen, not defaulted into. Trade coverage: <a href="https://www.publishersweekly.com/pw/by-topic/industry-news/audio-books/article/100278-audible-updates-royalty-plan-for-acx-authors.html">Publishers Weekly</a>.</p>
+  </section>
+
+  <section id="s2">
+    <h2><span class="sec">THE ALTERNATIVE:</span> Spotify's Audiobook Push Lands at Exactly the Right Moment</h2>
+    <p>At its May 21 investor day, Spotify reported its Audiobooks+ add-on passed one million subscribers with listening hours up 60% year over year, announced higher-hour add-ons for this summer with Family and Student plans later in 2026 — and, most useful, launched beta <strong>Audiobook Creation Tools</strong> in June that let self-published authors produce and publish digital-voice audiobooks (ElevenLabs-powered) inside Spotify for Authors, with no exclusivity (<a href="https://newsroom.spotify.com/2026-05-21/investor-day-audiobook-features-updates/">Spotify Newsroom, May 21</a>).</p>
+    <p>One honest caveat: the creation tools are an <strong>invite-only beta, English-only at launch</strong> — a channel maturing in real time, not one you can necessarily use today. For thriller authors weighing the Audible decision above, it's still the development to watch: a non-exclusive channel with a growing subscriber base, and a coming low-cost path to giving an audio-less backlist a voice. Digital narration is no substitute for a great human performance on your flagship series — but for deep backlist, it changes the math.</p>
+  </section>
+
+  <aside class="offer" aria-label="From Polymath">
+    <div class="label">FROM POLYMATH</div>
+    <div class="card">
+      <p class="hook">Author-Direct Sales: The guy who told you to wait just spent $197k proving himself wrong.</p>
+      <div class="row">
+        <a class="btn" href="https://stevepieper.com/">Learn More</a>
+        <p class="sub">Testing details in the disclosure at the bottom of this page.</p>
+      </div>
+    </div>
+  </aside>
+
+  <section id="s3">
+    <h2><span class="sec">THE FIELD:</span> Indie Incomes Are Splitting — and the Growers Share Two Habits</h2>
+    <p>Written Word Media's mid-year survey of 582 indie authors (<a href="https://www.writtenwordmedia.com/2026-mid-year-indie-author-survey/">published June 23</a>) found 44% report stable or growing businesses while 30% are declining — with the squeeze concentrated in the middle tier ($2,500–$10,000/month). What separates the growers: <strong>newsletters</strong> (58% of growing authors work theirs actively) and <strong>human-narrated audiobooks</strong> (43% of growing authors versus 28% overall). For a genre as binge-driven as thriller, both findings point the same direction — own your reader relationship and be present in audio. This survey is self-reported and skews toward engaged authors, so treat the percentages as directional rather than gospel; the direction, though, matches the retail signals below.</p>
+  </section>
+
+  <section id="s4">
+    <h2><span class="sec">YOUR MONEY:</span> The Kindle Unlimited Page Rate Slid Again</h2>
+    <p>Per <a href="https://www.writtenwordmedia.com/kdp-global-fund-payouts/">Written Word Media's KDP payout tracker (updated July 16)</a>, the June 2026 KDP Global Fund was $63.6M with a US-marketplace per-page rate of <strong>$0.004615</strong> — down about 5.6% from May's $0.004888, after April's $0.004820. One month is noise; the trailing direction is mildly down. If you're KU-exclusive — as a large share of thriller authors are — this is the number to plug into your fall projections: a 400-page read-through now pays roughly $1.85 in the US marketplace, versus about $1.95 in May. Worth exactly one evening of spreadsheet time, and one strategic question: what share of your income rides on a rate you don't control?</p>
+  </section>
+
+  <section id="s5">
+    <h2><span class="sec">ON SCREEN:</span> The Thriller Pipeline Is Running Hot — Ride It</h2>
+    <p><em>Reacher</em> Season 4 (adapting Lee Child's <em>Gone Tomorrow</em>) premiered August 12 on Prime Video; the season finale lands September 16, with the franchise's first spin-off, <em>Neagley</em>, released as a full season immediately after, and Season 5 already greenlit (<a href="https://www.tvguide.com/news/reacher-season-4-release-date-trailer-cast/">TV Guide, July 29</a>). Meanwhile the Freida McFadden flywheel keeps spinning: Lionsgate's <em>The Housemaid's Secret</em> is dated December 17, 2027 (<a href="https://au.variety.com/?p=34762">Variety, March 31</a>), while her companion novella <em>The Housemaid's Wedding</em> hit #10 on the NYT Paperback Trade Fiction list the week of July 26 (<a href="https://crimefictionmusings.com/complete-new-york-times-bestseller-list-for-mysteries-thrillers-and-crime-fiction/">Crime Fiction Musings NYT tracker</a>).</p>
+    <p>The practical play — stated as our working assumption rather than a measured result: premiere windows tend to lift attention on adjacent comps, so "for fans of Reacher" targeting, also-boughts, and action-thriller category ads are worth testing over the next six weeks if your catalog comps to Child or McFadden. We'll treat this as a hypothesis and report what the category data shows next issue.</p>
+  </section>
+
+  <section id="s6">
+    <h2><span class="sec">THE CALENDAR</span></h2>
+    <p><a href="https://register.killernashville.com/">Killer Nashville</a> runs <strong>August 20–23</strong> outside Nashville (registration still open, from $507) — the most craft-and-business-focused event in the genre. <a href="https://bouchercon2026.com/">Bouchercon 2026</a> heads to <strong>Calgary, October 21–25</strong>, its first Canadian edition, with Louise Penny receiving Lifetime Achievement honors — cross-border travel means booking now. And for 2027 planning: ThrillerFest has moved to spring — ThrillerFest XXII runs April 27–May 1, 2027 in New York (<a href="https://thrillerfest.com/future-thrillerfest-dates/">official dates</a>, showing every announced edition through 2030 in late April–May), with Michael Connelly and Karin Slaughter announced as 2027 ThrillerMasters (<a href="https://thrillerfest.com/">thrillerfest.com</a>).</p>
+  </section>
+
+  <section id="s7">
+    <h2><span class="sec">HOOKS &amp; TROPES:</span> What This Month's New Releases Are Selling</h2>
+    <p>Drawn from the Amazon book descriptions of nine top-ranked new releases in Mystery, Thriller &amp; Suspense (harvested via Rainforest API, August 13) — a deliberately small sample; these patterns describe the nine descriptions, not the genre wholesale. Three dominate. <strong>Isolation traps:</strong> a hurricane pins couples in a Hamptons estate (Kieran Scott's <em>The Getaway</em> — "with a hurricane bearing down, no one is getting out"), a storm hits a luxury cruise (Loreth Anne White's <em>The Black Orchid</em>), a remote New Hampshire lodge holds a "decades-old mystery" (Lisa Gardner's <em>You'll Be Sorry</em>). <strong>The buried past resurfacing:</strong> skeletal remains, cold cases, and hometown returns drive Patterson &amp; Lupica's <em>The Country Road Murders</em> and Mike Omer's <em>In the Killer's Sight</em> — the return-to-the-traumatic-hometown beat appears in three of the nine. <strong>Secrets among intimates:</strong> newlyweds, couples, and families hiding things from each other anchor four of nine descriptions.</p>
+    <p>Nearly every blurb in the sample still promises "twists you won't see coming," and six of nine are explicitly positioned as series entries — consistent with agent-side commentary that series currently command stronger advances and roughly 42% higher reader retention than standalones (<a href="https://erinniumata.substack.com/p/what-readers-want-right-now-the-state">Erin Niumata, June 17</a>; single-source commentary on acquisition trends, not audited sales data).</p>
+  </section>
+
+  <section id="s8">
+    <h2><span class="sec">SALES SIGNALS</span></h2>
+    <figure class="slotshare">
+      <div class="statrow">
+        <span class="stat">3 of 15</span>
+        <span class="statlab"><strong>slots on the NYT Combined Print &amp; E-Book Fiction list</strong> went to thrillers this week (20%)</span>
+      </div>
+      <svg viewBox="0 0 630 42" width="100%" height="42" role="img"
+           aria-label="Unit chart: 15 list slots, 3 held by thrillers, 12 by other fiction">
+        <g>
+          <rect x="0"   y="0" width="38" height="38" rx="4" fill="#a31621"/>
+          <rect x="42"  y="0" width="38" height="38" rx="4" fill="#a31621"/>
+          <rect x="84"  y="0" width="38" height="38" rx="4" fill="#a31621"/>
+          <rect x="126" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="168" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="210" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="252" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="294" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="336" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="378" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="420" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="462" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="504" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="546" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="588" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+        </g>
+      </svg>
+      <div class="unitlabels">
+        <span><span class="swatch" style="background:#a31621"></span>Thriller/suspense: 3</span>
+        <span><span class="swatch" style="background:#857e72"></span>Other fiction: 12</span>
+      </div>
+      <figcaption>List dated August 23, 2026 (sales week ending August 8) · Source: NYT Books API, pulled August 13 · Data © The New York Times, used with attribution per API terms.</figcaption>
+    </figure>
+    <p>The three: Riley Sager's <em>The Unknown</em> debuting at #5, Lisa Gardner's <em>You'll Be Sorry</em> debuting at #13, and Sally Hepworth's <em>Mad Mabel</em> at #15 in its third week. Classification method, so you can judge the count yourself: a title counts as thriller/suspense when the author's established primary genre and the book's marketing category are thriller/suspense/crime — a different method would move this number. Two of the week's five debuts were thrillers, in a week where romantasy took #1 (Hannah Nicole Maehrer's <em>Adversary to the Villain</em>, Red Tower).</p>
+    <p><strong>Flagship launches this window:</strong> Karin Slaughter's <em>The Secrets We Hide</em> (August 11, William Morrow) ranked #1 in Amazon's Women Sleuths, Crime Fiction, and Women Sleuth Mysteries categories (distinct store categories, not a double-count) as of our August 13 pull, two days post-release (Rainforest API; subcategory ranks, a snapshot rather than a launch-day record). Daniel Silva's <em>Ransom</em> (Gabriel Allon #27) leads the espionage side of the new-release chart in the same pull.</p>
+    <p class="src">Category-wide new-title volume and genre-landscape figures return in a future issue, pending data licensing.</p>
+  </section>
+
+  <div class="bottomcta">
+    <p>Go deeper, stay informed, sell more copies:</p>
+    <a class="btn" href="#subscribe">Subscribe</a>
+    <a class="btn ghost" href="https://stevepieper.com/">Get help with Direct Sales</a>
+  </div>
+</main>
+
+<footer>
+  <p>© 2026 Polymath Consulting &amp; Publishing · <a href="https://stevepieper.com/">stevepieper.com</a> · Questions or corrections: <a href="mailto:reports@stevepieper.com">reports@stevepieper.com</a></p>
+  <p>Bestseller list data © The New York Times, via the NYT Books API, used with attribution. Amazon retail data retrieved via Rainforest API. All third-party estimates are labeled as such in the text.</p>
+  <details>
+    <summary>About the $197,000 claim</summary>
+    <p>$197,000 spent by Polymath Consulting &amp; Publishing over a seven-month period (January–July 2026) to characterize the relative profitability of historically proven book offers under the following advertising conditions:</p>
+    <ul>
+      <li>Meta traffic ads, Advantage+ audience and placements, full enhancements, pointing directly to an author book page on Amazon</li>
+      <li>Meta traffic ads, Advantage+ audience, restricted placements, no enhancements, pointing directly to an author book page on Amazon</li>
+      <li>Meta traffic ads, restricted audience, restricted placements, no enhancements, pointing directly to an author book page on Amazon</li>
+      <li>Meta conversion ads pointing to an interstitial page containing a button pointing to Amazon, "ViewContent" conversion event, Advantage+ audience, restricted placements, no enhancements</li>
+      <li>Meta conversion ads pointing to an interstitial page containing a button pointing to Amazon, "ViewContent" conversion event, full Advantage+ audience selection, placements, and creative enhancements</li>
+      <li>Meta conversion ads pointing to an interstitial page containing a button pointing to Amazon, "ViewContent" conversion event, restricted audience, restricted placements, no creative enhancements</li>
+      <li>Meta conversion ads pointing to an author-owned Shopify store, "Purchase" conversion event, full Advantage+ audience selection and creative enhancements</li>
+      <li>Meta conversion ads pointing to an author-owned Shopify store, "Purchase" conversion event, full Advantage+ audience, restricted placements, no creative enhancements</li>
+      <li>Meta conversion ads pointing to an author-owned Shopify store, "Purchase" conversion event, restricted audience, restricted placements, no creative enhancements</li>
+    </ul>
+  </details>
+  <p>This is the permanent edition of Issue 001 · <a href="/thriller/aug-2026/">reports.stevepieper.com/thriller/aug-2026/</a></p>
+</footer>
+
+<script>
+  // Subscribe: POST to the Worker's double-opt-in endpoint
+  document.getElementById('subform').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('subbtn');
+    const email = e.target.email.value;
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      const r = await fetch('/api/subscribe', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({genre: 'thriller', email, consent_source: 'thriller-issue-001'})
+      });
+      const j = await r.json();
+      if (j.ok && j.state === 'confirmation-sent') btn.textContent = 'Check your inbox ✓';
+      else if (j.ok && j.state === 'already-subscribed') btn.textContent = 'Already aboard ✓';
+      else { btn.textContent = 'Try again'; btn.disabled = false; }
+    } catch { btn.textContent = 'Try again'; btn.disabled = false; }
+  });
+
+  // Archive dropdown navigation
+  document.getElementById('archive').addEventListener('change', (e) => {
+    if (e.target.value) location.href = e.target.value;
+  });
+
+  // In-issue search: hide sections that don't match; highlight matches
+  const search = document.getElementById('issuesearch');
+  search.addEventListener('input', () => {
+    const q = search.value.trim().toLowerCase();
+    document.querySelectorAll('main section').forEach(sec => {
+      if (!q) { sec.classList.remove('hidden'); return; }
+      sec.classList.toggle('hidden', !sec.textContent.toLowerCase().includes(q));
+    });
+  });
+</script>
 </body>
 </html>
