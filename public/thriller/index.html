@@ -17,16 +17,17 @@
     --col:46rem;
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
   body{margin:0;font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
        color:var(--ink);background:var(--paper);line-height:1.7;font-size:1.05rem}
   a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:2px}
   a:hover{color:var(--accent)}
 
-  /* ---------- sticky utility bar ---------- */
-  .topbar{position:sticky;top:0;z-index:50;background:var(--mast);color:var(--mast-ink);
+  /* ---------- sticky utility bar (hidden until the masthead scrolls out of view) ---------- */
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--mast);color:var(--mast-ink);
           border-bottom:1px solid var(--gold);padding:.5rem 1rem;
-          display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
+          display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+          transform:translateY(-105%);transition:transform .25s ease}
+  .topbar.show{transform:translateY(0)}
   .topbar .wordmark{font-weight:800;letter-spacing:.22em;font-size:.9rem;text-decoration:none;color:var(--mast-ink);white-space:nowrap}
   .topbar .grow{flex:1}
   .topbar select,.topbar input[type=search]{
@@ -79,7 +80,7 @@
   .bottomcta{margin:3rem 0 0;padding:1.6rem;background:var(--mast);color:var(--mast-ink);
              border-radius:6px;text-align:center}
   .bottomcta p{font-weight:700;font-size:1.1rem;margin:0 0 1rem}
-  .bottomcta .btn.ghost{background:transparent;border:1px solid var(--gold);color:var(--mast-ink)}
+  .bottomcta .btn.ghost{background:#3d0000;border:1px solid var(--gold);color:var(--mast-ink)}
   footer{border-top:1px solid var(--rule);margin-top:3rem;padding:1.6rem 1.2rem 3rem;
          max-width:var(--col);margin-left:auto;margin-right:auto;font-size:.85rem;color:var(--muted)}
   footer details{margin-top:1rem}
@@ -112,7 +113,7 @@
     <input type="email" name="email" required placeholder="you@example.com" aria-label="Email address">
     <button class="btn" type="submit" id="subbtn">Subscribe free</button>
   </form>
-  <p class="cadence">Every claim cited. Every figure sourced. New issue on the 1st.</p>
+  <p class="cadence">Every claim cited, every figure sourced. New issue on the 1st.</p>
 </header>
 
 <main>
@@ -132,7 +133,7 @@
   <section id="s2">
     <h2><span class="sec">THE ALTERNATIVE:</span> Spotify's Audiobook Push Lands at Exactly the Right Moment</h2>
     <p>At its May 21 investor day, Spotify reported its Audiobooks+ add-on passed one million subscribers with listening hours up 60% year over year, announced higher-hour add-ons for this summer with Family and Student plans later in 2026 — and, most useful, launched beta <strong>Audiobook Creation Tools</strong> in June that let self-published authors produce and publish digital-voice audiobooks (ElevenLabs-powered) inside Spotify for Authors, with no exclusivity (<a href="https://newsroom.spotify.com/2026-05-21/investor-day-audiobook-features-updates/">Spotify Newsroom, May 21</a>).</p>
-    <p>One honest caveat: the creation tools are an <strong>invite-only beta, English-only at launch</strong> — a channel maturing in real time, not one you can necessarily use today. For thriller authors weighing the Audible decision above, it's still the development to watch: a non-exclusive channel with a growing subscriber base, and a coming low-cost path to giving an audio-less backlist a voice. Digital narration is no substitute for a great human performance on your flagship series — but for deep backlist, it changes the math.</p>
+    <p>One caveat: the creation tools are an <strong>invite-only beta, English-only at launch</strong> — a channel maturing in real time, not one you can necessarily use today. For thriller authors weighing the Audible decision above, it's still the development to watch: a non-exclusive channel with a growing subscriber base, and a coming low-cost path to giving an audio-less backlist a voice. Digital narration is no substitute for a great human performance on your flagship series — but for deep backlist, it changes the math.</p>
   </section>
 
   <aside class="offer" aria-label="From Polymath">
@@ -257,6 +258,23 @@
       else { btn.textContent = 'Try again'; btn.disabled = false; }
     } catch { btn.textContent = 'Try again'; btn.disabled = false; }
   });
+
+  // Subscribe links: jump instantly to the very top (masthead form), no slow scroll
+  document.querySelectorAll('a[href="#subscribe"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({top: 0, behavior: 'auto'});
+      const em = document.querySelector('#subform input[type=email]');
+      if (em) em.focus({preventScroll: true});
+    });
+  });
+
+  // Utility bar: hidden while the masthead is in view; appears once the reader scrolls past it
+  const topbar = document.querySelector('.topbar');
+  const masthead = document.querySelector('.masthead');
+  new IntersectionObserver(([entry]) => {
+    topbar.classList.toggle('show', !entry.isIntersecting);
+  }, {threshold: 0}).observe(masthead);
 
   // Archive dropdown navigation
   document.getElementById('archive').addEventListener('change', (e) => {
