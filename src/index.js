@@ -81,10 +81,10 @@ export default {
 async function handleApi(request, url, env, ctx) {
   try {
     if (url.pathname === "/api/subscribe" && request.method === "POST") {
-      return await subscribe(request, env);
+      return await subscribe(request, env, ctx);
     }
     if (url.pathname === "/api/confirm" && request.method === "GET") {
-      return await confirm(url, env);
+      return await confirm(url, request, env, ctx);
     }
     if (url.pathname === "/api/unsubscribe" && request.method === "GET") {
       return await unsubscribe(url, env);
@@ -97,7 +97,7 @@ async function handleApi(request, url, env, ctx) {
   }
 }
 
-async function subscribe(request, env) {
+async function subscribe(request, env, ctx) {
   const body = await request.json().catch(() => ({}));
   const email = String(body.email || "").trim().toLowerCase();
   const firstName = String(body.first_name || "").trim().slice(0, 100);
@@ -135,16 +135,24 @@ async function subscribe(request, env) {
   await sendConfirmationEmail(env, { email, firstName, genre, token: row.doi_token });
   await sb(env, `subscribers?id=eq.${row.id}`, "PATCH", { doi_sent_at: new Date().toISOString() });
 
+  // Meta CAPI: subscribe-start (Lead). Fire-and-forget; never blocks the response.
+  if (ctx) ctx.waitUntil(sendMetaEvent(env, request, {
+    eventName: "Lead",
+    eventId: `${row.doi_token}-lead`,
+    email,
+    customData: { genre: genre.slug, consent_source: consentSource },
+  }));
+
   return json({ ok: true, state: "confirmation-sent" });
 }
 
-async function confirm(url, env) {
+async function confirm(url, request, env, ctx) {
   const token = url.searchParams.get("token") || "";
   if (!/^[0-9a-f-]{36}$/.test(token)) return htmlPage("That link doesn't look right.", 400);
 
   const rows = await sb(
     env,
-    `subscribers?doi_token=eq.${token}&select=id,status,genre_id,genres:genre_id(slug,display_name)`,
+    `subscribers?doi_token=eq.${token}&select=id,status,email,consent_source,genre_id,genres:genre_id(slug,display_name)`,
     "GET"
   );
   if (!rows.length) return htmlPage("This confirmation link is invalid or was already used.", 404);
@@ -155,6 +163,13 @@ async function confirm(url, env) {
       status: "confirmed",
       confirmed_at: new Date().toISOString(),
     });
+    // Meta CAPI: confirmed double opt-in (CompleteRegistration).
+    if (ctx) ctx.waitUntil(sendMetaEvent(env, request, {
+      eventName: "CompleteRegistration",
+      eventId: `${token}-confirm`,
+      email: row.email,
+      customData: { genre: (row.genres || {}).slug, consent_source: row.consent_source },
+    }));
   }
   const g = row.genres || {};
   return Response.redirect(
@@ -205,11 +220,103 @@ async function sb(env, path, method, body, extraHeaders = {}) {
 }
 
 // ---------------------------------------------------------------------------
+// Meta Conversions API — server-side events from the Worker.
+// No-ops silently until META_PIXEL_ID and META_CAPI_TOKEN secrets are set.
+// event_id is derived from the DOI token so a future browser pixel firing the
+// same events deduplicates cleanly. _fbp/_fbc are read from the request's own
+// cookies (same-origin), so no client-side changes are needed.
+// ---------------------------------------------------------------------------
+async function sendMetaEvent(env, request, { eventName, eventId, email, customData }) {
+  try {
+    if (!env.META_PIXEL_ID || !env.META_CAPI_TOKEN) return;
+
+    const cookies = parseCookies(request.headers.get("Cookie") || "");
+    const userData = {
+      em: [await sha256Hex(String(email || "").trim().toLowerCase())],
+      client_ip_address: request.headers.get("CF-Connecting-IP") || undefined,
+      client_user_agent: request.headers.get("User-Agent") || undefined,
+      fbp: cookies._fbp || undefined,
+      fbc: cookies._fbc || undefined,
+    };
+
+    const body = {
+      data: [{
+        event_name: eventName,
+        event_time: Math.floor(Date.now() / 1000),
+        event_id: eventId,
+        action_source: "website",
+        event_source_url: request.headers.get("Referer") || request.url,
+        user_data: userData,
+        custom_data: customData || {},
+      }],
+    };
+    if (env.META_TEST_EVENT_CODE) body.test_event_code = env.META_TEST_EVENT_CODE;
+
+    const res = await fetch(
+      `https://graph.facebook.com/v23.0/${env.META_PIXEL_ID}/events?access_token=${env.META_CAPI_TOKEN}`,
+      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
+    );
+    if (!res.ok) console.error("meta capi", eventName, res.status, await res.text());
+  } catch (err) {
+    console.error("meta capi error", eventName, err.stack || String(err));
+  }
+}
+
+function parseCookies(header) {
+  const out = {};
+  for (const part of header.split(";")) {
+    const i = part.indexOf("=");
+    if (i > 0) out[part.slice(0, i).trim()] = part.slice(i + 1).trim();
+  }
+  return out;
+}
+
+async function sha256Hex(s) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+// ---------------------------------------------------------------------------
 // Postmark — DOI confirmation (transactional stream)
 // ---------------------------------------------------------------------------
 async function sendConfirmationEmail(env, { email, firstName, genre, token }) {
   const confirmUrl = `https://${CANONICAL_HOST}/api/confirm?token=${token}`;
   const name = firstName || "there";
+  const pub = `${genre.display_name} Monthly`;
+  const wordmark = pub.toUpperCase();
+  const htmlBody =
+`<!doctype html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background-color:#f2f0eb;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f2f0eb;">
+    <tr><td align="center" style="padding:32px 16px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
+        <!-- masthead -->
+        <tr><td align="center" style="background-color:#12151a;border-radius:6px 6px 0 0;border-bottom:2px solid #c1932b;padding:28px 24px;">
+          <div style="font-family:'Avenir Next','Segoe UI',Arial,sans-serif;font-weight:800;font-size:18px;letter-spacing:6px;color:#f5f2ea;">${wordmark}</div>
+        </td></tr>
+        <!-- card -->
+        <tr><td style="background-color:#ffffff;border-radius:0 0 6px 6px;padding:32px 32px 28px;font-family:'Avenir Next','Segoe UI',Arial,sans-serif;color:#1c1c1c;font-size:16px;line-height:1.6;">
+          <p style="margin:0 0 14px;">Hi ${name},</p>
+          <p style="margin:0 0 22px;">One click and you're in — confirm your free subscription to <strong>${pub}</strong>:</p>
+          <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 22px;">
+            <tr><td align="center" style="background-color:#a31621;border-radius:4px;">
+              <a href="${confirmUrl}" style="display:inline-block;padding:13px 28px;font-family:'Avenir Next','Segoe UI',Arial,sans-serif;font-size:16px;font-weight:700;color:#ffffff;text-decoration:none;">Confirm my subscription</a>
+            </td></tr>
+          </table>
+          <p style="margin:0 0 22px;font-size:13px;color:#6b6b6b;">Button not working? Paste this link into your browser:<br>
+            <a href="${confirmUrl}" style="color:#a31621;word-break:break-all;">${confirmUrl}</a></p>
+          <p style="margin:0 0 4px;font-size:14px;color:#444444;">Every claim cited, every figure sourced. New issue on the 1st.</p>
+          <hr style="border:none;border-top:1px solid #e5e1d8;margin:20px 0;">
+          <p style="margin:0;font-size:13px;color:#8a8578;">If you didn't request this, ignore this email and nothing happens.<br>
+            — Steve Pieper, Polymath Consulting &amp; Publishing</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
   const res = await fetch("https://api.postmarkapp.com/email", {
     method: "POST",
     headers: {
@@ -221,10 +328,11 @@ async function sendConfirmationEmail(env, { email, firstName, genre, token }) {
       From: "Steve Pieper <reports@stevepieper.com>",
       To: email,
       MessageStream: "outbound", // transactional stream for DOI
-      Subject: `Confirm your ${genre.display_name} Monthly subscription`,
+      Subject: `Confirm your ${pub} subscription`,
+      HtmlBody: htmlBody,
       TextBody:
         `Hi ${name},\n\n` +
-        `One click and you're in: confirm your subscription to ${genre.display_name} Monthly here:\n\n` +
+        `One click and you're in: confirm your subscription to ${pub} here:\n\n` +
         `${confirmUrl}\n\n` +
         `If you didn't request this, ignore this email and nothing happens.\n\n` +
         `— Steve Pieper\nPolymath Consulting & Publishing`,
