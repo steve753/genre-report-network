@@ -12,6 +12,7 @@
  *   POST /api/subscribe   {genre, email, first_name}  → pending row + confirmation email
  *   GET  /api/confirm?token=...                       → flips subscriber to confirmed
  *   GET  /api/unsubscribe?token=...                   → flips subscriber to unsubscribed
+ *   POST /api/unsubscribe?token=...                   → same, RFC 8058 one-click (always 200)
  *
  * Secrets: SUPABASE_URL, SUPABASE_SERVICE_KEY, POSTMARK_TOKEN, DOI_SIGNING_SECRET.
  * The Supabase REST calls target the genre_reports schema via PostgREST profile
@@ -86,8 +87,15 @@ async function handleApi(request, url, env, ctx) {
     if (url.pathname === "/api/confirm" && request.method === "GET") {
       return await confirm(url, request, env, ctx);
     }
-    if (url.pathname === "/api/unsubscribe" && request.method === "GET") {
-      return await unsubscribe(url, env);
+    // GET = a human clicking the link in an email body.
+    // POST = RFC 8058 one-click unsubscribe, sent by the mailbox provider.
+    // Both must work: a provider that POSTs and receives 404 records the
+    // unsubscribe as failed while List-Unsubscribe-Post promises it worked.
+    if (
+      url.pathname === "/api/unsubscribe" &&
+      (request.method === "GET" || request.method === "POST")
+    ) {
+      return await unsubscribe(url, env, request.method);
     }
     return json({ error: "not found" }, 404);
   } catch (err) {
@@ -178,12 +186,23 @@ async function confirm(url, request, env, ctx) {
   );
 }
 
-async function unsubscribe(url, env) {
+async function unsubscribe(url, env, method = "GET") {
+  // One-click (POST) callers are machines, not people. They want a 2xx and
+  // nothing else. Any non-2xx — including for a token we don't recognise —
+  // is recorded by the provider as a failed unsubscribe and counts against
+  // sender reputation, so the POST path always answers 200.
+  const isOneClick = method === "POST";
+  const ok = () => new Response("OK", { status: 200 });
+
   const token = url.searchParams.get("token") || "";
-  if (!/^[0-9a-f-]{36}$/.test(token)) return htmlPage("That link doesn't look right.", 400);
+  if (!/^[0-9a-f-]{36}$/.test(token)) {
+    return isOneClick ? ok() : htmlPage("That link doesn't look right.", 400);
+  }
 
   const rows = await sb(env, `subscribers?doi_token=eq.${token}&select=id,status`, "GET");
-  if (!rows.length) return htmlPage("This link is invalid.", 404);
+  if (!rows.length) {
+    return isOneClick ? ok() : htmlPage("This link is invalid.", 404);
+  }
 
   if (rows[0].status !== "unsubscribed") {
     await sb(env, `subscribers?id=eq.${rows[0].id}`, "PATCH", {
@@ -191,7 +210,9 @@ async function unsubscribe(url, env) {
       unsubscribed_at: new Date().toISOString(),
     });
   }
-  return htmlPage("You're unsubscribed. No hard feelings — the archive stays open to you.", 200);
+  return isOneClick
+    ? ok()
+    : htmlPage("You're unsubscribed. No hard feelings — the archive stays open to you.", 200);
 }
 
 // ---------------------------------------------------------------------------
@@ -313,8 +334,9 @@ async function sendConfirmationEmail(env, { email, firstName, genre, token }) {
             <a href="${confirmUrl}" style="color:#a31621;word-break:break-all;">${confirmUrl}</a></p>
           <p style="margin:0 0 4px;font-size:14px;color:#444444;">Every claim cited, every figure sourced. New issue on the 1st.</p>
           <hr style="border:none;border-top:1px solid #e5e1d8;margin:20px 0;">
-          <p style="margin:0;font-size:13px;color:#8a8578;">If you didn't request this, ignore this email and nothing happens.<br>
+          <p style="margin:0 0 12px;font-size:13px;color:#8a8578;">If you didn't request this, ignore this email and nothing happens.<br>
             — Steve Pieper, Polymath Consulting &amp; Publishing</p>
+          <p style="margin:0;font-size:12px;line-height:1.5;color:#8a8578;">Polymath Consulting &amp; Publishing Inc<br>8215 Blossom Hill Lane, Suite 302<br>Parker, CO 80138</p>
         </td></tr>
       </table>
     </td></tr>
@@ -339,7 +361,9 @@ async function sendConfirmationEmail(env, { email, firstName, genre, token }) {
         `One click and you're in: confirm your subscription to ${pub} here:\n\n` +
         `${confirmUrl}\n\n` +
         `If you didn't request this, ignore this email and nothing happens.\n\n` +
-        `— Steve Pieper\nPolymath Consulting & Publishing`,
+        `— Steve Pieper\nPolymath Consulting & Publishing\n\n` +
+        `—\nPolymath Consulting & Publishing Inc\n` +
+        `8215 Blossom Hill Lane, Suite 302\nParker, CO 80138`,
     }),
   });
   if (!res.ok) throw new Error(`postmark ${res.status}: ${await res.text()}`);
