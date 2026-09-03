@@ -9,7 +9,7 @@
  *   any other proxied hostname                  → pass through to origin untouched
  *
  * API (double opt-in, design doc §2.13 / Worker+Supabase).
- * State changes require a click (registry: genre_reports.network.confirm_unsubscribe_semantics):
+ * State changes require a click (registry: genre_reports.network.doi_token_behavior):
  * a bare GET never mutates subscriber state — corporate link-scanners fetch every
  * link in an email and must not be able to confirm or unsubscribe anyone.
  *   POST /api/subscribe   {genre, email, first_name}  → pending row + confirmation email
@@ -192,7 +192,7 @@ async function confirm(url, request, env, ctx) {
   const pub = cfg ? pubName(cfg) : "our report";
 
   // GET renders; only the button's POST mutates
-  // (registry: genre_reports.network.confirm_unsubscribe_semantics).
+  // (registry: genre_reports.network.doi_token_behavior).
   if (request.method === "GET") {
     if (row.status !== "pending") {
       return Response.redirect(`https://${CANONICAL_HOST}/${g.slug || ""}/?subscribed=1`, 302);
@@ -227,7 +227,7 @@ async function confirm(url, request, env, ctx) {
 
 async function unsubscribe(url, request, env) {
   // GET renders a click-through page; only a POST mutates
-  // (registry: genre_reports.network.confirm_unsubscribe_semantics).
+  // (registry: genre_reports.network.doi_token_behavior).
   // POST callers are two species: the click-through page's button (a human),
   // and RFC 8058 one-click from a mailbox provider (a machine, whose body is
   // "List-Unsubscribe=One-Click"). Machines want a 2xx and nothing else — any
