@@ -118,6 +118,9 @@ async function handleApi(request, url, env, ctx) {
     ) {
       return await unsubscribe(url, request, env);
     }
+    if (url.pathname === "/api/send-issue" && request.method === "POST") {
+      return await sendIssue(request, env);
+    }
     return json({ error: "not found" }, 404);
   } catch (err) {
     // Never leak internals; log for observability.
@@ -271,6 +274,263 @@ async function unsubscribe(url, request, env) {
   return isOneClick
     ? ok()
     : htmlPage("You're unsubscribed. No hard feelings — the archive stays open to you.", 200);
+}
+
+// ---------------------------------------------------------------------------
+// Broadcast sender — POST /api/send-issue
+//
+// Ruled gates it implements:
+//   - UNARMED BY DEFAULT (genre_reports.network.dormancy): without the
+//     SEND_AUTH_TOKEN secret the endpoint answers 503 and nothing can send.
+//     Arming (setting the secret) and per-send copy approval remain Steve's.
+//   - Audience is the sendable view only — confirmed subscribers
+//     (genre_reports.network.dormancy: "confirmed subscribers means
+//     status='confirmed'").
+//   - CAN-SPAM address block COUNTED, exactly once, in BOTH HtmlBody and
+//     TextBody of every message (genre_reports.network.canspam_address);
+//     any other count refuses the whole send.
+//   - List-Unsubscribe + List-Unsubscribe-Post headers point at the deployed
+//     one-click endpoint (genre_reports.network.canspam_address).
+//   - email_log dedup: a subscriber with a 'sent' row for this issue is
+//     skipped, so a repeated invocation is safe.
+//   - All links built from config, never from the request URL.
+//
+// Body: { issue_id, genre, subject, teaser_bullets: [..], permalink_url,
+//         dry_run?: true }
+// dry_run renders and counts everything, writes nothing, sends nothing,
+// and returns the audience size plus one rendered sample.
+// ---------------------------------------------------------------------------
+const CANSPAM_ADDRESS_LINE = "8215 Blossom Hill Lane, Suite 302";
+
+async function sendIssue(request, env) {
+  if (!env.SEND_AUTH_TOKEN) {
+    console.log("broadcast_refused_not_armed");
+    return json({ error: "sender not armed" }, 503);
+  }
+  const auth = request.headers.get("Authorization") || "";
+  const presented = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  if (!timingSafeEqual(presented, env.SEND_AUTH_TOKEN)) {
+    console.log("broadcast_refused_bad_token");
+    return json({ error: "unauthorized" }, 401);
+  }
+
+  const body = await request.json().catch(() => ({}));
+  const issueId = String(body.issue_id || "");
+  const genreSlug = slugify(String(body.genre || ""));
+  const subject = String(body.subject || "").trim();
+  const bullets = Array.isArray(body.teaser_bullets)
+    ? body.teaser_bullets.map((b) => String(b)).filter(Boolean).slice(0, 6)
+    : [];
+  const permalink = String(body.permalink_url || "");
+  const dryRun = body.dry_run === true;
+
+  const genre = GENRES.get(genreSlug);
+  if (!genre) return json({ error: "unknown genre" }, 400);
+  if (!/^[0-9a-f-]{36}$/.test(issueId)) return json({ error: "invalid issue_id" }, 400);
+  if (!subject || bullets.length === 0) {
+    return json({ error: "subject and teaser_bullets are required" }, 400);
+  }
+  if (!permalink.startsWith(`https://${CANONICAL_HOST}/${genre.slug}/`)) {
+    return json({ error: "permalink_url must live under the genre's canonical path" }, 400);
+  }
+
+  // Issue must exist and belong to this genre.
+  const issues = await sb(
+    env,
+    `issues?id=eq.${issueId}&select=id,genre_id,genres_all:genre_id(slug)`,
+    "GET"
+  );
+  if (!issues.length) return json({ error: "unknown issue" }, 404);
+  if ((issues[0].genres_all || {}).slug !== genre.slug) {
+    return json({ error: "issue does not belong to this genre" }, 400);
+  }
+
+  // Audience: confirmed subscribers for the genre, minus already-sent.
+  const audience = await sb(
+    env,
+    `sendable?genre_slug=eq.${genre.slug}&select=subscriber_id,email,first_name,doi_token`,
+    "GET"
+  );
+  const sentRows = await sb(
+    env,
+    `email_log?issue_id=eq.${issueId}&status=eq.sent&select=subscriber_id`,
+    "GET"
+  );
+  const alreadySent = new Set(sentRows.map((r) => r.subscriber_id));
+  const recipients = audience.filter((s) => !alreadySent.has(s.subscriber_id));
+
+  const pub = pubName(genre);
+  const messages = recipients.map((s) => renderIssueEmail(env, {
+    subscriber: s, genre, pub, subject, bullets, permalink,
+  }));
+
+  // DR-0163: COUNT the address block — exactly one in each body of every
+  // message, or the whole send refuses. A presence check passes happily with
+  // duplicates; a count does not.
+  for (const m of messages) {
+    const htmlCount = countOccurrences(m.HtmlBody, CANSPAM_ADDRESS_LINE);
+    const textCount = countOccurrences(m.TextBody, CANSPAM_ADDRESS_LINE);
+    if (htmlCount !== 1 || textCount !== 1) {
+      console.error("broadcast_refused_canspam_count", "html", htmlCount, "text", textCount);
+      return json({
+        error: `CAN-SPAM address block count wrong (html=${htmlCount}, text=${textCount}); send refused`,
+      }, 500);
+    }
+  }
+
+  if (dryRun) {
+    console.log("broadcast_dry_run", "issue", issueId, "genre", genre.slug,
+      "audience", recipients.length, "skipped_already_sent", alreadySent.size);
+    return json({
+      ok: true, dry_run: true, audience: recipients.length,
+      skipped_already_sent: alreadySent.size,
+      sample: messages[0] ? {
+        To: messages[0].To, Subject: messages[0].Subject,
+        HtmlBody: messages[0].HtmlBody, TextBody: messages[0].TextBody,
+        Headers: messages[0].Headers,
+      } : null,
+    });
+  }
+
+  if (recipients.length === 0) {
+    return json({ ok: true, sent: 0, failed: 0, skipped_already_sent: alreadySent.size });
+  }
+
+  // Postmark batch endpoint: 500 messages per call.
+  let sent = 0, failed = 0;
+  for (let i = 0; i < messages.length; i += 500) {
+    const chunk = messages.slice(i, i + 500);
+    const res = await fetch("https://api.postmarkapp.com/email/batch", {
+      method: "POST",
+      headers: {
+        "X-Postmark-Server-Token": env.POSTMARK_TOKEN,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(chunk),
+    });
+    if (!res.ok) throw new Error(`postmark batch ${res.status}: ${await res.text()}`);
+    const results = await res.json();
+    const logRows = [];
+    for (let j = 0; j < results.length; j++) {
+      const r = results[j];
+      const rec = recipients[i + j];
+      const ok = r.ErrorCode === 0;
+      if (ok) sent++; else failed++;
+      logRows.push({
+        issue_id: issueId,
+        subscriber_id: rec.subscriber_id,
+        message_stream: "genre-reports",
+        postmark_message_id: r.MessageID || null,
+        status: ok ? "sent" : "failed",
+        error: ok ? null : `${r.ErrorCode}: ${r.Message}`,
+      });
+    }
+    await sb(env, "email_log", "POST", logRows, { Prefer: "return=minimal" });
+  }
+
+  console.log("broadcast_sent", "issue", issueId, "genre", genre.slug,
+    "sent", sent, "failed", failed, "skipped_already_sent", alreadySent.size);
+  return json({ ok: true, sent, failed, skipped_already_sent: alreadySent.size });
+}
+
+function countOccurrences(haystack, needle) {
+  return String(haystack).split(needle).length - 1;
+}
+
+function timingSafeEqual(a, b) {
+  const enc = new TextEncoder();
+  const ab = enc.encode(String(a));
+  const bb = enc.encode(String(b));
+  if (ab.length !== bb.length) return false;
+  let diff = 0;
+  for (let i = 0; i < ab.length; i++) diff |= ab[i] ^ bb[i];
+  return diff === 0;
+}
+
+function renderIssueEmail(env, { subscriber, genre, pub, subject, bullets, permalink }) {
+  const name = subscriber.first_name || "there";
+  const wordmark = pub.toUpperCase();
+  const unsubUrl = `https://${CANONICAL_HOST}/api/unsubscribe?token=${subscriber.doi_token}`;
+  const bulletsHtml = bullets
+    .map((b) => `<li style="margin:0 0 8px;">${escapeHtml(b)}</li>`)
+    .join("\n            ");
+  const bulletsText = bullets.map((b) => `  - ${b}`).join("\n");
+
+  const HtmlBody =
+`<!doctype html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background-color:#f2f0eb;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f2f0eb;">
+    <tr><td align="center" style="padding:32px 16px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
+        <tr><td align="center" style="background-color:#12151a;border-radius:6px 6px 0 0;border-bottom:2px solid #c1932b;padding:28px 24px;">
+          <div style="font-family:'Avenir Next','Segoe UI',Arial,sans-serif;font-weight:800;font-size:18px;letter-spacing:6px;color:#f5f2ea;">${wordmark}</div>
+        </td></tr>
+        <tr><td style="background-color:#ffffff;border-radius:0 0 6px 6px;padding:32px 32px 28px;font-family:'Avenir Next','Segoe UI',Arial,sans-serif;color:#1c1c1c;font-size:16px;line-height:1.6;">
+          <p style="margin:0 0 14px;">Hi ${escapeHtml(name)},</p>
+          <p style="margin:0 0 14px;">The new issue of <strong>${escapeHtml(pub)}</strong> is out. In this one:</p>
+          <ul style="margin:0 0 22px;padding-left:20px;">
+            ${bulletsHtml}
+          </ul>
+          <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 22px;">
+            <tr><td align="center" style="background-color:#a31621;border-radius:4px;">
+              <a href="${permalink}" style="display:inline-block;padding:13px 28px;font-family:'Avenir Next','Segoe UI',Arial,sans-serif;font-size:16px;font-weight:700;color:#ffffff;text-decoration:none;">Read the issue</a>
+            </td></tr>
+          </table>
+          <p style="margin:0 0 4px;font-size:14px;color:#444444;">Every claim cited, every figure sourced.</p>
+          <hr style="border:none;border-top:1px solid #e5e1d8;margin:20px 0;">
+          <p style="margin:0 0 12px;font-size:13px;color:#8a8578;">— Steve Pieper, Polymath Consulting &amp; Publishing</p>
+          <p style="margin:0 0 12px;font-size:12px;line-height:1.5;color:#8a8578;">Polymath Consulting &amp; Publishing Inc<br>${CANSPAM_ADDRESS_LINE}<br>Parker, CO 80138</p>
+          <p style="margin:0;font-size:12px;color:#8a8578;"><a href="${unsubUrl}" style="color:#8a8578;">Unsubscribe</a> — one click, honored immediately.</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  const TextBody =
+`Hi ${name},
+
+The new issue of ${pub} is out. In this one:
+
+${bulletsText}
+
+Read the issue:
+${permalink}
+
+Every claim cited, every figure sourced.
+
+— Steve Pieper, Polymath Consulting & Publishing
+
+—
+Polymath Consulting & Publishing Inc
+${CANSPAM_ADDRESS_LINE}
+Parker, CO 80138
+
+Unsubscribe (one click, honored immediately):
+${unsubUrl}`;
+
+  return {
+    From: "Steve Pieper <reports@stevepieper.com>",
+    To: subscriber.email,
+    MessageStream: "genre-reports",
+    Subject: subject,
+    HtmlBody,
+    TextBody,
+    Headers: [
+      { Name: "List-Unsubscribe", Value: `<${unsubUrl}>` },
+      { Name: "List-Unsubscribe-Post", Value: "List-Unsubscribe=One-Click" },
+    ],
+  };
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
 // ---------------------------------------------------------------------------
