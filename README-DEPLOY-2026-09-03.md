@@ -13,14 +13,14 @@
 1. **15 new pages** — fantasy, romance, mystery, science-fiction, horror × (home, subscribe,
    `q4-2026` Issue-001 permalink placeholder). Quarterly masthead cadence
    (`genre_reports.network.cadence`), optional first-name field
-   (`…subscribe_fields`), offer card unchanged targeting stevepieper.com
+   (`…first_name_capture`), offer card unchanged targeting stevepieper.com
    (`…offer_card_destination`). All noindex until you call launch.
-2. **Truthful fine print site-wide** (`…capi_disclosure`) — "never sold or shared" is gone
+2. **Truthful fine print site-wide** (`…pixel_privacy_disclosure`) — "never sold or shared" is gone
    everywhere; subscribe surfaces disclose hashed-email sharing with Meta and link /privacy/.
    Thriller's three pages patched for parity (fine print + first-name field).
 3. **`/privacy/` and `/terms/`** — drafted for your copy approval; they ship in this deploy,
    so read them before typing DEPLOY. Both carry the Parker, CO address.
-4. **Worker: click-through confirm/unsubscribe** (`…confirm_unsubscribe_semantics`) —
+4. **Worker: click-through confirm/unsubscribe** (`…doi_token_behavior`) —
    a bare GET can no longer mutate state (link-scanner protection); the page's button POSTs.
    RFC 8058 one-click POST still answers 200 always. 16-check behavioral suite passed.
 5. **Tier-correct DOI emails** — fixed a live bug: the confirmation email hardcoded
