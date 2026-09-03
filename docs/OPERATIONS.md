@@ -1,3 +1,5 @@
+> **SUPERSEDED 2026-09-03.** The installed genre-report-network ACCOUNT SKILL is the operative copy; this file is a historical snapshot from 2026-08-14 and predates the broadcast sender, the one-click approval mechanism, and the write lane. Do not operate from it.
+
 ---
 name: genre-report-network
 description: Produce, verify, publish, and distribute monthly per-genre book-industry reports for the Genre Report Network (reports.stevepieper.com) — Polymath Consulting & Publishing. Use for any genre-report work — monthly production runs, single-issue builds, new-genre onboarding, subscriber/DOI operations, template or Worker changes, and email sends. Covers the researcher → adversary → publisher pipeline, all infrastructure endpoints, and every binding editorial and licensing policy.

@@ -2,11 +2,12 @@
  * Genre Report Network — write lane (MCP server Worker).
  *
  * Pattern of record: The Dangle write lane. Sessions hold no database write
- * access; this Worker is the ONLY write path, and it exposes exactly two
- * tools, both backed by SECURITY DEFINER functions whose gates live in
- * Postgres (sql/2026-09-03-write-lane.sql). The approval fields
+ * access; this Worker is the ONLY write path, and it exposes exactly three
+ * tools: two backed by SECURITY DEFINER functions whose gates live in
+ * Postgres (sql/2026-09-03-write-lane.sql), plus a notify relay. The approval fields
  * (approved_at, approved_by, approval_token_hash) have NO tool here by
- * design — the one-click console is their only writer, and send-arming
+ * design (the third tool, genre_notify_draft, only relays the publication
+ * Worker's own credential-free notify endpoint — it cannot approve either), and send-arming
  * (SEND_AUTH_TOKEN) is a different Worker's secret entirely. Blast radius
  * of a compromised lane token, stated exactly: it can mark an issue
  * published and author the payload a later broadcast would carry — it
@@ -66,6 +67,23 @@ const TOOLS = [
         adversary_verdict: { type: "string" },
         story_count: { type: "integer" },
         production_notes: { type: "string" },
+      },
+    },
+  },
+  {
+    name: "genre_notify_draft",
+    description:
+      "Relay to the publication Worker's credential-free POST /api/notify-draft: " +
+      "emails the approver a fresh one-click review link for a published issue " +
+      "with a recorded send_payload. Exists because sessions cannot reach the " +
+      "publication host directly (egress proxy) while MCP traffic is exempt. " +
+      "Sends nothing to subscribers; rate-limited to one notification per issue " +
+      "per hour by the Worker (a 'recently notified' skip is success, not failure).",
+    inputSchema: {
+      type: "object",
+      required: ["issue_id"],
+      properties: {
+        issue_id: { type: "string", description: "UUID of the published genre_reports.issues row." },
       },
     },
   },
@@ -139,6 +157,21 @@ async function handle(msg, env) {
         p_production_notes: args.production_notes ? String(args.production_notes).slice(0, 4000) : null,
       });
       return toolResult(id, out, out && out.ok === false);
+    }
+    if (name === "genre_notify_draft") {
+      const issueId = String(args.issue_id || "");
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(issueId.toLowerCase())) {
+        return toolResult(id, { ok: false, error: "invalid issue_id" }, true);
+      }
+      const res = await fetch("https://reports.stevepieper.com/api/notify-draft", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ issue_id: issueId.toLowerCase() }),
+      });
+      const text = await res.text();
+      let out;
+      try { out = JSON.parse(text); } catch { out = { ok: false, error: `unparseable reply (${res.status})` }; }
+      return toolResult(id, out, !res.ok || out.ok === false);
     }
     return rpcError(id, -32602, `unknown tool: ${name}`);
   }
