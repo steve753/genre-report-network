@@ -8,11 +8,16 @@
  *   {genre}.stevepieper.com/*                   → vanity hostname, 301 → canonical genre home
  *   any other proxied hostname                  → pass through to origin untouched
  *
- * API (double opt-in, design doc §2.13 / Worker+Supabase):
+ * API (double opt-in, design doc §2.13 / Worker+Supabase).
+ * State changes require a click (registry: genre_reports.network.confirm_unsubscribe_semantics):
+ * a bare GET never mutates subscriber state — corporate link-scanners fetch every
+ * link in an email and must not be able to confirm or unsubscribe anyone.
  *   POST /api/subscribe   {genre, email, first_name}  → pending row + confirmation email
- *   GET  /api/confirm?token=...                       → flips subscriber to confirmed
- *   GET  /api/unsubscribe?token=...                   → flips subscriber to unsubscribed
- *   POST /api/unsubscribe?token=...                   → same, RFC 8058 one-click (always 200)
+ *   GET  /api/confirm?token=...                       → renders a page whose button POSTs
+ *   POST /api/confirm?token=...                       → flips subscriber to confirmed
+ *   GET  /api/unsubscribe?token=...                   → renders a page whose button POSTs
+ *   POST /api/unsubscribe?token=...                   → flips to unsubscribed; RFC 8058
+ *                                                       one-click posts always answer 200
  *
  * Secrets: SUPABASE_URL, SUPABASE_SERVICE_KEY, POSTMARK_TOKEN, DOI_SIGNING_SECRET.
  * The Supabase REST calls target the genre_reports schema via PostgREST profile
@@ -41,6 +46,18 @@ const GENRES = new Map();
 for (const g of genresConfig.genres) {
   GENRES.set(g.slug, g);
   for (const a of g.aliases || []) GENRES.set(slugify(a), g);
+}
+
+// Publication naming follows the genre's launch tier (registry:
+// genre_reports.network.launch_tiers) — the masthead and every email promise
+// only the cadence the pipeline actually delivers.
+function pubName(genre) {
+  return `${genre.display_name} ${genre.tier === "monthly" ? "Monthly" : "Quarterly"}`;
+}
+function cadenceLine(genre) {
+  return genre.tier === "monthly"
+    ? "Every claim cited, every figure sourced. New issue on the 1st."
+    : "Every claim cited, every figure sourced. Published quarterly.";
 }
 
 // ---------------------------------------------------------------------------
@@ -84,18 +101,22 @@ async function handleApi(request, url, env, ctx) {
     if (url.pathname === "/api/subscribe" && request.method === "POST") {
       return await subscribe(request, env, ctx);
     }
-    if (url.pathname === "/api/confirm" && request.method === "GET") {
+    if (
+      url.pathname === "/api/confirm" &&
+      (request.method === "GET" || request.method === "POST")
+    ) {
       return await confirm(url, request, env, ctx);
     }
-    // GET = a human clicking the link in an email body.
-    // POST = RFC 8058 one-click unsubscribe, sent by the mailbox provider.
-    // Both must work: a provider that POSTs and receives 404 records the
-    // unsubscribe as failed while List-Unsubscribe-Post promises it worked.
+    // GET = a human clicking the link in an email body → click-through page.
+    // POST = the page's button, or RFC 8058 one-click from the mailbox provider.
+    // The one-click path must always answer 200: a provider that POSTs and
+    // receives non-2xx records the unsubscribe as failed while
+    // List-Unsubscribe-Post promises it worked.
     if (
       url.pathname === "/api/unsubscribe" &&
       (request.method === "GET" || request.method === "POST")
     ) {
-      return await unsubscribe(url, env, request.method);
+      return await unsubscribe(url, request, env);
     }
     return json({ error: "not found" }, 404);
   } catch (err) {
@@ -166,6 +187,25 @@ async function confirm(url, request, env, ctx) {
   if (!rows.length) return htmlPage("This confirmation link is invalid or was already used.", 404);
 
   const row = rows[0];
+  const g = row.genres || {};
+  const cfg = GENRES.get(g.slug || "");
+  const pub = cfg ? pubName(cfg) : "our report";
+
+  // GET renders; only the button's POST mutates
+  // (registry: genre_reports.network.confirm_unsubscribe_semantics).
+  if (request.method === "GET") {
+    if (row.status !== "pending") {
+      return Response.redirect(`https://${CANONICAL_HOST}/${g.slug || ""}/?subscribed=1`, 302);
+    }
+    return htmlPage(
+      `One click to go — confirm your free subscription to <strong>${pub}</strong>.` +
+        `<form method="post" action="/api/confirm?token=${token}" style="margin:1.2rem 0">` +
+        `<button type="submit" style="background:#a31621;color:#fff;border:none;border-radius:4px;` +
+        `padding:.7rem 1.4rem;font-weight:700;font-size:1rem;cursor:pointer">Confirm my subscription</button></form>`,
+      200
+    );
+  }
+
   if (row.status === "pending") {
     await sb(env, `subscribers?id=eq.${row.id}`, "PATCH", {
       status: "confirmed",
@@ -176,22 +216,27 @@ async function confirm(url, request, env, ctx) {
       eventName: "CompleteRegistration",
       eventId: `${token}-confirm`,
       email: row.email,
-      customData: { genre: (row.genres || {}).slug, consent_source: row.consent_source },
+      customData: { genre: g.slug, consent_source: row.consent_source },
     }));
   }
-  const g = row.genres || {};
-  return Response.redirect(
-    `https://${CANONICAL_HOST}/${g.slug || ""}/?subscribed=1`,
-    302
-  );
+  return new Response(null, {
+    status: 303,
+    headers: { Location: `https://${CANONICAL_HOST}/${g.slug || ""}/?subscribed=1` },
+  });
 }
 
-async function unsubscribe(url, env, method = "GET") {
-  // One-click (POST) callers are machines, not people. They want a 2xx and
-  // nothing else. Any non-2xx — including for a token we don't recognise —
-  // is recorded by the provider as a failed unsubscribe and counts against
-  // sender reputation, so the POST path always answers 200.
-  const isOneClick = method === "POST";
+async function unsubscribe(url, request, env) {
+  // GET renders a click-through page; only a POST mutates
+  // (registry: genre_reports.network.confirm_unsubscribe_semantics).
+  // POST callers are two species: the click-through page's button (a human),
+  // and RFC 8058 one-click from a mailbox provider (a machine, whose body is
+  // "List-Unsubscribe=One-Click"). Machines want a 2xx and nothing else — any
+  // non-2xx, including for a token we don't recognise, is recorded by the
+  // provider as a failed unsubscribe while List-Unsubscribe-Post promised it
+  // worked. So the machine path always answers 200.
+  const isPost = request.method === "POST";
+  const isOneClick =
+    isPost && (await request.text().catch(() => "")).includes("List-Unsubscribe=One-Click");
   const ok = () => new Response("OK", { status: 200 });
 
   const token = url.searchParams.get("token") || "";
@@ -202,6 +247,19 @@ async function unsubscribe(url, env, method = "GET") {
   const rows = await sb(env, `subscribers?doi_token=eq.${token}&select=id,status`, "GET");
   if (!rows.length) {
     return isOneClick ? ok() : htmlPage("This link is invalid.", 404);
+  }
+
+  if (!isPost) {
+    if (rows[0].status === "unsubscribed") {
+      return htmlPage("You're already unsubscribed — nothing more is coming.", 200);
+    }
+    return htmlPage(
+      `Sorry to see you go. One click and you're out — immediately, no questions.` +
+        `<form method="post" action="/api/unsubscribe?token=${token}" style="margin:1.2rem 0">` +
+        `<button type="submit" style="background:#1c1c1c;color:#fff;border:none;border-radius:4px;` +
+        `padding:.7rem 1.4rem;font-weight:700;font-size:1rem;cursor:pointer">Unsubscribe me</button></form>`,
+      200
+    );
   }
 
   if (rows[0].status !== "unsubscribed") {
@@ -307,7 +365,8 @@ async function sha256Hex(s) {
 async function sendConfirmationEmail(env, { email, firstName, genre, token }) {
   const confirmUrl = `https://${CANONICAL_HOST}/api/confirm?token=${token}`;
   const name = firstName || "there";
-  const pub = `${genre.display_name} Monthly`;
+  const pub = pubName(genre);
+  const cadence = cadenceLine(genre);
   const wordmark = pub.toUpperCase();
   const htmlBody =
 `<!doctype html>
@@ -332,7 +391,7 @@ async function sendConfirmationEmail(env, { email, firstName, genre, token }) {
           </table>
           <p style="margin:0 0 22px;font-size:13px;color:#6b6b6b;">Button not working? Paste this link into your browser:<br>
             <a href="${confirmUrl}" style="color:#a31621;word-break:break-all;">${confirmUrl}</a></p>
-          <p style="margin:0 0 4px;font-size:14px;color:#444444;">Every claim cited, every figure sourced. New issue on the 1st.</p>
+          <p style="margin:0 0 4px;font-size:14px;color:#444444;">${cadence}</p>
           <hr style="border:none;border-top:1px solid #e5e1d8;margin:20px 0;">
           <p style="margin:0 0 12px;font-size:13px;color:#8a8578;">If you didn't request this, ignore this email and nothing happens.<br>
             — Steve Pieper, Polymath Consulting &amp; Publishing</p>

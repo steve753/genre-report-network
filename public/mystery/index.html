@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="robots" content="noindex"><!-- remove at public launch -->
+<title>Mystery Quarterly — market intelligence for mystery authors</title>
+<meta name="description" content="The business of the whodunit, for the authors who plot it. Free, quarterly, every claim cited.">
+<link rel="canonical" href="https://reports.stevepieper.com/mystery/">
+<style>
+  :root{
+    --mast:#12151a; --mast-ink:#f5f2ea; --paper:#faf8f4; --ink:#1c1c1c; --ink-2:#444;
+    --accent:#35427e; --accent-dark:#283263; --muted:#857e72; --gold:#c1932b;
+    --rule:#e5e1d8; --col:42rem;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+       color:var(--ink);background:var(--paper);line-height:1.7;font-size:1.05rem}
+  a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:2px}
+  a:hover{color:var(--accent)}
+  .btn{display:inline-block;background:var(--accent);color:#fff;border:none;border-radius:4px;
+       padding:.45rem .9rem;font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none}
+  .btn:hover{background:var(--accent-dark);color:#fff}
+
+  .masthead{background:var(--mast);color:var(--mast-ink);padding:2.2rem 1.2rem 2.4rem;text-align:center;
+            border-bottom:2px solid var(--gold)}
+  .masthead h1{margin:0;font-size:2rem;letter-spacing:.28em;font-weight:800}
+  .masthead .tag{font-style:italic;opacity:.85;margin:.4rem 0 1.2rem}
+  .capture{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+  .capture input{padding:.55rem .8rem;border-radius:4px;border:1px solid #3a414b;
+    background:#fff;color:var(--ink);font-size:.95rem}
+  .capture input[type=email]{min-width:16rem}
+  .capture input[type=text]{min-width:10rem}
+  .masthead .cadence{font-style:italic;opacity:.8;font-size:.9rem;margin-top:.8rem}
+
+  main{max-width:var(--col);margin:0 auto;padding:2.6rem 1.2rem 3.5rem}
+  .fromdesk{font-style:italic;color:var(--ink-2)}
+  .kicker{font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:.9rem 0 .2rem}
+  h2{font-size:1.3rem;margin:0 0 1rem;letter-spacing:.02em}
+  ul.what{margin:0 0 1.4rem 1.2rem;padding:0}
+  ul.what li{margin:.6rem 0}
+  .promise{margin:0 0 1.8rem}
+  .firstissue{margin:0 0 2.2rem}
+  .fineprint{font-size:.85rem;color:var(--muted);border-top:1px solid var(--rule);padding-top:1.2rem}
+
+  .offer{margin:2.4rem 0}
+  .offer .label{font-size:.7rem;font-weight:800;letter-spacing:.14em;color:var(--muted);margin-bottom:.5rem}
+  .offer .card{border:1px solid var(--rule);border-left:4px solid var(--accent);border-radius:6px;
+               padding:1.1rem 1.3rem;background:#fff}
+  .offer .hook{font-size:1.15rem;font-weight:800;line-height:1.35;margin:0 0 .8rem}
+  .offer .row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+  .offer .sub{font-size:.9rem;color:var(--ink-2);margin:0}
+
+  .bottomcta{margin:3rem 0 0;padding:1.6rem;background:var(--mast);color:var(--mast-ink);
+             border-radius:6px;text-align:center}
+  .bottomcta p{font-weight:700;font-size:1.1rem;margin:0 0 1rem}
+  .bottomcta .btn.ghost{background:#3d0000;border:1px solid var(--gold);color:var(--mast-ink)}
+  footer{border-top:1px solid var(--rule);margin-top:3rem;padding:1.6rem 1.2rem 3rem;
+         max-width:var(--col);margin-left:auto;margin-right:auto;font-size:.85rem;color:var(--muted)}
+  footer details{margin-top:1rem}
+  footer summary{cursor:pointer;font-weight:700}
+  footer ul{margin:.5rem 0 0 1.1rem;padding:0}
+  footer li{margin:.25rem 0}
+</style>
+</head>
+<body>
+
+<header class="masthead" id="subscribe">
+  <h1>MYSTERY QUARTERLY</h1>
+  <p class="tag">The business of the whodunit, for the authors who plot it.</p>
+  <form class="capture" id="subform">
+    <input type="text" name="first_name" autocomplete="given-name" placeholder="First name (optional)" aria-label="First name (optional)">
+    <input type="email" name="email" required placeholder="you@example.com" aria-label="Email address">
+    <button class="btn" type="submit" id="subbtn">Subscribe free</button>
+  </form>
+  <p class="cadence">Every claim cited, every figure sourced. Published quarterly.</p>
+</header>
+
+<main>
+  <p class="fromdesk">from the desk of Steve Pieper, Polymath Consulting &amp; Publishing.</p>
+  <p class="kicker">First issue in production</p>
+
+  <h2>Fifteen minutes a quarter on the business of writing mystery.</h2>
+
+  <ul class="what">
+    <li><strong>The decisions that touch your royalties</strong> — platform royalty changes, the Kindle Unlimited math, and retailer moves — explained while the deadlines are still ahead of you.</li>
+    <li><strong>What the quarter's bestselling new releases are actually selling</strong> — hooks, tropes, and blurb patterns — cozy to procedural — pulled from the descriptions themselves, not from theory.</li>
+    <li><strong>The wider field</strong> — the genre's share of the bestseller lists, screen adaptations in the pipeline, and the convention dates worth booking.</li>
+  </ul>
+
+  <p class="promise">Written for working mystery authors. Every claim carries a citation, every figure names its source and date, and if a story doesn't matter to your career, it doesn't run.</p>
+
+  <p class="firstissue">Issue 001 is in research now; its permanent address is <a href="/mystery/q4-2026/">reports.stevepieper.com/mystery/q4-2026/</a>. For our fellow skeptics — to see exactly the standard it will meet: <a href="/thriller/aug-2026/">read a current issue from our thriller desk&nbsp;→</a></p>
+
+  <aside class="offer" aria-label="From Polymath">
+    <div class="label">FROM POLYMATH</div>
+    <div class="card">
+      <p class="hook">Author-Direct Sales: The guy who told you to wait just spent $197k proving himself wrong.</p>
+      <div class="row">
+        <a class="btn" href="https://stevepieper.com/">Learn More</a>
+        <p class="sub">Testing details in the disclosure at the bottom of this page.</p>
+      </div>
+    </div>
+  </aside>
+
+  <div class="bottomcta">
+    <p>Go deeper, stay informed, sell more copies:</p>
+    <a class="btn" href="#subscribe">Subscribe</a>
+    <a class="btn ghost" href="https://stevepieper.com/">Get help with Direct Sales</a>
+  </div>
+</main>
+
+<footer>
+  <p>© 2026 Polymath Consulting &amp; Publishing · <a href="https://stevepieper.com/">stevepieper.com</a> · Questions or corrections: <a href="mailto:reports@stevepieper.com">reports@stevepieper.com</a></p>
+  <p>Subscriptions are free and double opt-in. We use your address to deliver Mystery Quarterly and share a hashed (privacy-protected) copy with Meta to measure our advertising; we never sell your information. <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · Unsubscribe anytime with one click.</p>
+
+  <details>
+    <summary>About the $197,000 in testing</summary>
+    <p>$197,000 spent by Polymath Consulting &amp; Publishing over a seven-month period (January–July 2026) to characterize the relative profitability of historically proven offers under the following advertising conditions:</p>
+    <ul>
+      <li>Meta traffic ads, Advantage+ audience and placements, full enhancements, pointing directly to a retail site product page</li>
+      <li>Meta traffic ads, Advantage+ audience, restricted placements, no enhancements, pointing directly to a retail site product page</li>
+      <li>Meta traffic ads, restricted audience, restricted placements, no enhancements, pointing directly to a retail site product page</li>
+      <li>Meta conversion ads pointing to an interstitial page containing a button pointing to a retail site product page, "ViewContent" conversion event, Advantage+ audience, restricted placements, no enhancements</li>
+      <li>Meta conversion ads pointing to an interstitial page containing a button pointing to a retail site product page, "ViewContent" conversion event, full Advantage+ audience selection, placements, and creative enhancements</li>
+      <li>Meta conversion ads pointing to an interstitial page containing a button pointing to a retail site product page, "ViewContent" conversion event, restricted audience, restricted placements, no creative enhancements</li>
+      <li>Meta conversion ads pointing to a privately owned web store, "Purchase" conversion event, full Advantage+ audience selection and creative enhancements</li>
+      <li>Meta conversion ads pointing to a privately owned web store, "Purchase" conversion event, full Advantage+ audience, restricted placements, no creative enhancements</li>
+      <li>Meta conversion ads pointing to a privately owned web store, "Purchase" conversion event, restricted audience, restricted placements, no creative enhancements</li>
+    </ul>
+  </details>
+
+</footer>
+
+<script>
+  // consent_source records the page plus any UTM parameters that brought the visitor here.
+  const utm = [];
+  const q = new URLSearchParams(location.search);
+  for (const k of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term']) {
+    if (q.get(k)) utm.push(k + '=' + q.get(k));
+  }
+  const consentSource = ['mystery-home'].concat(utm).join('|');
+
+  document.getElementById('subform').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('subbtn');
+    const email = e.target.email.value;
+    const firstName = e.target.first_name.value.trim();
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      const r = await fetch('/api/subscribe', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({genre: 'mystery', email, first_name: firstName, consent_source: consentSource})
+      });
+      const j = await r.json();
+      if (j.ok && j.state === 'confirmation-sent') btn.textContent = 'Check your inbox ✓';
+      else if (j.ok && j.state === 'already-subscribed') btn.textContent = 'Already aboard ✓';
+      else { btn.textContent = 'Try again'; btn.disabled = false; }
+    } catch { btn.textContent = 'Try again'; btn.disabled = false; }
+  });
+
+  // Subscribe links: jump instantly to the very top (masthead form), no slow scroll
+  document.querySelectorAll('a[href="#subscribe"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({top: 0, behavior: 'auto'});
+      const em = document.querySelector('#subform input[type=email]');
+      if (em) em.focus({preventScroll: true});
+    });
+  });
+</script>
+</body>
+</html>

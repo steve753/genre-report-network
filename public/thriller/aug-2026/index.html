@@ -46,8 +46,10 @@
   .masthead h1{margin:0;font-size:2rem;letter-spacing:.28em;font-weight:800}
   .masthead .tag{font-style:italic;opacity:.85;margin:.4rem 0 1.2rem}
   .capture{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
-  .capture input[type=email]{padding:.55rem .8rem;border-radius:4px;border:1px solid #3a414b;
-    background:#fff;color:var(--ink);min-width:16rem;font-size:.95rem}
+  .capture input{padding:.55rem .8rem;border-radius:4px;border:1px solid #3a414b;
+    background:#fff;color:var(--ink);font-size:.95rem}
+  .capture input[type=email]{min-width:16rem}
+  .capture input[type=text]{min-width:10rem}
   .masthead .cadence{font-style:italic;opacity:.8;font-size:.9rem;margin-top:.8rem}
 
   /* ---------- article ---------- */
@@ -113,6 +115,7 @@
   <h1>THRILLER MONTHLY</h1>
   <p class="tag">The business of suspense, for the authors who write it.</p>
   <form class="capture" id="subform">
+    <input type="text" name="first_name" autocomplete="given-name" placeholder="First name (optional)" aria-label="First name (optional)">
     <input type="email" name="email" required placeholder="you@example.com" aria-label="Email address">
     <button class="btn" type="submit" id="subbtn">Subscribe free</button>
   </form>
@@ -225,6 +228,7 @@
 <footer>
   <p>© 2026 Polymath Consulting &amp; Publishing · <a href="https://stevepieper.com/">stevepieper.com</a> · Questions or corrections: <a href="mailto:reports@stevepieper.com">reports@stevepieper.com</a></p>
   <p>Bestseller list data © The New York Times, via the NYT Books API, used with attribution. Amazon retail data retrieved via Rainforest API. All third-party estimates are labeled as such in the text.</p>
+  <p>Subscriptions are free and double opt-in. We use your address to deliver Thriller Monthly and share a hashed (privacy-protected) copy with Meta to measure our advertising; we never sell your information. <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · Unsubscribe anytime with one click.</p>
   <details>
     <summary>About the $197,000 in testing</summary>
     <p>$197,000 spent by Polymath Consulting &amp; Publishing over a seven-month period (January–July 2026) to characterize the relative profitability of historically proven offers under the following advertising conditions:</p>
@@ -249,11 +253,12 @@
     e.preventDefault();
     const btn = document.getElementById('subbtn');
     const email = e.target.email.value;
+    const firstName = e.target.first_name.value.trim();
     btn.disabled = true; btn.textContent = 'Sending…';
     try {
       const r = await fetch('/api/subscribe', {
         method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({genre: 'thriller', email, consent_source: 'thriller-issue-001'})
+        body: JSON.stringify({genre: 'thriller', email, first_name: firstName, consent_source: 'thriller-issue-001'})
       });
       const j = await r.json();
       if (j.ok && j.state === 'confirmation-sent') btn.textContent = 'Check your inbox ✓';

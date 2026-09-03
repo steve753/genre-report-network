@@ -3,32 +3,78 @@
     {
       "slug": "thriller",
       "display_name": "Thriller",
-      "aliases": ["thrillers", "thriller-and-suspense", "thrillers-and-suspense", "suspense-thriller", "suspense", "spy-thriller", "espionage"]
+      "tier": "monthly",
+      "aliases": [
+        "thrillers",
+        "thriller-and-suspense",
+        "thrillers-and-suspense",
+        "suspense-thriller",
+        "suspense",
+        "spy-thriller",
+        "espionage"
+      ]
     },
     {
       "slug": "fantasy",
       "display_name": "Fantasy",
-      "aliases": ["fantasies", "epic-fantasy", "high-fantasy", "urban-fantasy", "dark-fantasy"]
+      "tier": "quarterly",
+      "aliases": [
+        "fantasies",
+        "epic-fantasy",
+        "high-fantasy",
+        "urban-fantasy",
+        "dark-fantasy"
+      ]
     },
     {
       "slug": "romance",
       "display_name": "Romance",
-      "aliases": ["romances", "romantasy", "fantasy-romance", "dark-romance", "contemporary-romance", "romantic-suspense"]
+      "tier": "quarterly",
+      "aliases": [
+        "romances",
+        "romantasy",
+        "fantasy-romance",
+        "dark-romance",
+        "contemporary-romance",
+        "romantic-suspense"
+      ]
     },
     {
       "slug": "mystery",
       "display_name": "Mystery",
-      "aliases": ["mysteries", "cozy-mystery", "detective-fiction", "police-procedural", "whodunit", "crime"]
+      "tier": "quarterly",
+      "aliases": [
+        "mysteries",
+        "cozy-mystery",
+        "detective-fiction",
+        "police-procedural",
+        "whodunit",
+        "crime"
+      ]
     },
     {
       "slug": "science-fiction",
       "display_name": "Science Fiction",
-      "aliases": ["sci-fi", "scifi", "sf", "space-opera", "dystopian", "science-fiction-and-fantasy"]
+      "tier": "quarterly",
+      "aliases": [
+        "sci-fi",
+        "scifi",
+        "sf",
+        "space-opera",
+        "dystopian",
+        "science-fiction-and-fantasy"
+      ]
     },
     {
       "slug": "horror",
       "display_name": "Horror",
-      "aliases": ["horrors", "supernatural-horror", "gothic-horror", "paranormal-horror"]
+      "tier": "quarterly",
+      "aliases": [
+        "horrors",
+        "supernatural-horror",
+        "gothic-horror",
+        "paranormal-horror"
+      ]
     }
   ]
 }
