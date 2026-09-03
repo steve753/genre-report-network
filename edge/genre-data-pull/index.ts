@@ -187,11 +187,22 @@ async function pullAmazon(nodes: Json[], key: string, topN: number, errors: Json
       if (!asin) continue;
       try {
         const prod = await rainforest(key, { type: "product", asin, amazon_domain: "amazon.com" });
+        const pr = ((prod as Json).product ?? {}) as Json;
+        // Book marketing copy lives in book_description / editorial_reviews /
+        // feature_bullets — `description` is usually empty for books.
         (out.descriptions as Json[]).push({
           asin,
-          title: (prod as Json).product ? ((prod as Json).product as Json).title : item.title,
-          description: (prod as Json).product ? ((prod as Json).product as Json).description : null,
           rank: item.rank,
+          title: pr.title ?? item.title,
+          authors: pr.authors ?? null,
+          publication_date: pr.publication_date ?? null,
+          categories: pr.categories_flat ?? null,
+          rating: pr.rating ?? null,
+          ratings_total: pr.ratings_total ?? null,
+          description: pr.description ?? null,
+          book_description: pr.book_description ?? null,
+          editorial_reviews: pr.editorial_reviews ?? null,
+          feature_bullets: pr.feature_bullets ?? null,
         });
       } catch (e) {
         errors.push({ source: `rainforest:product:${asin}`, error: String(e) });

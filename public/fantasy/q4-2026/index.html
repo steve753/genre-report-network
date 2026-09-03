@@ -2,31 +2,45 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="robots" content="noindex"><!-- remove at public launch -->
-<title>Fantasy Quarterly — Issue 001 (in production)</title>
-<meta name="description" content="The permanent address of Fantasy Quarterly Issue 001, currently in research.">
+<title>Fantasy Quarterly — Issue 001 · Q4 2026</title>
+<meta name="description" content="Audible ends its old royalty model with the year, and fantasy&#x27;s exposure is outsized: the backlists run long, the audiobooks run longer, and the listeners binge. Audible's year-end royalty switch, the new $12.99 ceiling, the KU math, and what the category's new releases are selling.">
 <link rel="canonical" href="https://reports.stevepieper.com/fantasy/q4-2026/">
 <style>
   :root{
-    --mast:#12151a; --mast-ink:#f5f2ea; --paper:#faf8f4; --ink:#1c1c1c; --ink-2:#444;
-    --accent:#5b3a8e; --accent-dark:#462c6f; --muted:#857e72; --gold:#c1932b;
-    --rule:#e5e1d8; --col:42rem;
+    --ink:#1a1d21; --ink-2:#4a4f56; --muted:#6e747c;
+    --paper:#fcfcfb; --panel:#f4f2ee;
+    --mast:#12151a; --mast-ink:#f5f2ec;
+    --accent:#5b3a8e; --accent-dark:#462c6f;
+    --context:#857e72; --rule:#e2ddd5; --gold:#c1932b;
+    --col:46rem;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
        color:var(--ink);background:var(--paper);line-height:1.7;font-size:1.05rem}
   a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:2px}
   a:hover{color:var(--accent)}
+
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--mast);color:var(--mast-ink);
+          border-bottom:1px solid var(--gold);padding:.5rem 1rem;
+          display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+          transform:translateY(-105%);transition:transform .25s ease}
+  .topbar.show{transform:translateY(0)}
+  .topbar .wordmark{font-weight:800;letter-spacing:.22em;font-size:.9rem;text-decoration:none;color:var(--mast-ink);white-space:nowrap}
+  .topbar .grow{flex:1}
+  .topbar select,.topbar input[type=search]{
+    background:#1d222a;color:var(--mast-ink);border:1px solid #333a44;border-radius:4px;
+    padding:.35rem .5rem;font-size:.85rem}
+  .topbar input[type=search]{width:11rem}
   .btn{display:inline-block;background:var(--accent);color:#fff;border:none;border-radius:4px;
        padding:.45rem .9rem;font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none}
   .btn:hover{background:var(--accent-dark);color:#fff}
 
-  .masthead{background:var(--mast);color:var(--mast-ink);padding:2.2rem 1.2rem 2.4rem;text-align:center;
-            border-bottom:2px solid var(--gold)}
+  .masthead{background:var(--mast);color:var(--mast-ink);padding:2.2rem 1.2rem 2.4rem;text-align:center}
   .masthead h1{margin:0;font-size:2rem;letter-spacing:.28em;font-weight:800}
   .masthead .tag{font-style:italic;opacity:.85;margin:.4rem 0 1.2rem}
   .capture{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
@@ -36,15 +50,15 @@
   .capture input[type=text]{min-width:10rem}
   .masthead .cadence{font-style:italic;opacity:.8;font-size:.9rem;margin-top:.8rem}
 
-  main{max-width:var(--col);margin:0 auto;padding:2.6rem 1.2rem 3.5rem}
+  main{max-width:var(--col);margin:0 auto;padding:2.4rem 1.2rem 4rem}
   .fromdesk{font-style:italic;color:var(--ink-2)}
   .kicker{font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:.9rem 0 .2rem}
-  h2{font-size:1.3rem;margin:0 0 1rem;letter-spacing:.02em}
-  ul.what{margin:0 0 1.4rem 1.2rem;padding:0}
-  ul.what li{margin:.6rem 0}
-  .promise{margin:0 0 1.8rem}
-  .firstissue{margin:0 0 2.2rem}
-  .fineprint{font-size:.85rem;color:var(--muted);border-top:1px solid var(--rule);padding-top:1.2rem}
+  .title{font-size:2.1rem;line-height:1.2;font-weight:800;margin:.1rem 0 1.4rem}
+  .lede{font-weight:800;text-transform:uppercase;letter-spacing:.02em}
+  h2{font-size:1.25rem;margin:2.6rem 0 .6rem;letter-spacing:.03em}
+  h2 .sec{color:var(--accent)}
+  .src{font-size:.85rem;color:var(--muted)}
+  section{scroll-margin-top:5.5rem}
 
   .offer{margin:2.4rem 0}
   .offer .label{font-size:.7rem;font-weight:800;letter-spacing:.14em;color:var(--muted);margin-bottom:.5rem}
@@ -53,6 +67,14 @@
   .offer .hook{font-size:1.15rem;font-weight:800;line-height:1.35;margin:0 0 .8rem}
   .offer .row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
   .offer .sub{font-size:.9rem;color:var(--ink-2);margin:0}
+
+  figure.slotshare{margin:1.6rem 0;padding:1.2rem 1.3rem;background:var(--panel);border-radius:6px}
+  figure.slotshare figcaption{font-size:.85rem;color:var(--muted);margin-top:.7rem}
+  .statrow{display:flex;align-items:baseline;gap:.9rem;flex-wrap:wrap;margin-bottom:.6rem}
+  .stat{font-size:2.6rem;font-weight:800;color:var(--accent);line-height:1}
+  .statlab{font-size:.95rem;color:var(--ink-2)}
+  .unitlabels{display:flex;gap:1.4rem;font-size:.85rem;margin-top:.5rem}
+  .swatch{display:inline-block;width:.75rem;height:.75rem;border-radius:2px;margin-right:.35rem;vertical-align:-1px}
 
   .bottomcta{margin:3rem 0 0;padding:1.6rem;background:var(--mast);color:var(--mast-ink);
              border-radius:6px;text-align:center}
@@ -64,9 +86,22 @@
   footer summary{cursor:pointer;font-weight:700}
   footer ul{margin:.5rem 0 0 1.1rem;padding:0}
   footer li{margin:.25rem 0}
+  .hidden{display:none}
+  mark{background:#f6e3a1}
 </style>
 </head>
 <body>
+
+<nav class="topbar" aria-label="Fantasy Quarterly">
+  <a class="wordmark" href="/fantasy/">FANTASY&nbsp;QUARTERLY</a>
+  <span class="grow"></span>
+  <input type="search" id="issuesearch" placeholder="Search this issue…" aria-label="Search this issue">
+  <select id="archive" aria-label="Past issues">
+    <option value="">Archive</option>
+    <option value="/fantasy/q4-2026/">Q4 2026 — Issue 001</option>
+  </select>
+  <a class="btn" href="#subscribe">Subscribe</a>
+</nav>
 
 <header class="masthead" id="subscribe">
   <h1>FANTASY QUARTERLY</h1>
@@ -81,29 +116,131 @@
 
 <main>
   <p class="fromdesk">from the desk of Steve Pieper, Polymath Consulting &amp; Publishing.</p>
-  <p class="kicker">Issue 001 · In production</p>
+  <p class="kicker">Issue of Q4 2026 · Nº 001</p>
+  <h1 class="title">Audible Rewrites Your Audiobook Money, Amazon Raises the Price Ceiling, and Epic Fantasy's Screens Fill Up</h1>
 
-  <h2>This is Issue 001's permanent address. The issue itself is in research.</h2>
+  <p class="lede">Audible ends its old royalty model with the year, and fantasy's exposure is outsized: the backlists run long, the audiobooks run longer, and the listeners binge. ACX has published no calendar date — only "by end of year."</p>
+  <p>More below, along with the first Kindle royalty-band ceiling move in sixteen years, the number to plug into your fall Kindle Unlimited math, the one screen window left to test ads against, and the convention deadlines that cost real money if you miss them. But first: your royalties.</p>
 
-  <p class="promise">When it publishes, it will live at this URL forever — every claim cited, every figure naming its source and date. Subscribe above and it lands in your inbox the day it's out; nothing else is ever sent.</p>
+  <section id="s1">
+    <h2><span class="sec">THE HEADLINE:</span> Audible Retires Your Royalty Model at Year-End — Every ACX Title Must Move or Leave</h2>
+    <p>As of May 26, Audible opened its new royalty model — built on what ACX calls "Member Value" — to all ACX creators, and the legacy per-sale model is discontinued "by end of year": <a href="https://www.acx.com/mp/blog/audible-new-royalty-model">ACX's own announcement</a> tells creators to "either choose to enroll your titles in the new model or discontinue distribution if you prefer." The headline rates rise — per the <a href="https://selfpublishingadvice.org/podcast-audible-retires-legacy-royalty-model/">Alliance of Independent Authors</a>, exclusive royalties go from 40% to 50% and non-exclusive from 25% to 30% — but payouts are computed from a pooled Member Value divided across everything a member listened to that month, which <a href="https://www.acx.com/mp/blog/coming-soon-to-acx-a-new-royalty-model-and-more-opportunities-to-earn">ACX describes</a> as earning "across all membership listening activity." ACX claims early-access participants averaged <a href="https://www.acx.com/mp/blog/audibles-new-royalty-model-early-access-successes">roughly 45% earnings increases</a> — ACX's own figures, covering creators four months into early access, unaudited, and with ACX noting that earnings vary by creator.</p>
+    <p>Fantasy's exposure is specific: long series, long runtimes, binge listeners. <a href="https://kindlepreneur.com/audible-royalty-changes/">Kindlepreneur's July 11 analysis</a> notes binge-friendly genres may gain from subscription discovery while warning that "a higher royalty percentage doesn't automatically mean higher earnings if the underlying payout system changes."</p>
+    <p>The organized pushback comes from inside the genre: a <a href="https://www.change.org/p/convince-audible-to-revise-it-s-new-royalty-model">Change.org petition</a> started by Robin Sullivan — business manager for <em>Riyria Revelations</em> author Michael J. Sullivan — stood at 30,367 signatures as of September 3, arguing that pooling redirects one author's purchase revenue to other authors; Michael J. Sullivan has published <a href="https://riyria.blogspot.com/p/calculations-for-audibles-new-royalty.html">a worked example</a> (undated page) splitting a $13 credit across three titles. One caution on the scariest numbers in circulation: <a href="https://www.authormedia.com/audible-forces-every-title-into-new-royalty-model/">Author Media reports</a> several creators claiming 30–40% royalty drops after enrollment, sourced to individual posts on X rather than to any dataset, and <a href="https://kindlepreneur.com/audible-royalty-changes/">Kindlepreneur</a>, surveying the same debate, records only that some early-access authors report gains and others report the opposite. For a fantasy backlist deep in audio, the decision compounds title by title: enroll the series with eyes open, take it wide, or take it out. The one option that isn't real is drifting into December undecided.</p>
+  </section>
 
-  <p class="firstissue">Meanwhile: <a href="https://reports.stevepieper.com/thriller/aug-2026/">read a current issue from our thriller desk&nbsp;→</a> — that's the standard this one has to meet.</p>
+  <section id="s2">
+    <h2><span class="sec">YOUR MONEY:</span> Amazon's 70% Royalty Band Now Runs to $12.99 — Room Long Books Can Use</h2>
+    <p>The first move on this ceiling since the 70% band was created in 2010 (<a href="https://techcrunch.com/?p=137316">TechCrunch's contemporaneous report</a>). Effective July 7, <a href="https://kdp.amazon.com/en_US/help/topic/G200634560">KDP's eBook List Price Requirements page</a> puts the 70% royalty band on Amazon.com at $2.99–$12.99, up from $2.99–$9.99; anything priced above the old cap earned the <a href="https://kdp.amazon.com/en_US/help/topic/G200644210">35% option</a>, so a title that moves into the expanded band roughly doubles its royalty rate on the whole list price. The <a href="https://authorsguild.org/news/statement-on-amazon-kdp-raising-70-percent-royalty-ceiling/">Authors Guild's July 9 statement</a> welcomed the change — "we are pleased to see that Amazon is allowing authors greater choice in how they price their work" — while noting Apple Books and B&amp;N Press pay 70% at every price point, and pressing Amazon on "per-megabyte delivery fees (which no other ebook retailer charges)," a live cost for map-laden fantasy files.</p>
+    <p>It is not automatic: the Guild flags that titles currently priced between $9.99 and $12.99 and not already on the 70% plan need their plan changed to benefit — and note the 70% option deducts per-megabyte delivery costs while the 35% option does not, which trims the multiple for heavy files. <a href="https://goodereader.com/blog/digital-publishing/amazon-increases-the-royalty-rate-for-kindle-direct-publishing">Good e-Reader reported</a>, two days after the change, that boxed sets were already being repriced. Long-form fantasy sits squarely in the band the old cap constrained — per K-lytics' August 2026 sub-category report (data per July 31, 2026), the average top-20 fantasy ebook runs 607 pages. Completed-series omnibuses are the obvious first test.</p>
+  </section>
+
+  <aside class="offer" aria-label="From Polymath">
+    <div class="label">FROM POLYMATH</div>
+    <div class="card">
+      <p class="hook">Author-Direct Sales: The guy who told you to wait just spent $197k proving himself wrong.</p>
+      <div class="row">
+        <a class="btn" href="https://stevepieper.com/">Learn More</a>
+        <p class="sub">Testing details in the disclosure at the bottom of this page.</p>
+      </div>
+    </div>
+  </aside>
+
+
+  <section id="s3">
+    <h2><span class="sec">YOUR MONEY:</span> The KU Fund Hit a 2026 High in July. The Page Rate Fell to Its Lowest Since January.</h2>
+    <p>Both are true at once, and the second one lands in your bank account. These are tracked rather than published figures — Amazon announces the fund but not the rate, which trackers derive. Per <a href="https://www.writtenwordmedia.com/kdp-global-fund-payouts/">Written Word Media's KDP Global Fund tracker, updated August 18</a>, July's fund was $67.6 million — the year's largest — while the US per-page rate fell to $0.004221, the lowest since January, after May's $0.004888. On the tracker's own figures, 1,000 pages read paid $4.89 in May and $4.22 in July — a roughly 14% slide in two months on a fund that grew, the signature of page reads expanding faster than the pot.</p>
+    <p>A second tracker, <a href="https://profitable.app/kdp/stats/kenp-rate">Profitable's KENP page (updated May 9)</a>, matches Written Word Media through April within rounding, which corroborates the method — but July currently stands on one tracker. For a genre this KU-heavy, the strategic question is the one <a href="https://reports.stevepieper.com/thriller/aug-2026/">our thriller desk asked in August</a>: what share of your income rides on a rate you don't control?</p>
+  </section>
+
+  <section id="s4">
+    <h2><span class="sec">ON SCREEN:</span> One Comp Window Left Before Year-End — and What the Last One Showed</h2>
+    <p><em>House of the Dragon</em> season three <a href="https://help.hbomax.com/us/Answer/Detail/000002581">premiered June 21 on HBO Max</a> and ran to an <a href="https://en.wikipedia.org/wiki/House_of_the_Dragon_season_3">August 9 finale</a>; Warner Bros. Discovery put the premiere at <a href="https://www.yardbarker.com/entertainment/articles/house_of_the_dragon_season_3_premiere_draws_215_million_viewers_despite_fifa_world_cup/s1_17785_43995657">21.5 million global viewers in three days, down 8% from season two</a> against World Cup competition — a studio-issued number, not an audited one. The bigger window is ahead: Prime Video <a href="https://press.amazonmgmstudios.com/us/en/press-release/prime-video-confirms-season-three-premiere-date-of">confirmed <em>The Rings of Power</em> season three for November 11</a>, with <a href="https://nerdist.com/article/the-rings-of-power-season-3-release-schedule/">eight episodes in three batches — November 11, 18, and 25</a>.</p>
+    <p>Our working hypothesis, stated as a hypothesis: a batched drop concentrates attention into three spikes rather than eight weeks, which may reward front-loading epic-fantasy ad tests into November 11–14 — "for fans of" targeting against Martin, Tolkien, Abercrombie, and Hobb comps. Test against your own baseline. And the Cosmere stays parked: Sanderson <a href="https://www.brandonsanderson.com/pages/film-and-tv-news">announced July 28 that the <em>Mistborn</em> screenplay's first draft is done</a> for the Apple TV deal, which means no Cosmere premiere exists to plan around — epic fantasy's biggest adaptation wave queues behind <em>Rings</em>, not beside it.</p>
+  </section>
+
+  <section id="s5">
+    <h2><span class="sec">THE FIELD &amp; THE CALENDAR:</span> A Price Wall on September 30, and the 2,492 Ballots Behind This Year's Hugos</h2>
+    <p>The hardest date on your calendar is a price wall: <a href="https://montreal2027.ca/en/registration">Montréal 2027 Worldcon</a> (<a href="https://en.wikipedia.org/wiki/85th_World_Science_Fiction_Convention">September 2–6, 2027</a>) holds adult registration at CAD $270 only "until September 30, 2026 at 11:59pm" — about four weeks out. The forward lesson from <a href="https://www.dragoncon.org/about/membership-info/">Dragon Con's published ladder</a> — $110 for those who booked a year out, $180 at this week's door — is that con budgets reward the early spreadsheet. <a href="https://boardgamewire.com/index.php/2026/08/05/gen-con-tops-74000-attendees-as-record-breaking-show-preps-for-much-needed-venue-hotel-expansion/">Gen Con sold out before opening for the third straight year</a> at <a href="https://www.gencon.com/press/gen_con_attendees_flooded_downtow_indy_2026">74,000+ attendees</a>; its <a href="https://www.gencon.com/gen-con-indy/authors">Authors Avenue</a> filled and waitlisted by February 20 — the 2027 window opens late January. <a href="https://wfc2026.org/">World Fantasy Convention 2026</a> runs October 22–25 in Oakland; no published registration price could be verified on its official pages as of September 3, so check the site directly before budgeting.</p>
+    <p>On the awards side, the <a href="https://www.lacon.org/2026hugos/">2026 Hugos were decided at LAcon V by 2,492 final ballots</a> — Best Novel to Alix E. Harrow's <em>The Everlasting</em> (<a href="https://www.thehugoawards.org/2026/08/2026-hugo-awards-results/">results</a>) — and by our count from <a href="https://reactormag.com/here-are-the-2026-world-fantasy-award-finalists/">Reactor's list of World Fantasy Novel finalists</a>, two of five come from outside the Big Five — both from Tachyon Publications. Awards attention in this genre remains winnable without a Manhattan imprint.</p>
+    <p>---</p>
+  </section>
+
+  <section id="s6">
+    <h2><span class="sec">HOOKS &amp; TROPES:</span> What the Category's New Releases Are Selling</h2>
+    <p>Drawn from the Amazon book descriptions of the nine top-ranked new releases in the Fantasy category (harvested via Rainforest API, September 3) — a deliberately small sample; these patterns describe the nine descriptions, not the genre wholesale. The headline pattern is who's shelved here: <strong>six of the nine are romance-forward fantasy</strong> — Rachel Gillig's <em>The Knave and the Moon</em> ("the queen of gothic romantasy," per its own blurb), Sarah J. Maas's <em>A Court of Splintered Harmony</em>, both halves of Liv Zander's dark-romantasy Heartstring Duet, Penn Cole's "epic fantasy romance" finale, and Leena Kazak's <em>Between Tides &amp; Thunder</em>. Romantasy is covered as a genre on our Romance desk; it appears here because it is shelved in — and currently dominating — the Fantasy category's new-release rack, which changes what your also-boughts and category ads sit beside.</p>
+    <p>Inside the copy itself, three patterns. <strong>The imperative mantra hook:</strong> Zander's duet opens each blurb, under an all-caps bestseller banner, with a mirrored three-beat command — "Wed me. Bed me. Slit my throat." / "Wed him. Bed him. Slit his throat." — and pairs an inverted welcome across the two volumes ("Welcome to the funeral." / "Welcome to your wedding, my love."). <strong>Emotional damage as the promise:</strong> "LEAVING READERS WORLDWIDE IN TEARS," "WILL WRECK YOU, HEAL YOU, AND HAUNT YOU" (caps in the originals) — the outcome sold is feeling, not plot, down to "What this book doesn't contain is a hero (because villains do it better)." <strong>Binge assurance:</strong> eight of nine are series entries, and the copy works hard to de-risk the commitment — "book one of two in the <em>completed</em> dark fantasy romance Heartstring Duet," "the fourth and <em>final</em> book," while the lone standalone leads with "stand-alone" as a selling point. Comp-stacking is explicit and unembarrassed: Cole's blurb names six comp series outright; Kazak's names three authors. The quiet signal in the same nine: the #1 and #3 slots are pre-release editions from brand-name authors with no ratings yet — as is #6 — while the published titles among the nine run from 113 to 41,659 ratings, four of them above 6,400. The tier beneath the marquee names is not uniformly small, and the craft patterns above are the tools it is using.</p>
+  </section>
+
+  <section id="s7">
+    <h2><span class="sec">SALES SIGNALS</span></h2>
+    <figure class="slotshare">
+      <div class="statrow">
+        <span class="stat">2 of 15</span>
+        <span class="statlab"><strong>slots on the NYT Combined Print &amp; E-Book Fiction list</strong> went to fantasy this week (13%)</span>
+      </div>
+      <svg viewBox="0 0 630 42" width="100%" height="42" role="img"
+           aria-label="Unit chart: 15 list slots, 2 held by fantasy, 13 by other fiction">
+        <g>
+          <rect x="0" y="0" width="38" height="38" rx="4" fill="#5b3a8e"/>
+          <rect x="42" y="0" width="38" height="38" rx="4" fill="#5b3a8e"/>
+          <rect x="84" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="126" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="168" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="210" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="252" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="294" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="336" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="378" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="420" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="462" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="504" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="546" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="588" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+        </g>
+      </svg>
+      <div class="unitlabels">
+        <span><span class="swatch" style="background:#5b3a8e"></span>Fantasy: 2</span>
+        <span><span class="swatch" style="background:#857e72"></span>Other fiction: 13</span>
+      </div>
+      <figcaption>List dated September 13, 2026 (sales week ending August 29) · Source: NYT Books API, pulled September 3 · Data © The New York Times, used with attribution per API terms.</figcaption>
+    </figure>
+    <p>The two: Matt Dinniman's <em>Dungeon Crawler Carl</em> at #5 in its 34th week on the list, and its sequel <em>Carl's Doomsday Scenario</em> at #11 in its 5th — one series from one author holding both of the genre's slots (both Ace). Classification method, so you can judge the count yourself: a title counts as fantasy when the author's established primary genre and the book's marketing category are both fantasy — and one judgment call is worth showing. T. Kingfisher's <em>Daggerbound</em> debuted at #14, but its publisher's imprint is Bramble and <a href="https://www.libraryjournal.com/story/daggerbound-by-t-kingfisher-sff-pick-of-the-month">Library Journal's review</a> classes it as romantasy, which our network covers on the Romance desk — count it and fantasy's share rises to 3 of 15. Andy Weir's <em>Project Hail Mary</em> (#10, 64 weeks) is science fiction and belongs to that desk for the same reason.</p>
+    <p>The week's wider signal: the genre's entire presence on the flagship list was carried by one binge-serial series while the thriller slots turned over weekly — and read alongside the K-lytics category standing below, the flagship list is where fantasy is thinnest, not where it lives.</p>
+    <p>Per the K-lytics August 2026 sub-category report (data per July 31, 2026): the Kindle Fantasy sub-category ranks #2 of 486 tracked sub-categories by estimated sales volume of its top 20 titles — roughly 1,051 estimated sales per day across that top 20 — while carrying 962,522 titles — among the five most crowded of the 486 sub-categories K-lytics tracks. Demand near the top of the store, competition to match. K-lytics' month-over-month read adds a trend without a figure: momentum across the top 20 was positive while the #1 bestseller's own rank slipped — churn at the very top, strength in the tier beneath it.</p>
+    <p class="src">Amazon category-level new-release patterns appear in Hooks &amp; Tropes above.</p>
+  </section>
+
+  <div class="bottomcta">
+    <p>Go deeper, stay informed, sell more copies:</p>
+    <a class="btn" href="#subscribe">Subscribe</a>
+    <a class="btn ghost" href="https://stevepieper.com/">Get help with Direct Sales</a>
+  </div>
 </main>
 
 <footer>
   <p>© 2026 Polymath Consulting &amp; Publishing · <a href="https://stevepieper.com/">stevepieper.com</a> · Questions or corrections: <a href="mailto:reports@stevepieper.com">reports@stevepieper.com</a></p>
+  <p>Bestseller list data © The New York Times, via the NYT Books API, used with attribution. Amazon retail data retrieved via Rainforest API. K-lytics figures used with attribution by arrangement with K-lytics. All third-party estimates are labeled as such in the text.</p>
   <p>Subscriptions are free and double opt-in. We use your address to deliver Fantasy Quarterly and share a hashed (privacy-protected) copy with Meta to measure our advertising; we never sell your information. <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · Unsubscribe anytime with one click.</p>
+  <details>
+    <summary>About the $197,000 in testing</summary>
+    <p>$197,000 spent by Polymath Consulting &amp; Publishing over a seven-month period (January–July 2026) to characterize the relative profitability of historically proven offers under the following advertising conditions:</p>
+    <ul>
+      <li>Meta traffic ads, Advantage+ audience and placements, full enhancements, pointing directly to a retail site product page</li>
+      <li>Meta traffic ads, Advantage+ audience, restricted placements, no enhancements, pointing directly to a retail site product page</li>
+      <li>Meta traffic ads, restricted audience, restricted placements, no enhancements, pointing directly to a retail site product page</li>
+      <li>Meta conversion ads pointing to an interstitial page containing a button pointing to a retail site product page, "ViewContent" conversion event, Advantage+ audience, restricted placements, no enhancements</li>
+      <li>Meta conversion ads pointing to an interstitial page containing a button pointing to a retail site product page, "ViewContent" conversion event, full Advantage+ audience selection, placements, and creative enhancements</li>
+      <li>Meta conversion ads pointing to an interstitial page containing a button pointing to a retail site product page, "ViewContent" conversion event, restricted audience, restricted placements, no creative enhancements</li>
+      <li>Meta conversion ads pointing to a privately owned web store, "Purchase" conversion event, full Advantage+ audience selection and creative enhancements</li>
+      <li>Meta conversion ads pointing to a privately owned web store, "Purchase" conversion event, full Advantage+ audience, restricted placements, no creative enhancements</li>
+      <li>Meta conversion ads pointing to a privately owned web store, "Purchase" conversion event, restricted audience, restricted placements, no creative enhancements</li>
+    </ul>
+  </details>
+  <p>This is the permanent edition of Issue 001 · <a href="/fantasy/q4-2026/">reports.stevepieper.com/fantasy/q4-2026/</a></p>
 </footer>
 
 <script>
-  // consent_source records the page plus any UTM parameters that brought the visitor here.
-  const utm = [];
-  const q = new URLSearchParams(location.search);
-  for (const k of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term']) {
-    if (q.get(k)) utm.push(k + '=' + q.get(k));
-  }
-  const consentSource = ['fantasy-q4-2026-placeholder'].concat(utm).join('|');
-
   document.getElementById('subform').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('subbtn');
@@ -113,7 +250,7 @@
     try {
       const r = await fetch('/api/subscribe', {
         method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({genre: 'fantasy', email, first_name: firstName, consent_source: consentSource})
+        body: JSON.stringify({genre: 'fantasy', email, first_name: firstName, consent_source: 'fantasy-issue-001'})
       });
       const j = await r.json();
       if (j.ok && j.state === 'confirmation-sent') btn.textContent = 'Check your inbox ✓';
@@ -122,13 +259,31 @@
     } catch { btn.textContent = 'Try again'; btn.disabled = false; }
   });
 
-  // Subscribe links: jump instantly to the very top (masthead form), no slow scroll
   document.querySelectorAll('a[href="#subscribe"]').forEach(a => {
     a.addEventListener('click', (e) => {
       e.preventDefault();
       window.scrollTo({top: 0, behavior: 'auto'});
       const em = document.querySelector('#subform input[type=email]');
       if (em) em.focus({preventScroll: true});
+    });
+  });
+
+  const topbar = document.querySelector('.topbar');
+  const masthead = document.querySelector('.masthead');
+  new IntersectionObserver(([entry]) => {
+    topbar.classList.toggle('show', !entry.isIntersecting);
+  }, {threshold: 0}).observe(masthead);
+
+  document.getElementById('archive').addEventListener('change', (e) => {
+    if (e.target.value) location.href = e.target.value;
+  });
+
+  const search = document.getElementById('issuesearch');
+  search.addEventListener('input', () => {
+    const q = search.value.trim().toLowerCase();
+    document.querySelectorAll('main section').forEach(sec => {
+      if (!q) { sec.classList.remove('hidden'); return; }
+      sec.classList.toggle('hidden', !sec.textContent.toLowerCase().includes(q));
     });
   });
 </script>
