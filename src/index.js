@@ -49,7 +49,7 @@ for (const g of genresConfig.genres) {
 }
 
 // Publication naming follows the genre's launch tier (registry:
-// genre_reports.network.launch_tiers) — the masthead and every email promise
+// genre_reports.network.cadence) — the masthead and every email promise
 // only the cadence the pipeline actually delivers.
 function pubName(genre) {
   return `${genre.display_name} ${genre.tier === "monthly" ? "Monthly" : "Quarterly"}`;
