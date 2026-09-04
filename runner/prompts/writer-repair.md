@@ -1,0 +1,5 @@
+You are the writing seat. The draft at `private/draft.md` failed the pipeline's structural validation. The exact problems are listed, one per line, in `private/draft-problems.txt` — read that file first, then fix ONLY those problems in `private/draft.md`, changing nothing else about the content.
+
+Common causes and their fixes: a missing or empty frontmatter field (add it per the writer contract); teaser_bullets outside 3-6 non-empty entries; a section heading without the `## LABEL: Title` shape; a figure block violating the strict figure grammar — inside `<figure>` every attribute must be double-quoted `name="value"`, only chart elements are allowed (svg and its shapes, style, figcaption, div/p/span/table for layout), no `on*`, `href`, `src`, or `style`-escaping constructs, no backslashes in CSS, `<style>` selectors must target svg/figure/figcaption or `.ch*` classes only, and a literal less-than sign in text must be written `&lt;`.
+
+End your final message with REPAIR COMPLETE and one line naming what you changed.
