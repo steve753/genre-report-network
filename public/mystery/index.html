@@ -2,31 +2,45 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="robots" content="noindex"><!-- remove at public launch -->
-<title>Mystery Quarterly — market intelligence for mystery authors</title>
-<meta name="description" content="The business of the whodunit, for the authors who plot it. Free, quarterly, every claim cited.">
-<link rel="canonical" href="https://reports.stevepieper.com/mystery/">
+<title>Mystery Quarterly — Issue 001 · Q4 2026</title>
+<meta name="description" content="State of the Genre: nine titles top Amazon&#x27;s Mystery new-release chart and only two are filed under Mystery; the Edgar is closed to self-published authors while the Anthony is open; no Kindle mystery new release is priced between $6.00 and $12.99; and Miss Marple&#x27;s first authorized continuation novel outranks books with thousands of ratings on zero of its own.">
+<link rel="canonical" href="https://reports.stevepieper.com/mystery/q4-2026/">
 <style>
   :root{
-    --mast:#12151a; --mast-ink:#f5f2ea; --paper:#faf8f4; --ink:#1c1c1c; --ink-2:#444;
-    --accent:#35427e; --accent-dark:#283263; --muted:#857e72; --gold:#c1932b;
-    --rule:#e5e1d8; --col:42rem;
+    --ink:#1a1d21; --ink-2:#4a4f56; --muted:#6e747c;
+    --paper:#fcfcfb; --panel:#f4f2ee;
+    --mast:#12151a; --mast-ink:#f5f2ec;
+    --accent:#35427e; --accent-dark:#283263;
+    --context:#857e72; --rule:#e2ddd5; --gold:#c1932b;
+    --col:46rem;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
        color:var(--ink);background:var(--paper);line-height:1.7;font-size:1.05rem}
   a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:2px}
   a:hover{color:var(--accent)}
+
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--mast);color:var(--mast-ink);
+          border-bottom:1px solid var(--gold);padding:.5rem 1rem;
+          display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+          transform:translateY(-105%);transition:transform .25s ease}
+  .topbar.show{transform:translateY(0)}
+  .topbar .wordmark{font-weight:800;letter-spacing:.22em;font-size:.9rem;text-decoration:none;color:var(--mast-ink);white-space:nowrap}
+  .topbar .grow{flex:1}
+  .topbar select,.topbar input[type=search]{
+    background:#1d222a;color:var(--mast-ink);border:1px solid #333a44;border-radius:4px;
+    padding:.35rem .5rem;font-size:.85rem}
+  .topbar input[type=search]{width:11rem}
   .btn{display:inline-block;background:var(--accent);color:#fff;border:none;border-radius:4px;
        padding:.45rem .9rem;font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none}
   .btn:hover{background:var(--accent-dark);color:#fff}
 
-  .masthead{background:var(--mast);color:var(--mast-ink);padding:2.2rem 1.2rem 2.4rem;text-align:center;
-            border-bottom:2px solid var(--gold)}
+  .masthead{background:var(--mast);color:var(--mast-ink);padding:2.2rem 1.2rem 2.4rem;text-align:center}
   .masthead h1{margin:0;font-size:2rem;letter-spacing:.28em;font-weight:800}
   .masthead .tag{font-style:italic;opacity:.85;margin:.4rem 0 1.2rem}
   .capture{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
@@ -36,15 +50,15 @@
   .capture input[type=text]{min-width:10rem}
   .masthead .cadence{font-style:italic;opacity:.8;font-size:.9rem;margin-top:.8rem}
 
-  main{max-width:var(--col);margin:0 auto;padding:2.6rem 1.2rem 3.5rem}
+  main{max-width:var(--col);margin:0 auto;padding:2.4rem 1.2rem 4rem}
   .fromdesk{font-style:italic;color:var(--ink-2)}
   .kicker{font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:.9rem 0 .2rem}
-  h2{font-size:1.3rem;margin:0 0 1rem;letter-spacing:.02em}
-  ul.what{margin:0 0 1.4rem 1.2rem;padding:0}
-  ul.what li{margin:.6rem 0}
-  .promise{margin:0 0 1.8rem}
-  .firstissue{margin:0 0 2.2rem}
-  .fineprint{font-size:.85rem;color:var(--muted);border-top:1px solid var(--rule);padding-top:1.2rem}
+  .title{font-size:2.1rem;line-height:1.2;font-weight:800;margin:.1rem 0 1.4rem}
+  .lede{font-weight:800;text-transform:uppercase;letter-spacing:.02em}
+  h2{font-size:1.25rem;margin:2.6rem 0 .6rem;letter-spacing:.03em}
+  h2 .sec{color:var(--accent)}
+  .src{font-size:.85rem;color:var(--muted)}
+  section{scroll-margin-top:5.5rem}
 
   .offer{margin:2.4rem 0}
   .offer .label{font-size:.7rem;font-weight:800;letter-spacing:.14em;color:var(--muted);margin-bottom:.5rem}
@@ -53,6 +67,9 @@
   .offer .hook{font-size:1.15rem;font-weight:800;line-height:1.35;margin:0 0 .8rem}
   .offer .row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
   .offer .sub{font-size:.9rem;color:var(--ink-2);margin:0}
+
+  figure.databox{margin:1.6rem 0;padding:1.2rem 1.3rem;background:var(--panel);border-radius:6px}
+  figure.databox figcaption{font-size:.85rem;color:var(--muted);margin-top:.7rem}
 
   .bottomcta{margin:3rem 0 0;padding:1.6rem;background:var(--mast);color:var(--mast-ink);
              border-radius:6px;text-align:center}
@@ -64,9 +81,22 @@
   footer summary{cursor:pointer;font-weight:700}
   footer ul{margin:.5rem 0 0 1.1rem;padding:0}
   footer li{margin:.25rem 0}
+  .hidden{display:none}
+  mark{background:#f6e3a1}
 </style>
 </head>
 <body>
+
+<nav class="topbar" aria-label="Mystery Quarterly">
+  <a class="wordmark" href="/mystery/">MYSTERY&nbsp;QUARTERLY</a>
+  <span class="grow"></span>
+  <input type="search" id="issuesearch" placeholder="Search this issue…" aria-label="Search this issue">
+  <select id="archive" aria-label="Past issues">
+    <option value="">Archive</option>
+    <option value="/mystery/q4-2026/">Q4 2026 — Issue 001</option>
+  </select>
+  <a class="btn" href="#subscribe">Subscribe</a>
+</nav>
 
 <header class="masthead" id="subscribe">
   <h1>MYSTERY QUARTERLY</h1>
@@ -81,19 +111,27 @@
 
 <main>
   <p class="fromdesk">from the desk of Steve Pieper, Polymath Consulting &amp; Publishing.</p>
-  <p class="kicker">First issue in production</p>
+  <p class="kicker">State of the Genre · Q4 2026 · Nº 001</p>
+  <h1 class="title">Amazon's Mystery Shelf Is Mostly Not Mysteries, Three Prizes Draw Three Lines, and Marple Returns on Zero Ratings</h1>
 
-  <h2>Fifteen minutes a quarter on the business of writing mystery.</h2>
+  <p class="lede">Ninety days of the mystery business, June 5 through September 4, 2026, read for the authors who write it.</p>
 
-  <ul class="what">
-    <li><strong>The decisions that touch your royalties</strong> — platform royalty changes, the Kindle Unlimited math, and retailer moves — explained while the deadlines are still ahead of you.</li>
-    <li><strong>What the quarter's bestselling new releases are actually selling</strong> — hooks, tropes, and blurb patterns — cozy to procedural — pulled from the descriptions themselves, not from theory.</li>
-    <li><strong>The wider field</strong> — the genre's share of the bestseller lists, screen adaptations in the pipeline, and the convention dates worth booking.</li>
-  </ul>
+  <section id="s1">
+    <h2><span class="sec">THE HEADLINE:</span> The Shelf Named Mystery Is Mostly Not Selling Mysteries</h2>
+    <p>Start with where your book would sit. Our data pack pulled Amazon's Mystery browse node — the <a href="https://www.amazon.com/Best-Sellers-Mysteries/zgbs/books/10457/">Mystery bestseller chart</a> and its <a href="https://www.amazon.com/gp/new-releases/books/10457">new-release chart</a>, captured September 4, 2026 — along with Amazon's own breadcrumb category for the nine highest-ranked new releases. Only two of those nine carry a breadcrumb inside the Mystery branch: Karin Slaughter's <em>The Secrets We Hide</em> (Mystery &gt; Women Sleuths) and <em>Harker</em> (Mystery &gt; Police Procedurals). Five sit under Thrillers &amp; Suspense. One is filed under Action &amp; Adventure &gt; Mystery, Thriller &amp; Suspense &gt; Crime — inside the family, though not the Mystery branch. And one — Rhys Bowen's <em>The Castle in the Glen</em>, ranked #6 on the Mystery new-release chart — is not in Mystery, Thriller &amp; Suspense at all: its breadcrumb reads Literature &amp; Fiction &gt; Genre Fiction &gt; Historical &gt; 20th Century. One sampling note: all nine of these titles also sit on the bestseller top 50 — the new-release chart's top 24 rows reappear there (see the structural note in Sales signals) — so this is a reading of the shelf's commercial center, not of its margins.</p>
+    <p>The chart's #1 makes the point from another angle: Mary Burton's <em>Trust No One</em> is a Montlake title with a publication date of October 1, 2026 (<a href="https://www.netgalley.com/catalog/book/838949">NetGalley listing</a>), and the pack has its Kindle edition at $1.99 (September 4) — which means it topped both the bestseller and new-release charts four weeks before publication. NetGalley files it under Mystery &amp; Thrillers <em>and</em> Romance.</p>
+    <p>The sales data measures the same split from the other side. As of July 31, 2026, the Mystery sub-category's top 20 titles averaged 424 estimated sales per day <em>per title</em> — a per-title average, not a total across the twenty — less than half the per-title rate of either of its Thrillers or Suspense siblings on the same table <em>(Attribution: K-lytics, August 2026 report)</em>.</p>
+    <p><strong>Why a working mystery author cares:</strong> category is a merchandising decision, not a description. If you write traditional whodunits, the shelf that carries your genre's name runs slower per title than either its Thrillers or its Suspense sibling, and the books at the top of it are mostly not mysteries — which cuts both ways: thinner sales, weaker competition for the readers who came looking for exactly what you write.</p>
+  </section>
 
-  <p class="promise">Written for working mystery authors. Every claim carries a citation, every figure names its source and date, and if a story doesn't matter to your career, it doesn't run.</p>
-
-  <p class="firstissue">Issue 001 is in research now; its permanent address is <a href="/mystery/q4-2026/">reports.stevepieper.com/mystery/q4-2026/</a>. For our fellow skeptics — to see exactly the standard it will meet: <a href="/thriller/aug-2026/">read a current issue from our thriller desk&nbsp;→</a></p>
+  <section id="s2">
+    <h2><span class="sec">THE PRIZES:</span> Three Big Mystery Prizes, Three Different Answers on Whether Indies Exist</h2>
+    <p>The genre's headline awards each drew their line this window, and only one lets a self-published mystery in the door.</p>
+    <p><strong>The Edgars.</strong> MWA's submission page states: "At this time, self-published work is not eligible for Edgar Award consideration" — publishers must appear on MWA's approved list, and Best Paperback/E-Book Original requires an e-book publisher from that list, with the author paid before the deadline (<a href="https://mysterywriters.org/edgars/edgar-submission-information/">MWA submission information</a>; <a href="https://mysterywriters.org/edgars/edgar-award-category-information/">category information</a>). New alongside it: "we require all writers and publishers submitting work to verify that the substantive content of their submission is free of AI-generated material." Submissions for the 2027 Edgars (2026 US publications) must reach the judges by December 7, 2026; no entry fee, no cap.</p>
+    <p><strong>The Anthonys.</strong> The Bouchercon Standing Rules include a category named "Best Paperback Original/E-Book/Audiobook Original Novel," and eligibility is simply work "relevant to the Crime/Mystery genre and published between January 1 and December 31 in the year immediately prior" — no approved-publisher clause anywhere in the rules (<a href="https://www.bouchercon.com/bouchercon-standing-rules">Bouchercon Standing Rules</a>). The gate is at the ballot box: nominating ballots go to registrants, and "You must be in attendance to be eligible to vote on the final ballot" (<a href="https://bouchercon2026.com/anthony-awards/">Bouchercon 2026</a>). Winners are announced Saturday, October 24, 2026, in Calgary.</p>
+    <p><strong>The CWA.</strong> The Emerging Author Dagger is "open to any unpublished novelist in the world writing in English" — an opening chapter of up to 3,000 words plus a 1,500-word synopsis; no finished manuscript required. Nominations for the 2027 Daggers are open (<a href="https://thecwa.co.uk/awards-and-competitions/the-daggers/">CWA Daggers</a>).</p>
+    <p><strong>Why a working mystery author cares:</strong> if you publish yourself, the Edgar is closed, the Anthony is open — though its electorate is the people in the room in Calgary — and the CWA's open door is for the book you haven't published yet. Plan your award calendar around the doors that are actually open.</p>
+  </section>
 
   <aside class="offer" aria-label="From Polymath">
     <div class="label">FROM POLYMATH</div>
@@ -106,6 +144,91 @@
     </div>
   </aside>
 
+  <section id="s3">
+    <h2><span class="sec">THE FIELD:</span> July's UK Crime Prizes Rewarded the Quiet End of the Shelf</h2>
+    <p>The 2026 CWA Daggers were announced the evening of July 2 (<a href="https://ianfleming.com/the-2026-cwa-dagger-winners/">Ian Fleming Publications</a>; <a href="https://crimespreemag.com/crime-writers-association-announce-2026-dagger-winners/">Crimespree, July 3</a>). Two results matter more to a working mystery author than the marquee ones. The Whodunnit Dagger — the CWA's category for books "where the sex, swearing, and bloodletting take place offstage," covering cozy, traditional, and Golden Age-inspired mysteries (<a href="https://thecwa.co.uk/awards-and-competitions/the-daggers/">CWA</a>) — went to Mel Pennant's <em>A Murder for Miss Hortense</em> (<a href="https://www.waterstones.com/category/cultural-highlights/book-awards/the-cwa-daggers">Waterstones' winners listing</a> corroborates), and the same book was Highly Commended three weeks later in the McDermid Debut Award at Harrogate (<a href="https://harrogateinternationalfestivals.com/news/theakston-old-peculier-crime-novel-of-the-year-award-winner/">Harrogate International Festivals</a>). A cozy-register debut took the traditional-puzzle prize outright and placed at a second festival the same month. Crimespree's winner table — the one source we read that lists the category — also has the Best Crime &amp; Mystery Publisher Dagger going to <a href="https://www.bitterlemonpress.com/pages/about-us">Bitter Lemon Press</a>, a London independent publishing international crime since 2003.</p>
+    <p>At Harrogate on July 23, the Theakston Old Peculier Crime Novel of the Year went to Elly Griffiths' <em>The Frozen People</em> — £3,000 and an engraved beer cask, from a six-title shortlist with the public vote seated as the eighth judge — and David Baldacci took the Outstanding Contribution Award (<a href="https://harrogateinternationalfestivals.com/news/theakston-old-peculier-crime-novel-of-the-year-award-winner/">Harrogate International Festivals</a>).</p>
+    <p><strong>Why a working mystery author cares:</strong> the traditional and cozy register now has a named prize of its own, and this cycle it went to a debut — with a London independent taking publisher of the year. Prestige on this shelf is not reserved for the biggest imprints.</p>
+  </section>
+
+  <section id="s4">
+    <h2><span class="sec">THE FRANCHISE:</span> Marple Returns — to a Chart Where Franchise Weight Outranks Reader Response</h2>
+    <p>Lucy Foley's <em>Murder at the Grand Alpine Hotel</em> is marketed as "the first official continuation novel starring Miss Marple," arriving "50 years after Agatha Christie's last MISS MARPLE novel was published" (<a href="https://www.waterstones.com/book/murder-at-the-grand-alpine-hotel/lucy-foley/agatha-christie/9780008694821">Waterstones</a>: HarperCollins, UK hardback September 22, £22.00). The Christie estate's page gives the US date — the one that matters to most of this desk's readers — as September 8, 2026, at $30.00 (<a href="https://www.agathachristie.com/stories/murder-at-the-grand-alpine-hotel">agathachristie.com</a>). The estate has authorized Marple work before — a twelve-author story collection in 2022 that included Foley (<a href="https://www.agathachristielimited.com/news/harpercollins-to-publish-fully-authorised-new-short-story-collection-featuring-agatha-christies-legendary-detective-miss-jane-marple">Agatha Christie Ltd</a>) — but this is the first full novel.</p>
+    <p>The pack shows the commercial shape of that arrival. On September 4, <em>Murder at the Grand Alpine Hotel</em> sat at #32 on the Mystery new-release chart at $21.00 in hardcover with no ratings at all; Louise Penny's <em>Miss Wolcott's Ghost</em> sat at #29 on identical terms; a new Audible production of Christie's <em>The Murder at the Vicarage</em> charted at #22 in new releases and #39 among the bestsellers, also with zero ratings. Seven of the fifty new-release slots — ranks 22, 27, 29, 32, 38, 42, and 50 — are held by titles carrying no ratings.</p>
+    <p><strong>Why a working mystery author cares:</strong> on this chart, pre-publication franchise weight outranks published books with thousands of ratings. Amazon does not publish what feeds its rankings, so we won't tell you what they are built from — what the pack shows is that ratings are no precondition for a top-40 slot here, and your launch math should account for that.</p>
+  </section>
+
+  <section id="s5">
+    <h2><span class="sec">YOUR MONEY:</span> Two Money Deadlines, and the Mystery Numbers That Change Them</h2>
+    <p>Our sibling desks covered the mechanics — <a href="https://reports.stevepieper.com/fantasy/q4-2026/">Audible's year-end retirement of the legacy ACX royalty model</a> on the fantasy desk, <a href="https://reports.stevepieper.com/romance/q4-2026/">the KDP 70% royalty ceiling's move to $12.99</a> as the romance desk's headline — so here are only the mystery numbers. Audio: Audible audiobooks are 14 of the 50 titles on the Mystery bestseller chart — 28%, more than a quarter of this shelf's top sellers — at a median list price of about $18.70 (pack, September 4; Kindle pricing sits in Sales signals below). The ACX change — enroll in the new model or be discontinued by year-end (<a href="https://www.acx.com/mp/blog/audible-new-royalty-model">ACX's announcement</a>, posted April 28, updated May 26, 2026) — lands on whichever of those rows are ACX-distributed. The pack can't say which: its only publisher data, the top nine new releases, shows the two audio titles there as a William Morrow production and an Audible Original — not ACX self-serve, on our read. Pricing: of the 36 Kindle editions on the Mystery new-release top 50, zero are priced between $6.00 and $12.99 — twenty-nine at $5.99 or below, seven at $13.99 or above (pack, September 4). That gap swallows the whole $10.00–$12.99 slice the new 70% ceiling just opened — yet these aren't prices readers won't pay: nine of the 32 bestseller Kindle rows sit between $6.99 and $12.99, four at $11.99 or above (pack, September 4). New releases just aren't launching there.</p>
+  </section>
+
+  <section id="s6">
+    <h2><span class="sec">SALES SIGNALS:</span> What the Charts and the Tables Agree On</h2>
+    <p>From the same two charts, captured September 4, 2026. The bestseller chart's Kindle rows — 32 of 50; the Audible rows are priced in the brief above — run a $4.99 median, with 8 of 32 priced $1.00–$2.99 and 7 of 32, about one in five, at $1.99 or below. We read those seven prices as promotional; that is an inference from price alone, and the $1.99 rows aren't one kind of book: Louise Penny backlist sits there alongside <em>Trust No One</em>, the Montlake-published #1. Twenty of the 32 Kindle rows price at $5.99 or below. We treat that band as a stand-in for indie-style pricing, and the $9.99-and-up band as its traditional counterpart — a stand-in only: the label types the price a book competes against, never its publisher, and a $1.99 promotion from a big house lands in the "indie" band exactly the way those seven rows just did. Series share depends on how you count: an explicit series marker in the title gives 20% of the bestseller chart; accept "A ___ Novel/Mystery/Thriller," "Mysteries," "Volume N" and similar series-club phrasings and it rises to 38% — quote the method with the number. On the new-release chart the strict count doubles, to 40%, and the loose count rises by about half, to 56%. Author concentration is the anti-romance: among the 36 bestseller rows that carry an author name (the audio rows don't), 34 distinct authors — no one holds this shelf the way <a href="https://reports.stevepieper.com/romance/q4-2026/">two authors hold 16 of the romance chart's 50 bestseller slots</a>, though the two counts are built differently and shouldn't be pushed past a sentence. Ratings tell the franchise story numerically: among rated rows, the bestseller chart's median title carries 7,530 ratings (49 of its 50 rows are rated) against 269 on the new-release chart (43 of 50) — a 28-fold difference. Count every row, unrated as zero, and the medians are 7,166 and 164.</p>
+    <p>One structural note before the chart: the new-release chart's top 24 entries all reappear on the bestseller top 50, in identical relative order, and none of ranks 25–50 appear there at all. Nearly half the "new release" rows are, in other words, the bestseller list again; anything genuinely new on this shelf lives in the bottom half. Three things in this issue lean on those top rows — the chart below, the headline story's nine breadcrumbs, and the hooks section — and each says so where it happens.</p>
+    <figure class="databox">
+      <svg viewBox="0 0 660 340" role="img" aria-labelledby="myst-chart-title myst-chart-desc" xmlns="http://www.w3.org/2000/svg">
+        <title id="myst-chart-title">What the Mystery shelf calls itself</title>
+        <desc id="myst-chart-desc">Grouped bar chart comparing the Amazon Mystery bestseller and new-release top-50 charts by title wording. Mystery word only: 16 percent of bestsellers, 34 percent of new releases. Thriller word only: 14 percent of bestsellers, 10 percent of new releases. Both: 4 percent of bestsellers, 6 percent of new releases. Neither: 66 percent of bestsellers, 50 percent of new releases.</desc>
+        <style>
+          svg{--ch-ink:#222;--ch-muted:#777;--ch-grid:#e2ddd5;--ch-a:#1d4e89;--ch-b:#b8860b;--ch-bg:transparent}
+          /* dark palette activates only if the site chrome ever sets data-theme="dark"; the page renders light today */
+          :root[data-theme="dark"] svg{--ch-ink:#e6e1d8;--ch-muted:#a09a90;--ch-grid:#44403a;--ch-a:#7aa7d9;--ch-b:#d4a017}
+          svg text{font-family:Georgia,serif;fill:var(--ch-ink)}.chlbl{font-size:12px}.chval{font-size:12px}.chleg{font-size:12px}.chaxis{font-size:10px;fill:var(--ch-muted)}
+        </style>
+        <defs>
+          <pattern id="myst-hatch-b" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+            <rect width="6" height="6" fill="var(--ch-b)"/>
+            <line x1="3" y1="0" x2="3" y2="6" stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+          </pattern>
+        </defs>
+        <rect x="0" y="0" width="660" height="340" fill="var(--ch-bg)"/>
+        <text x="12" y="20" font-size="15" font-weight="bold">What the Mystery shelf calls itself</text>
+        <rect x="300" y="10" width="12" height="12" fill="var(--ch-a)"/><text class="chleg" x="318" y="20">Bestsellers (n = 50)</text>
+        <rect x="470" y="10" width="12" height="12" fill="url(#myst-hatch-b)" stroke="var(--ch-b)" stroke-width="1"/><text class="chleg" x="488" y="20">New releases (n = 50)</text>
+        <g stroke="var(--ch-grid)" stroke-width="1">
+          <line x1="70" y1="280" x2="640" y2="280"/><line x1="70" y1="245" x2="640" y2="245"/>
+          <line x1="70" y1="210" x2="640" y2="210"/><line x1="70" y1="175" x2="640" y2="175"/>
+          <line x1="70" y1="140" x2="640" y2="140"/><line x1="70" y1="105" x2="640" y2="105"/>
+          <line x1="70" y1="70" x2="640" y2="70"/><line x1="70" y1="35" x2="640" y2="35"/>
+        </g>
+        <g class="chaxis">
+          <text x="46" y="284">0%</text><text x="40" y="249">10%</text><text x="40" y="214">20%</text>
+          <text x="40" y="179">30%</text><text x="40" y="144">40%</text><text x="40" y="109">50%</text>
+          <text x="40" y="74">60%</text><text x="40" y="39">70%</text>
+        </g>
+        <rect x="94" y="224" width="44" height="56" fill="var(--ch-a)"/>
+        <rect x="144" y="161" width="44" height="119" fill="url(#myst-hatch-b)" stroke="var(--ch-b)" stroke-width="1"/>
+        <text class="chval" text-anchor="middle" x="116" y="218">16.0%</text><text class="chval" text-anchor="middle" x="166" y="155">34.0%</text>
+        <text class="chlbl" text-anchor="middle" x="141" y="298">Mystery word only</text>
+        <rect x="236" y="231" width="44" height="49" fill="var(--ch-a)"/>
+        <rect x="286" y="245" width="44" height="35" fill="url(#myst-hatch-b)" stroke="var(--ch-b)" stroke-width="1"/>
+        <text class="chval" text-anchor="middle" x="258" y="225">14.0%</text><text class="chval" text-anchor="middle" x="308" y="239">10.0%</text>
+        <text class="chlbl" text-anchor="middle" x="283" y="298">Thriller word only</text>
+        <rect x="378" y="266" width="44" height="14" fill="var(--ch-a)"/>
+        <rect x="428" y="259" width="44" height="21" fill="url(#myst-hatch-b)" stroke="var(--ch-b)" stroke-width="1"/>
+        <text class="chval" text-anchor="middle" x="400" y="260">4.0%</text><text class="chval" text-anchor="middle" x="450" y="253">6.0%</text>
+        <text class="chlbl" text-anchor="middle" x="425" y="298">Both</text>
+        <rect x="520" y="49" width="44" height="231" fill="var(--ch-a)"/>
+        <rect x="570" y="105" width="44" height="175" fill="url(#myst-hatch-b)" stroke="var(--ch-b)" stroke-width="1"/>
+        <text class="chval" text-anchor="middle" x="542" y="43">66.0%</text><text class="chval" text-anchor="middle" x="592" y="99">50.0%</text>
+        <text class="chlbl" text-anchor="middle" x="567" y="298">Neither</text>
+        <text class="chval" x="12" y="326" font-style="italic">Half the new-release chart names neither genre.</text>
+      </svg>
+      <figcaption>Amazon Mystery browse node 10457, captured 4 September 2026. Bars are shares of each 50-title list, not counts: two-thirds of bestseller titles name neither genre; half the new-release titles do. The two lists are not independent samples — the new-release chart's top 24 rows all reappear in the bestseller top 50, so nearly half the new-release bars re-count bestseller titles; on the non-overlapping bottom half (ranks 25–50), the mystery-word-only share is 12 of 26 titles, 46%. Classification is a title-string heuristic — a title counts as a "mystery word" title if its title string matches mystery or mysteries, detective, cozy/cosy, sleuth, whodunit, murder, crime, FBI, inspector, or private investigator (case-insensitive), and as a "thriller word" title on thriller, suspense, or psychological; it reads the words a publisher chose to put on the cover, not the book. Genre Report Network analysis.</figcaption>
+    </figure>
+    <p><strong>The Times list.</strong> On the New York Times Combined Print &amp; E-Book Fiction list for the sales week ending August 29, 2026 (data from The New York Times Books API), mystery-proper holds one of the fifteen slots outright: <em>Delusional</em> (#8 — the only description on the list with an investigation in it: "A group that is angry with the government gets investigated," the 18th Michael Bennett book). State the rule so you can audit the count: mystery-proper means the Times' description makes the investigation of a crime the book's engine, judged from that description alone, not imprint. One more has the case but not the engine: Jennifer Hillier's <em>Heart of Glass</em> (#13, debut week) opens on "a man known as the Carnival Killer takes back his confession," landing on two women who "lost their friend 25 years ago" — but the description hands them no investigation, only that they "must confront their past," so under the rule it stays a near-miss. Both titles sit inside the four our <a href="https://reports.stevepieper.com/thriller/sep-2026/">thriller desk</a> counted as crime-and-suspense yesterday — this desk's strict one is a declared subset of that four, not a competing claim, and the counts must never be summed. Two more edges of the rule are worth naming. Freida McFadden's <em>Brain Damage</em> (#6) stays with the thriller desk: its heroine "tries to piece together her memories and determine if someone close to her is a threat," and that makes the engine her own safety, not the investigation of the crime she survived. And Liane Moriarty's <em>Big Little Truths</em> (#2, debut week) stays out the simplest way: this description names no crime at all. Note, too, that our own two instruments disagree about <em>Delusional</em>: Amazon's breadcrumb files it under Thrillers &amp; Suspense in our headline tally, while the Times' description puts it under investigation — mystery-proper by the rule above. Both calls are stated-rule calls: category is a merchandising decision there; the description governs here.</p>
+    <p><strong>The K-lytics view, completing the three readings this issue takes from the K-lytics tables:</strong> Mystery's top-20 average sales rank moved +2% this cycle — a rank measure, not a sales change — while on the same momentum table the adjacent Crime Fiction sub-category ran +29%. Flat where you'd expect the genre's name to live; the strong move is one shelf over — and that figure, too, is rank movement, not measured sales growth. <em>(Attribution: K-lytics, August 2026 report, data per July 31, 2026.)</em></p>
+  </section>
+
+  <section id="s7">
+    <h2><span class="sec">HOOKS &amp; TROPES:</span> The Closed Circle Is Here, Wearing Thriller Clothes</h2>
+    <p>The marketing copy tells its own version of the headline story. We read the descriptions Amazon carries for the nine highest-ranked new releases — the same nine books the headline story sorted by breadcrumb, all of them also on the bestseller chart per the structural note above — as positioning: what each publisher chose to sell (pack, September 4). Three of the nine build a classical closed circle — counted when the copy names a bounded cast, by number or by family, in a place that hems them in: "nine elite guests" on a storm-wrecked maiden voyage ("Not all of them will survive"); "A thousand strangers receive the invitation," "One hundred make the cut" — into games with "No rescue. No second chances."; a woman's return to an "isolated family estate" and its "generations of family deceptions." Two of those three are shelved under Thrillers &amp; Suspense and the third under Action &amp; Adventure — none under Mystery — so the device is doing a whodunit's job inside jeopardy-first copy. Our thriller desk counted the same device — "the countable hook," in its words — yesterday; what the mystery lens adds is where the device is living. Four of the nine attach a personal wound to their lead before any case — counted when the copy gives the lead an injury or a fraught relationship that predates the case ("Her former high school lover, now the lead detective"; "a magnetic ex-CIA colleague—and former lover"; "a rage that she can't excuse but can understand"; "Five years ago, Harker survived an encounter that should have killed her"). The hook we'd call most unusual — an aesthetic read, not a count — belongs to the least typical book: Rhys Bowen's ghostwriter discovers "the story is not fiction at all." Four of the nine descriptions open on an author credential, judged on what each description's first clause leads with; the other five lead with the hook itself (two), a genre line, a production feature, or a preorder-bonus notice. And the engine count: four of the nine promise detection — counted when the description's lead is a professional investigator and the promised draw is that they solve the crime; <em>The Secrets We Hide</em> ("it's up to Emmy Clifton to uncover the truth"), <em>Delusional</em> ("Bennett, Trilling, and the ATF investigate"), <em>Fury in Death</em>, and <em>Harker</em> qualify, while an ensemble's retired profiler, an ex-spy tracking her own would-be killer, or a ghostwriter with no investigative brief does not — and the other five promise jeopardy. Set that beside the headline story's tally: by their own marketing copy, four of the nine sell detection; by Amazon's breadcrumbs, only two of the nine are shelved as mysteries. The two instruments disagree on the details and agree on the direction — most of what tops the Mystery chart is selling something else.</p>
+  </section>
+
+  <p class="src"><em>Sources and dates appear inline throughout. Amazon chart data captured September 4, 2026, from the top-50 pages of the <a href="https://www.amazon.com/Best-Sellers-Mysteries/zgbs/books/10457/">Mystery Best Sellers</a> and <a href="https://www.amazon.com/gp/new-releases/books/10457">Mystery New Releases</a> charts. Data from The New York Times Books API. Copyright (c) 2026 The New York Times Company. All Rights Reserved. K-lytics figures used with attribution from the August 2026 sub-category report. Where we derive an estimate or a classification — the price heuristic, the series-share range, the title-word chart, the mystery-proper rule, the hook counts — we say so and give the method at the point of use.</em></p>
+
   <div class="bottomcta">
     <p>Go deeper, stay informed, sell more copies:</p>
     <a class="btn" href="#subscribe">Subscribe</a>
@@ -115,8 +238,8 @@
 
 <footer>
   <p>© 2026 Polymath Consulting &amp; Publishing · <a href="https://stevepieper.com/">stevepieper.com</a> · Questions or corrections: <a href="mailto:reports@stevepieper.com">reports@stevepieper.com</a></p>
+  <p>Bestseller list data from The New York Times Books API. Copyright (c) 2026 The New York Times Company. All Rights Reserved. Amazon retail data retrieved via Rainforest API. K-lytics figures used with attribution by arrangement with K-lytics. All third-party estimates are labeled as such in the text.</p>
   <p>Subscriptions are free and double opt-in. We use your address to deliver Mystery Quarterly and share a hashed (privacy-protected) copy with Meta to measure our advertising; we never sell your information. <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · Unsubscribe anytime with one click.</p>
-
   <details>
     <summary>About the $197,000 in testing</summary>
     <p>$197,000 spent by Polymath Consulting &amp; Publishing over a seven-month period (January–July 2026) to characterize the relative profitability of historically proven offers under the following advertising conditions:</p>
@@ -132,18 +255,9 @@
       <li>Meta conversion ads pointing to a privately owned web store, "Purchase" conversion event, restricted audience, restricted placements, no creative enhancements</li>
     </ul>
   </details>
-
 </footer>
 
 <script>
-  // consent_source records the page plus any UTM parameters that brought the visitor here.
-  const utm = [];
-  const q = new URLSearchParams(location.search);
-  for (const k of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term']) {
-    if (q.get(k)) utm.push(k + '=' + q.get(k));
-  }
-  const consentSource = ['mystery-home'].concat(utm).join('|');
-
   document.getElementById('subform').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('subbtn');
@@ -153,7 +267,7 @@
     try {
       const r = await fetch('/api/subscribe', {
         method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({genre: 'mystery', email, first_name: firstName, consent_source: consentSource})
+        body: JSON.stringify({genre: 'mystery', email, first_name: firstName, consent_source: 'mystery-issue-001'})
       });
       const j = await r.json();
       if (j.ok && j.state === 'confirmation-sent') btn.textContent = 'Check your inbox ✓';
@@ -162,13 +276,31 @@
     } catch { btn.textContent = 'Try again'; btn.disabled = false; }
   });
 
-  // Subscribe links: jump instantly to the very top (masthead form), no slow scroll
   document.querySelectorAll('a[href="#subscribe"]').forEach(a => {
     a.addEventListener('click', (e) => {
       e.preventDefault();
       window.scrollTo({top: 0, behavior: 'auto'});
       const em = document.querySelector('#subform input[type=email]');
       if (em) em.focus({preventScroll: true});
+    });
+  });
+
+  const topbar = document.querySelector('.topbar');
+  const masthead = document.querySelector('.masthead');
+  new IntersectionObserver(([entry]) => {
+    topbar.classList.toggle('show', !entry.isIntersecting);
+  }, {threshold: 0}).observe(masthead);
+
+  document.getElementById('archive').addEventListener('change', (e) => {
+    if (e.target.value) location.href = e.target.value;
+  });
+
+  const search = document.getElementById('issuesearch');
+  search.addEventListener('input', () => {
+    const q = search.value.trim().toLowerCase();
+    document.querySelectorAll('main section').forEach(sec => {
+      if (!q) { sec.classList.remove('hidden'); return; }
+      sec.classList.toggle('hidden', !sec.textContent.toLowerCase().includes(q));
     });
   });
 </script>
