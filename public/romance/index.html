@@ -2,31 +2,45 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="robots" content="noindex"><!-- remove at public launch -->
-<title>Romance Quarterly — market intelligence for romance authors</title>
-<meta name="description" content="The business of the happily-ever-after, for the authors who write it. Free, quarterly, every claim cited.">
-<link rel="canonical" href="https://reports.stevepieper.com/romance/">
+<title>Romance Quarterly — Issue 001 · Q4 2026</title>
+<meta name="description" content="State of the Genre: Amazon&#x27;s 70% royalty ceiling is $12.99 now and moving up is opt-in; Kindle Unlimited paid its biggest 2026 pool at nearly its thinnest page rate; an AI-flood study maps romance-heavy terrain; romance bookstores cross 300; and two authors hold 16 of Amazon&#x27;s 50 romance bestseller slots.">
+<link rel="canonical" href="https://reports.stevepieper.com/romance/q4-2026/">
 <style>
   :root{
-    --mast:#12151a; --mast-ink:#f5f2ea; --paper:#faf8f4; --ink:#1c1c1c; --ink-2:#444;
-    --accent:#b02358; --accent-dark:#8c1a45; --muted:#857e72; --gold:#c1932b;
-    --rule:#e5e1d8; --col:42rem;
+    --ink:#1a1d21; --ink-2:#4a4f56; --muted:#6e747c;
+    --paper:#fcfcfb; --panel:#f4f2ee;
+    --mast:#12151a; --mast-ink:#f5f2ec;
+    --accent:#b02358; --accent-dark:#8c1a45;
+    --context:#857e72; --rule:#e2ddd5; --gold:#c1932b;
+    --col:46rem;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
        color:var(--ink);background:var(--paper);line-height:1.7;font-size:1.05rem}
   a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:2px}
   a:hover{color:var(--accent)}
+
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--mast);color:var(--mast-ink);
+          border-bottom:1px solid var(--gold);padding:.5rem 1rem;
+          display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+          transform:translateY(-105%);transition:transform .25s ease}
+  .topbar.show{transform:translateY(0)}
+  .topbar .wordmark{font-weight:800;letter-spacing:.22em;font-size:.9rem;text-decoration:none;color:var(--mast-ink);white-space:nowrap}
+  .topbar .grow{flex:1}
+  .topbar select,.topbar input[type=search]{
+    background:#1d222a;color:var(--mast-ink);border:1px solid #333a44;border-radius:4px;
+    padding:.35rem .5rem;font-size:.85rem}
+  .topbar input[type=search]{width:11rem}
   .btn{display:inline-block;background:var(--accent);color:#fff;border:none;border-radius:4px;
        padding:.45rem .9rem;font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none}
   .btn:hover{background:var(--accent-dark);color:#fff}
 
-  .masthead{background:var(--mast);color:var(--mast-ink);padding:2.2rem 1.2rem 2.4rem;text-align:center;
-            border-bottom:2px solid var(--gold)}
+  .masthead{background:var(--mast);color:var(--mast-ink);padding:2.2rem 1.2rem 2.4rem;text-align:center}
   .masthead h1{margin:0;font-size:2rem;letter-spacing:.28em;font-weight:800}
   .masthead .tag{font-style:italic;opacity:.85;margin:.4rem 0 1.2rem}
   .capture{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
@@ -36,15 +50,15 @@
   .capture input[type=text]{min-width:10rem}
   .masthead .cadence{font-style:italic;opacity:.8;font-size:.9rem;margin-top:.8rem}
 
-  main{max-width:var(--col);margin:0 auto;padding:2.6rem 1.2rem 3.5rem}
+  main{max-width:var(--col);margin:0 auto;padding:2.4rem 1.2rem 4rem}
   .fromdesk{font-style:italic;color:var(--ink-2)}
   .kicker{font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:.9rem 0 .2rem}
-  h2{font-size:1.3rem;margin:0 0 1rem;letter-spacing:.02em}
-  ul.what{margin:0 0 1.4rem 1.2rem;padding:0}
-  ul.what li{margin:.6rem 0}
-  .promise{margin:0 0 1.8rem}
-  .firstissue{margin:0 0 2.2rem}
-  .fineprint{font-size:.85rem;color:var(--muted);border-top:1px solid var(--rule);padding-top:1.2rem}
+  .title{font-size:2.1rem;line-height:1.2;font-weight:800;margin:.1rem 0 1.4rem}
+  .lede{font-weight:800;text-transform:uppercase;letter-spacing:.02em}
+  h2{font-size:1.25rem;margin:2.6rem 0 .6rem;letter-spacing:.03em}
+  h2 .sec{color:var(--accent)}
+  .src{font-size:.85rem;color:var(--muted)}
+  section{scroll-margin-top:5.5rem}
 
   .offer{margin:2.4rem 0}
   .offer .label{font-size:.7rem;font-weight:800;letter-spacing:.14em;color:var(--muted);margin-bottom:.5rem}
@@ -53,6 +67,9 @@
   .offer .hook{font-size:1.15rem;font-weight:800;line-height:1.35;margin:0 0 .8rem}
   .offer .row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
   .offer .sub{font-size:.9rem;color:var(--ink-2);margin:0}
+
+  figure.databox{margin:1.6rem 0;padding:1.2rem 1.3rem;background:var(--panel);border-radius:6px}
+  figure.databox figcaption{font-size:.85rem;color:var(--muted);margin-top:.7rem}
 
   .bottomcta{margin:3rem 0 0;padding:1.6rem;background:var(--mast);color:var(--mast-ink);
              border-radius:6px;text-align:center}
@@ -64,9 +81,22 @@
   footer summary{cursor:pointer;font-weight:700}
   footer ul{margin:.5rem 0 0 1.1rem;padding:0}
   footer li{margin:.25rem 0}
+  .hidden{display:none}
+  mark{background:#f6e3a1}
 </style>
 </head>
 <body>
+
+<nav class="topbar" aria-label="Romance Quarterly">
+  <a class="wordmark" href="/romance/">ROMANCE&nbsp;QUARTERLY</a>
+  <span class="grow"></span>
+  <input type="search" id="issuesearch" placeholder="Search this issue…" aria-label="Search this issue">
+  <select id="archive" aria-label="Past issues">
+    <option value="">Archive</option>
+    <option value="/romance/q4-2026/">Q4 2026 — Issue 001</option>
+  </select>
+  <a class="btn" href="#subscribe">Subscribe</a>
+</nav>
 
 <header class="masthead" id="subscribe">
   <h1>ROMANCE QUARTERLY</h1>
@@ -81,19 +111,25 @@
 
 <main>
   <p class="fromdesk">from the desk of Steve Pieper, Polymath Consulting &amp; Publishing.</p>
-  <p class="kicker">First issue in production</p>
+  <p class="kicker">State of the Genre · Q4 2026 · Nº 001</p>
+  <h1 class="title">Amazon Lifts the Royalty Ceiling, KU Thins the Page, and Two Authors Hold 16 of 50 Slots</h1>
 
-  <h2>Fifteen minutes a quarter on the business of writing romance.</h2>
+  <p class="lede">The inaugural issue of the Romance desk covers the trailing ninety days, June 5 through September 3, 2026. Every claim is cited inline; every figure names its source and as-of date.</p>
 
-  <ul class="what">
-    <li><strong>The decisions that touch your royalties</strong> — platform royalty changes, the Kindle Unlimited page-rate math the genre runs on, and retailer moves — explained while the deadlines are still ahead of you.</li>
-    <li><strong>What the quarter's bestselling new releases are actually selling</strong> — hooks, tropes, and blurb patterns — from contemporary to romantasy — pulled from the descriptions themselves, not from theory.</li>
-    <li><strong>The wider field</strong> — the genre's share of the bestseller lists, screen adaptations in the pipeline, and the reader-event dates worth booking.</li>
-  </ul>
+  <section id="s1">
+    <h2><span class="sec">THE HEADLINE:</span> The Royalty Ceiling Moved — but Only if You Move With It</h2>
+    <p>The change is easy to miss because it does nothing on its own. Since July 7, 2026, KDP's 70% ebook royalty applies up to a $12.99 list price on Amazon.com, where the band had been $2.99–$9.99 (<a href="https://goodereader.com/blog/digital-publishing/amazon-increases-the-royalty-rate-for-kindle-direct-publishing">Good e-Reader, July 9, 2026</a>). That $9.99 ceiling is as old as the option itself — Amazon's press release creating the 70% tier set the list-price requirement at $2.99–$9.99 (<a href="https://press.aboutamazon.com/2010/6/70-percent-royalty-option-for-kindle-digital-text-platform-now-available">Amazon, June 30, 2010</a>), and it was still $2.99–$9.99 the week before July's change; we found no record of a move in between. But a book already priced between $10.00 and $12.99 stays at the 35% rate until its author re-selects the 70% option in the KDP pricing dashboard (<a href="https://www.builtwritten.com/blog/amazon-changed-book-pricing-rules-2026">Built&amp;Written, July 31, 2026, updated August 12</a>).</p>
+    <p>The Authors Guild, which had raised the issue in its discussions with Amazon, welcomed the change the day it was reported and kept two asks open: extend 70% to all price tiers, and cut the delivery fee — a per-megabyte charge ($0.15/MB on Amazon.com per <a href="https://kdp.amazon.com/en_US/help/topic/G200634500">KDP's royalty help page</a>, as of September 2026) the Guild notes is unique to Amazon; Apple Books and Barnes &amp; Noble Press pay a flat 70% at any price, and Kobo pays 70% from $2.99 up (<a href="https://authorsguild.org/news/statement-on-amazon-kdp-raising-70-percent-royalty-ceiling/">Authors Guild statement, July 9, 2026</a>).</p>
+    <p>Two months in, the price point is in circulation: on <a href="https://www.amazon.com/Best-Sellers-Romance/zgbs/books/23/">Amazon's Books &gt; Romance Top 50</a> as we captured it September 4, exactly three Kindle titles sit at $12.99 — Liv Zander's <em>Crown Me Dead</em> and <em>Crown Me Yours</em>, and <em>Butterfly 6: Phase 1</em>. Whether those are KDP titles, and which royalty option they carry, the chart cannot tell us; only the price is observable.</p>
+    <p><strong>Why you care:</strong> if you have titles parked between $10.00 and $12.99, the repricing decision is now yours to make, and the arithmetic is simple: at a $12.99 list price, the 35% tier pays about $4.55 a copy, while the 70% option pays about $9.09 minus the delivery fee — roughly double, for one dashboard selection (our arithmetic, from the royalty structure on the KDP help page above).</p>
+  </section>
 
-  <p class="promise">Written for working romance authors. Every claim carries a citation, every figure names its source and date, and if a story doesn't matter to your career, it doesn't run.</p>
-
-  <p class="firstissue">Issue 001 is in research now; its permanent address is <a href="/romance/q4-2026/">reports.stevepieper.com/romance/q4-2026/</a>. For our fellow skeptics — to see exactly the standard it will meet: <a href="/thriller/aug-2026/">read a current issue from our thriller desk&nbsp;→</a></p>
+  <section id="s2">
+    <h2><span class="sec">YOUR MONEY:</span> Kindle Unlimited Paid Out More Money at a Lower Rate</h2>
+    <p>Romance authors got a bigger pot and a smaller slice in July. Written Word Media's payout tracker (updated August 18, 2026) has the month's KDP Select Global Fund at $67.6 million and the per-page KENP rate at $0.004221, down from June's $0.004615; no 2026 month has paid a bigger pool, and only January ($0.004202) has paid a thinner page (<a href="https://www.writtenwordmedia.com/kdp-global-fund-payouts/">Written Word Media</a>). These are tracked rather than published figures — Amazon announces the fund but not the rate, which trackers derive — and Written Word Media is the only source we could find still publishing monthly numbers for mid-2026; the other trackers we checked stop in the spring. Treat the June and July values as that tracker's reporting, corroborated nowhere else yet.</p>
+    <p>On those figures, the arithmetic runs: June to July, the pool rose about 6.3% ($63.6 million to $67.6 million) while the rate fell about 8.5%, which implies total pages read grew roughly 16% — an estimate we derive by dividing fund by rate, and directional only, since the fund excludes the All Stars bonuses Amazon pays on top (May's reported split: a $66.9 million fund plus $3.4 million in bonuses, per <a href="https://www.authormedia.com/kindle-unlimited-pays-indie-authors-record-breaking-royalties/">Author Media, June 22, 2026</a>). May's fund had been reported as an all-time high for a program that launched at $2.5 million a month in 2014.</p>
+    <p><strong>Why you care:</strong> romance sits heavily in Kindle Unlimited — no published ranking of KU dependence by genre exists, so treat that as our read rather than a measured fact — and this is the mechanism in one month: a bigger pool, a cheaper page. What moved your July KU check was pages read, not the size of the pot.</p>
+  </section>
 
   <aside class="offer" aria-label="From Polymath">
     <div class="label">FROM POLYMATH</div>
@@ -106,6 +142,62 @@
     </div>
   </aside>
 
+  <section id="s3">
+    <h2><span class="sec">THE FIELD:</span> The AI Flood Now Has a Study, and Romance Is Most of the Terrain It Maps</h2>
+    <p>On July 22, 2026, researchers from Stony Brook, Michigan, and Columbia Law posted <em>Generative AI floods and dilutes the market for books</em> (<a href="https://arxiv.org/abs/2607.20349">arXiv:2607.20349</a>) — an arXiv preprint, not yet peer-reviewed — running full-text AI detection across 14,419 self-published genre-fiction books sold on Amazon from 2023 to 2026, matched to daily sales through June 2026. The paper allocates that sample across eight genre clusters roughly in proportion to each cluster's share of new self-published releases from January 2023 to March 2026 — and the four romance clusters (general, speculative/adventure, crime/suspense, and sports) are just under 60% of that release share (<a href="https://arxiv.org/html/2607.20349v1">paper, sample construction</a>; the sum is ours). The abstract's finding, verbatim: books with substantial detected AI text "make up a large share of the catalog but a smaller share of sales… Even so, they reach commercial scale, winning a growing share of sales over time and taking more of the scarce top-rank positions once held by books with no detected AI text."</p>
+    <p>The dilution is a volume story, not a quality one — in the paper's words, "selling titles grew 19.2-fold, while unit sales and revenue grew only 7.3-fold and 8.9-fold" (<a href="https://arxiv.org/html/2607.20349v1">paper</a>). And the squeeze runs through Kindle Unlimited: the sales-share lead of books with no detected AI text is 8.5 percentage points smaller in genres where more titles sit in KU. A summary in <a href="https://the-decoder.com/ai-generated-books-are-flooding-amazon-and-tanking-sales-for-human-authors/">The Decoder (August 15, 2026)</a> adds that AI-heavy books were 20% of the catalog but 12.1% of sales, and that the share of new top-25 entries with substantial AI content rose from near zero to 31% over the study period.</p>
+    <p><strong>Why you care:</strong> the study's answer to "is AI taking my sales?" is: mostly by crowding, and hardest in genres where more titles sit in Kindle Unlimited — the terrain the paper's own romance-heavy sample maps.</p>
+  </section>
+
+  <section id="s4">
+    <h2><span class="sec">THE CHANNEL:</span> The Romance Bookstore Is Now a Channel, Not a Curiosity</h2>
+    <p>As of July 31, 2026, there were 300 physical romance bookstores worldwide and 211 in the United States, per the census kept by <a href="https://blog.romancingthedata.com/p/romance-bookstore-update-july-2026">Romancing the Data (August 10, 2026)</a>: 74 physical stores opened worldwide so far in 2026 against four closures; eight of those openings came in July alone. The same tracker counted 272 worldwide in April (<a href="https://blog.romancingthedata.com/p/romance-bookstore-update-april-2026">April update</a>) — a rise of about 10% in three months (our arithmetic). The 300 is the physical subset of a 527-entry directory whose channel categories overlap — the tracker notes a store can be online, run pop-ups, and have a physical location coming soon — with the detailed breakdown behind its paywall. Counting methods vary: an <a href="https://sarinabowen.com/blog/2025/5/24/the-definitive-list-of-romance-bookstores">independently maintained list</a>, updated June 2026, says "100+" on a narrower census. Cite the tracker you use; these are not interchangeable counts.</p>
+    <p>The channel now has its own calendar: Bookstore Romance Day fell on August 15, and as of Shelf Awareness's June 22 preview, nearly 700 stores had signed up, against roughly 600 the prior year — growth its founder attributes to mobile, pop-up, and online-only romance stores (<a href="https://www.shelf-awareness.com/theshelf/2026-06-22/save_the_date:_bookstore_romance_day_arrives_august_15.html">Shelf Awareness, June 22, 2026</a>). We found no post-event count.</p>
+    <p><strong>Why you care:</strong> 211 US romance bookstores is a signing circuit, a consignment channel, and a reason to price a print run that did not exist at this scale two years ago.</p>
+  </section>
+
+  <section id="s5">
+    <h2><span class="sec">THE CHART:</span> Two Authors, Sixteen Slots: the Chart Your Q4 Launch Competes Inside</h2>
+    <p>On August 17, Sarah J. Maas announced two new ACOTAR novels — <em>A Court of Splintered Harmony</em> (October 27, 2026) and <em>A Court of Forgotten Melody</em> (January 12, 2027), both Bloomsbury (<a href="https://abcnews.com/GMA/Culture/sarah-maas-unveils-titles-book-covers-2-installments/story?id=135715326">ABC News/GMA, August 17, 2026</a>). On the Amazon Romance Top 50 we captured September 4, Maas titles hold 13 of the 50 slots and Rebecca Yarros holds three more — 16 of 50, or 32% (our attribution; the chart's audiobook rows carry no author field, so ten of the Maas slots are attributed by series title, a method we state so you can weigh it). Both #1 and #2 on <a href="https://www.amazon.com/gp/new-releases/books/23">Amazon's Romance New Releases chart</a> are unpublished preorders: Yarros's <em>Threshing Day</em> (September 29) and <em>A Court of Splintered Harmony</em> (October 27).</p>
+    <p>In fact, four of the top nine "new releases" were preorders on our capture date, and only three of those nine list a romance browse category as their primary shelf — the top of the new-release chart is substantially a preorder chart wearing a romance label loosely.</p>
+    <p><strong>Why you care:</strong> any romance launch between now and January is competing for visibility inside two authors' release cycles and their backlists. Plan your window, your ads, and your expectations accordingly.</p>
+  </section>
+
+  <section id="s6">
+    <h2><span class="sec">SALES SIGNALS:</span> Where Romance Prices Actually Cluster</h2>
+    <p>From <a href="https://www.amazon.com/Best-Sellers-Romance/zgbs/books/23/">Amazon's Books &gt; Romance Top 50</a> and <a href="https://www.amazon.com/gp/new-releases/books/23">Romance New Releases Top 50</a>, both captured September 4, 2026 (twenty new-release rows were returned in Swedish krona; we normalized them to USD at the implied rate of 9.557 — a conversion we derive, not a figure Amazon returned, and every converted value resolves to a standard US price point). The bestseller chart's Kindle rows are bimodal: a mass at $1.99–$5.99 (19 of 32 titles), almost nothing between $6 and $10 (two titles, both at exactly $9.99), and a second mass at $10 and up (11 titles). The new-release chart is a single cluster: $5.99 is the modal price, and $4.99–$5.99 together account for 25 of its 47 Kindle rows. Under a price heuristic we label as such (≤$5.99 typed as indie-typical, ≥$9.99 as traditional-typical — directionally useful, individually unreliable), 59% of bestseller Kindle slots and 85% of new-release Kindle slots price in the indie band. The heuristic's known failure sits in this very issue: the two $12.99 Liv Zander titles above carry roughly 40,000 ratings each — a ratings profile more typical of self-published breakouts than of trade pricing — and the heuristic files them as traditional.</p>
+    <figure class="databox">
+      <svg viewBox="0 0 700 330" role="img" aria-label="Grouped bar chart comparing the share of Kindle titles in each price band on the Amazon Romance Top 50 and Romance New Releases Top 50" xmlns="http://www.w3.org/2000/svg">
+        <style>svg text{font-family:Georgia,serif;fill:#222}.chlbl{font-size:13px}.chval{font-size:12px}.chleg{font-size:12px}</style>
+        <text x="12" y="22" font-size="15" font-weight="bold">Where romance prices cluster — bestsellers vs. new releases</text>
+        <rect x="12" y="34" width="12" height="12" fill="#a31621"/><text class="chleg" x="30" y="44">Romance Top 50 (32 Kindle titles)</text>
+        <rect x="250" y="34" width="12" height="12" fill="#b8860b"/><text class="chleg" x="268" y="44">New Releases Top 50 (47 Kindle titles)</text>
+        <text class="chlbl" x="12" y="80">$0.99–$2.99</text>
+        <rect x="120" y="66" width="131" height="16" rx="3" fill="#a31621"/><text class="chval" x="257" y="79">21.9% (7)</text>
+        <rect x="120" y="86" width="128" height="16" rx="3" fill="#b8860b"/><text class="chval" x="254" y="99">21.3% (10)</text>
+        <text class="chlbl" x="12" y="140">$3.00–$5.99</text>
+        <rect x="120" y="126" width="225" height="16" rx="3" fill="#a31621"/><text class="chval" x="351" y="139">37.5% (12)</text>
+        <rect x="120" y="146" width="383" height="16" rx="3" fill="#b8860b"/><text class="chval" x="509" y="159">63.8% (30)</text>
+        <text class="chlbl" x="12" y="200">$6.00–$9.99</text>
+        <rect x="120" y="186" width="38" height="16" rx="3" fill="#a31621"/><text class="chval" x="164" y="199">6.3% (2)</text>
+        <rect x="120" y="206" width="38" height="16" rx="3" fill="#b8860b"/><text class="chval" x="164" y="219">6.4% (3)</text>
+        <text class="chlbl" x="12" y="260">$10.00 and up</text>
+        <rect x="120" y="246" width="206" height="16" rx="3" fill="#a31621"/><text class="chval" x="332" y="259">34.4% (11)</text>
+        <rect x="120" y="266" width="51" height="16" rx="3" fill="#b8860b"/><text class="chval" x="177" y="279">8.5% (4)</text>
+        <text class="chval" x="120" y="304" font-style="italic">Three of the eleven $10-and-up bestsellers sit exactly at $12.99 — the new KDP 70% ceiling.</text>
+      </svg>
+      <figcaption>Each bar is the price band's share of its own chart's Kindle rows (counts in parentheses). Kindle-edition list prices, Amazon Books &gt; Romance Top 50 and Romance New Releases Top 50, captured 4 September 2026. Audible (16 bestseller, 1 new-release) and hardcover (2 and 2) rows excluded. New Releases ranks 31–50 were returned in Swedish krona and converted to USD at the implied rate of 9.557 SEK/USD; every converted value resolves to a standard US price point. Genre Report Network analysis.</figcaption>
+    </figure>
+    <p><strong>The Times list.</strong> On the New York Times Combined Print &amp; E-Book Fiction list for the sales week ending August 29, 2026 (data from The New York Times Books API), romance holds two of the fifteen slots — one of them strictly: T. Kingfisher's <em>Daggerbound</em> (#14, Bramble, debut week) is romance-core romantasy, and Colleen Hoover's <em>Verity</em> (#15, in its 99th week) we count as romance-adjacent, since the Times' own description of it carries no romance language at all, while Amazon shelves it at #2 in Books &gt; Romance on the same capture date. <em>Daggerbound</em> sits on the romantasy boundary, and our fantasy desk counts it toward this desk, not its own. One weekly list is a thin slice: a tracker counting unique titles across all of July's weekly lists found 14 romance and romantasy titles for the month (<a href="https://blog.romancingthedata.com/p/nyt-romance-best-sellers-ranking-july-2026">Romancing the Data, August 12, 2026</a>) — a different denominator, not a comparable number.</p>
+    <p><strong>The K-lytics view.</strong> Three readings from the <a href="https://k-lytics.com/">K-lytics</a> August 2026 report (data per July 31, 2026, across 486 tracked sub-categories), each a rank measure or position, not a sales count: fake dating carried the sharpest rank momentum of any romance sub-category — the top 20 titles' average sales rank improved 39%; contemporary, still the highest-volume room in romance, saw its top 20 titles' average rank slide 37%, near the bottom of the momentum table; and romantasy sits 10th of 486 sub-categories by sales volume — the only one of romance's five highest-ranked sub-categories to climb this month. <em>(Attribution: K-lytics, August 2026 report.)</em></p>
+  </section>
+
+  <section id="s7">
+    <h2><span class="sec">HOOKS &amp; TROPES:</span> What the Top of the New-Release Chart Promises</h2>
+    <p>The copy at the top of <a href="https://www.amazon.com/gp/new-releases/books/23">Amazon's Romance New Releases chart</a> is selling insurance as much as it is selling desire. What follows reads the marketing descriptions of its nine top-ranked titles, captured September 4 — an observation about how nine books position themselves, which is all it is.</p>
+    <p>Two promises tie for most common, each in three of the nine: the forbidden ("the one man she can never have," "firmly off-limits," "hiding a relationship from the league") and an explicitly named heat level ("A Sizzling Hot Age Gap Romance" — in the title itself — "a spicy sports romance," "a spicy strangers-to-friends-to-lovers sports romance"). The most explicit copy in the nine prints its tropes as a labeled feature block — one description runs, in full, "Workplace / Overheard / Neurodivergent Heroine / Other Woman Drama / Betrayal &amp; Grovel / No Cheating / Complete Standalone." Two of those seven — "No Cheating" and "Complete Standalone" — are risk-reduction promises, statements about what will <em>not</em> happen; another title in the nine adds a third of the same kind, "a guaranteed happily ever after." That is copy aimed at a reader who has been burned before. Two of the nine put content warnings inside the sales copy, and one author routes fuller content notes to her own website — sending the reader off-retailer, which is its own move. Meanwhile the two titles at the top of the chart — the Yarros and Maas preorders — sell no tropes at all: continuity, stakes, and the collectible object ("available only in the US and Canada while supplies last"). The #1 new release in romance currently has no story blurb — "Full blurb to be revealed soon!" — and sells series continuity, a story count, an illustrator, and scarcity instead. Two of the nine barely make a romance promise: one makes none anywhere in its copy, and one makes it only in its last four words ("find their happy ending").</p>
+  </section>
+
   <div class="bottomcta">
     <p>Go deeper, stay informed, sell more copies:</p>
     <a class="btn" href="#subscribe">Subscribe</a>
@@ -115,8 +207,8 @@
 
 <footer>
   <p>© 2026 Polymath Consulting &amp; Publishing · <a href="https://stevepieper.com/">stevepieper.com</a> · Questions or corrections: <a href="mailto:reports@stevepieper.com">reports@stevepieper.com</a></p>
+  <p>Bestseller list data from The New York Times Books API. Copyright (c) 2026 The New York Times Company. All Rights Reserved. Amazon retail data retrieved via Rainforest API. K-lytics figures used with attribution by arrangement with K-lytics. All third-party estimates are labeled as such in the text.</p>
   <p>Subscriptions are free and double opt-in. We use your address to deliver Romance Quarterly and share a hashed (privacy-protected) copy with Meta to measure our advertising; we never sell your information. <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · Unsubscribe anytime with one click.</p>
-
   <details>
     <summary>About the $197,000 in testing</summary>
     <p>$197,000 spent by Polymath Consulting &amp; Publishing over a seven-month period (January–July 2026) to characterize the relative profitability of historically proven offers under the following advertising conditions:</p>
@@ -132,18 +224,9 @@
       <li>Meta conversion ads pointing to a privately owned web store, "Purchase" conversion event, restricted audience, restricted placements, no creative enhancements</li>
     </ul>
   </details>
-
 </footer>
 
 <script>
-  // consent_source records the page plus any UTM parameters that brought the visitor here.
-  const utm = [];
-  const q = new URLSearchParams(location.search);
-  for (const k of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term']) {
-    if (q.get(k)) utm.push(k + '=' + q.get(k));
-  }
-  const consentSource = ['romance-home'].concat(utm).join('|');
-
   document.getElementById('subform').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('subbtn');
@@ -153,7 +236,7 @@
     try {
       const r = await fetch('/api/subscribe', {
         method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({genre: 'romance', email, first_name: firstName, consent_source: consentSource})
+        body: JSON.stringify({genre: 'romance', email, first_name: firstName, consent_source: 'romance-issue-001'})
       });
       const j = await r.json();
       if (j.ok && j.state === 'confirmation-sent') btn.textContent = 'Check your inbox ✓';
@@ -162,13 +245,31 @@
     } catch { btn.textContent = 'Try again'; btn.disabled = false; }
   });
 
-  // Subscribe links: jump instantly to the very top (masthead form), no slow scroll
   document.querySelectorAll('a[href="#subscribe"]').forEach(a => {
     a.addEventListener('click', (e) => {
       e.preventDefault();
       window.scrollTo({top: 0, behavior: 'auto'});
       const em = document.querySelector('#subform input[type=email]');
       if (em) em.focus({preventScroll: true});
+    });
+  });
+
+  const topbar = document.querySelector('.topbar');
+  const masthead = document.querySelector('.masthead');
+  new IntersectionObserver(([entry]) => {
+    topbar.classList.toggle('show', !entry.isIntersecting);
+  }, {threshold: 0}).observe(masthead);
+
+  document.getElementById('archive').addEventListener('change', (e) => {
+    if (e.target.value) location.href = e.target.value;
+  });
+
+  const search = document.getElementById('issuesearch');
+  search.addEventListener('input', () => {
+    const q = search.value.trim().toLowerCase();
+    document.querySelectorAll('main section').forEach(sec => {
+      if (!q) { sec.classList.remove('hidden'); return; }
+      sec.classList.toggle('hidden', !sec.textContent.toLowerCase().includes(q));
     });
   });
 </script>
