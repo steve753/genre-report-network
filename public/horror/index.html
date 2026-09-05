@@ -2,31 +2,45 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="robots" content="noindex"><!-- remove at public launch -->
-<title>Horror Quarterly — market intelligence for horror authors</title>
-<meta name="description" content="The business of fear, for the authors who write it. Free, quarterly, every claim cited.">
-<link rel="canonical" href="https://reports.stevepieper.com/horror/">
+<title>Horror Quarterly — Issue 001 · Q4 2026</title>
+<meta name="description" content="State of the Genre: horror-proper holds 14 of the 50 slots on Amazon's Horror bestseller chart while romantasy, gothic romance, and dark fantasy hold 21; zero of the fifteen titles on the NYT combined fiction list are horror; and K-Lytics ranks Horror 13th of 486 Kindle sub-categories for sales momentum and 458th of 486 for competition.">
+<link rel="canonical" href="https://reports.stevepieper.com/horror/q4-2026/">
 <style>
   :root{
-    --mast:#12151a; --mast-ink:#f5f2ea; --paper:#faf8f4; --ink:#1c1c1c; --ink-2:#444;
-    --accent:#3f6212; --accent-dark:#2f4b0e; --muted:#857e72; --gold:#c1932b;
-    --rule:#e5e1d8; --col:42rem;
+    --ink:#1c1c1c; --ink-2:#444; --muted:#857e72;
+    --paper:#faf8f4; --panel:#f2eee6;
+    --mast:#12151a; --mast-ink:#f5f2ea;
+    --accent:#3f6212; --accent-dark:#2f4b0e;
+    --context:#857e72; --rule:#e5e1d8; --gold:#c1932b;
+    --col:46rem;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
        color:var(--ink);background:var(--paper);line-height:1.7;font-size:1.05rem}
   a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:2px}
   a:hover{color:var(--accent)}
+
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--mast);color:var(--mast-ink);
+          border-bottom:1px solid var(--gold);padding:.5rem 1rem;
+          display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+          transform:translateY(-105%);transition:transform .25s ease}
+  .topbar.show{transform:translateY(0)}
+  .topbar .wordmark{font-weight:800;letter-spacing:.22em;font-size:.9rem;text-decoration:none;color:var(--mast-ink);white-space:nowrap}
+  .topbar .grow{flex:1}
+  .topbar select,.topbar input[type=search]{
+    background:#1d222a;color:var(--mast-ink);border:1px solid #333a44;border-radius:4px;
+    padding:.35rem .5rem;font-size:.85rem}
+  .topbar input[type=search]{width:11rem}
   .btn{display:inline-block;background:var(--accent);color:#fff;border:none;border-radius:4px;
        padding:.45rem .9rem;font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none}
   .btn:hover{background:var(--accent-dark);color:#fff}
 
-  .masthead{background:var(--mast);color:var(--mast-ink);padding:2.2rem 1.2rem 2.4rem;text-align:center;
-            border-bottom:2px solid var(--gold)}
+  .masthead{background:var(--mast);color:var(--mast-ink);padding:2.2rem 1.2rem 2.4rem;text-align:center}
   .masthead h1{margin:0;font-size:2rem;letter-spacing:.28em;font-weight:800}
   .masthead .tag{font-style:italic;opacity:.85;margin:.4rem 0 1.2rem}
   .capture{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
@@ -36,15 +50,15 @@
   .capture input[type=text]{min-width:10rem}
   .masthead .cadence{font-style:italic;opacity:.8;font-size:.9rem;margin-top:.8rem}
 
-  main{max-width:var(--col);margin:0 auto;padding:2.6rem 1.2rem 3.5rem}
+  main{max-width:var(--col);margin:0 auto;padding:2.4rem 1.2rem 4rem}
   .fromdesk{font-style:italic;color:var(--ink-2)}
   .kicker{font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:.9rem 0 .2rem}
-  h2{font-size:1.3rem;margin:0 0 1rem;letter-spacing:.02em}
-  ul.what{margin:0 0 1.4rem 1.2rem;padding:0}
-  ul.what li{margin:.6rem 0}
-  .promise{margin:0 0 1.8rem}
-  .firstissue{margin:0 0 2.2rem}
-  .fineprint{font-size:.85rem;color:var(--muted);border-top:1px solid var(--rule);padding-top:1.2rem}
+  .title{font-size:2.1rem;line-height:1.2;font-weight:800;margin:.1rem 0 1.4rem}
+  .lede{font-weight:800;text-transform:uppercase;letter-spacing:.02em}
+  h2{font-size:1.25rem;margin:2.6rem 0 .6rem;letter-spacing:.03em}
+  h2 .sec{color:var(--accent)}
+  .src{font-size:.85rem;color:var(--muted)}
+  section{scroll-margin-top:5.5rem}
 
   .offer{margin:2.4rem 0}
   .offer .label{font-size:.7rem;font-weight:800;letter-spacing:.14em;color:var(--muted);margin-bottom:.5rem}
@@ -53,6 +67,9 @@
   .offer .hook{font-size:1.15rem;font-weight:800;line-height:1.35;margin:0 0 .8rem}
   .offer .row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
   .offer .sub{font-size:.9rem;color:var(--ink-2);margin:0}
+
+  figure.databox{margin:1.6rem 0;padding:1.2rem 1.3rem;background:var(--panel);border-radius:6px}
+  figure.databox figcaption{font-size:.85rem;color:var(--muted);margin-top:.7rem}
 
   .bottomcta{margin:3rem 0 0;padding:1.6rem;background:var(--mast);color:var(--mast-ink);
              border-radius:6px;text-align:center}
@@ -64,9 +81,22 @@
   footer summary{cursor:pointer;font-weight:700}
   footer ul{margin:.5rem 0 0 1.1rem;padding:0}
   footer li{margin:.25rem 0}
+  .hidden{display:none}
+  mark{background:#f6e3a1}
 </style>
 </head>
 <body>
+
+<nav class="topbar" aria-label="Horror Quarterly">
+  <a class="wordmark" href="/horror/">HORROR&nbsp;QUARTERLY</a>
+  <span class="grow"></span>
+  <input type="search" id="issuesearch" placeholder="Search this issue…" aria-label="Search this issue">
+  <select id="archive" aria-label="Past issues">
+    <option value="">Archive</option>
+    <option value="/horror/q4-2026/">Q4 2026 — Issue 001</option>
+  </select>
+  <a class="btn" href="#subscribe">Subscribe</a>
+</nav>
 
 <header class="masthead" id="subscribe">
   <h1>HORROR QUARTERLY</h1>
@@ -81,19 +111,88 @@
 
 <main>
   <p class="fromdesk">from the desk of Steve Pieper, Polymath Consulting &amp; Publishing.</p>
-  <p class="kicker">First issue in production</p>
+  <p class="kicker">State of the Genre · Q4 2026 · Nº 001</p>
+  <h1 class="title">Horror Is the Minority on Amazon's Horror Shelf, Romance-Adjacent Fantasy Is Its Largest Slice, No Horror Charts on the Times, and Demand Is Rising Into One of the Kindle Store's Most Crowded Rooms</h1>
 
-  <h2>Fifteen minutes a quarter on the business of writing horror.</h2>
+  <p class="lede">Fourteen of the fifty titles on Amazon's Horror bestseller chart are horror under a dread-first rule and twenty-one are romance-adjacent fantasy; none of the fifteen books on the New York Times combined fiction list is horror at all; and the category's demand and momentum are climbing into one of the most crowded fields in the Kindle store — the quarter's numbers, read for the authors who write the genre.</p>
 
-  <ul class="what">
-    <li><strong>The decisions that touch your royalties</strong> — platform royalty changes, the Kindle Unlimited math, and retailer moves — explained while the deadlines are still ahead of you.</li>
-    <li><strong>What the quarter's bestselling new releases are actually selling</strong> — hooks, tropes, and blurb patterns pulled from the descriptions themselves, not from theory.</li>
-    <li><strong>The wider field</strong> — the genre's share of the bestseller lists, screen adaptations in the pipeline, and the convention dates worth booking.</li>
-  </ul>
+  <section id="s1">
+    <h2><span class="sec">THE CONDITIONS:</span> Demand and Momentum Are Climbing Into One of the Kindle Store's Most Crowded Rooms</h2>
+    <p>Before the shelf, the room it sits in. As of July 31, 2026, Horror was one of the fastest-rising fiction niches in the Kindle store: its Top-20 titles improved 31% in average sales rank month over month, which ranks Horror 13th of 486 sub-categories for sales momentum — a rank measure, not a count of copies sold. Demand is strong and climbing with it: the category ranks 17th of 486 for the sales volume of its Top-20 titles, with the average Top-20 title moving roughly 380 copies a day (a per-title average, not a total across the twenty), and it rose 9 positions on that demand table against the prior month. The counterweight is the size of the field. About 367,612 titles compete in Horror, which ranks the category 458th of 486 for competition — only 28 sub-categories are more saturated. <em>Attribution: K-Lytics Kindle eBook Market Intelligence, Sub-Category Report, August 2026 (data as of 31 July 2026).</em> This issue prints no other category-table figure.</p>
+    <p>Read together they describe a rising tide in a crowded harbor. Readers are arriving faster than they were a month ago and buying at a rate that puts the category inside the top twenty of 486 — and every one of them lands on a shelf with more than a third of a million titles already on it. The question the rest of this issue answers is what those readers find when they get there. From the top fifty down, the answer is that most of it is not horror.</p>
+    <p><strong>Why a working horror author cares:</strong> the wind is at your back and the room is full. Rising momentum means the readers are present this quarter; 367,612 titles means they will not find you by accident. What the shelf data below adds is that the books they meet first, when they browse the category by name, are mostly not the kind of book you write — which is a discoverability problem and a positioning opening at the same time.</p>
+  </section>
 
-  <p class="promise">Written for working horror authors. Every claim carries a citation, every figure names its source and date, and if a story doesn't matter to your career, it doesn't run.</p>
-
-  <p class="firstissue">Issue 001 is in research now; its permanent address is <a href="/horror/q4-2026/">reports.stevepieper.com/horror/q4-2026/</a>. For our fellow skeptics — to see exactly the standard it will meet: <a href="/thriller/aug-2026/">read a current issue from our thriller desk&nbsp;→</a></p>
+  <section id="s2">
+    <h2><span class="sec">THE ADJUDICATION:</span> Fourteen of the Fifty Titles on Amazon's Horror Shelf Are Horror</h2>
+    <p>Horror-proper holds 14 of the 50 slots on Amazon's <a href="https://www.amazon.com/gp/bestsellers/books/49/">Horror bestseller chart</a> — browse node 49, captured September 1, 2026 — which is 28.0% of the list. Here is the rule that produced that number. Each of the fifty titles is assigned to exactly one of four buckets by its dominant commercial engine, judged from the title, the series identity, and, for the nine rows that also carry marketing descriptions in our pack, the description. Horror-proper: the dominant promise is dread, fear, or the uncanny — supernatural menace or human monstrousness as the engine — with no central romance arc and no crime-or-psychological-thriller structure. Romantasy, gothic romance, and dark fantasy: a fantasy, gothic, or otherworldly frame whose engine is a romance arc or an adventure-fantasy quest, with darkness as atmosphere rather than the primary aim; explicit dark romantasy and grimdark both land here. Thriller-crossover: a psychological or crime thriller shelved under Horror, driven by a human antagonist and by suspense or investigation. Literary/other: literary fiction, magical realism, or LitRPG and science fiction that is neither dread-driven nor romance-driven. Applied row by row, the rule yields 14 horror-proper, 21 romantasy/gothic/dark-fantasy, 5 thriller-crossover, and 10 literary/other — 14 + 21 + 5 + 10 = 50. Non-horror-proper is 36 of 50, 72.0%. Amazon's author field is null across the pack, so every author name in this issue's bestseller rows is our attribution from the title or series identity, and rows without an established identity go unattributed.</p>
+    <p>The fourteen are <em>The Unknown</em> (#7), <em>The Whisper Man</em> (#8), <em>Eldritch: The Eating Woods, Book 2</em> (#22), <em>Slewfoot</em> (#24), <em>Anathema</em> (#29), <em>It</em> (#30), <em>Ninth House</em> (#33), <em>Frankenstein</em> (#34), <em>Dracula</em> (#35), <em>Dead Beat</em> (#40), <em>Mean Spirited</em> (#42), <em>The Stand</em> (#43), <em>The Buffalo Hunter Hunter</em> (#45), and <em>Incidents Around the House</em> (#48). The twenty-one romance-adjacent rows run from #1 to #49 and include four Rachel Gillig titles by series identity (<em>The Knave and the Moon</em> at #1, <em>The Knight and the Moth</em> at #3, and the Shepherd King pair, <em>One Dark Window</em> at #15 and <em>Two Twisted Crowns</em> at #27), three Crowns of Nyaxia vampire-romance installments (#16, #31, #32), the two Heartstring Duet books (#5, #9), the two Wolves of Ruin werewolf titles (#12, #17), and four rows whose own titles announce the bucket: <em>Phantasma: A dark fantasy romance</em> (#36), <em>Tame the Dark: A Dark Romantasy Standalone</em> (#41), <em>Bonetide: A Dark Gothic Romance</em> (#47), and <em>The Unmagical Life of Briar Jones: A Dark Academia Fantasy</em> (#37). Inside the top ten the tilt is sharper than on the full list: five rows are romance-adjacent (ranks 1, 3, 4, 5, 9), three are literary/other (2, 6, 10), and two are horror-proper — <em>The Unknown</em> at #7 and <em>The Whisper Man</em> at #8. The highest-ranked horror novel on the Horror shelf is #7. Three of the fifty are low-confidence calls, because the pack carries no description and the title alone underdetermines them: <em>The Poison Daughter</em> (#4, romantasy by title pattern and node context), <em>Death Row</em> (#11, a crime framing at 3.8 stars, read as thriller), and <em>Briar Jones</em> (#37, dark-academia fantasy, read as dark fantasy). Reassign all three to horror-proper and the count becomes 17 of 50 against 19 romance-adjacent — horror-proper is still the smaller bucket, and still a minority of the shelf. Within the twenty-one, 18 carry an explicit central romance arc (36.0% of the whole list); the remaining three (#4, #37, and <em>Empire of the Vampire</em> at #49) are dark or grimdark fantasy without a clear romance engine.</p>
+<figure class="databox">
+<style>
+svg{--ch-ink:#1a1d21;--ch-muted:#6e747c;--ch-grid:#e2ddd5;--ch-a:#3f6212;--ch-b:#b9b2a6;--ch-hatch:#f6f3ee;--ch-bg:transparent}
+:root[data-theme="dark"] svg{--ch-ink:#e6e1d8;--ch-muted:#a09a90;--ch-grid:#44403a;--ch-a:#9fc95e;--ch-b:#6f6a61;--ch-hatch:#2a2723}
+svg text{font-family:Georgia,serif;fill:var(--ch-ink)}
+svg .chtitle{font-size:15px;font-weight:bold}
+svg .chval{font-size:13px;font-weight:bold}
+svg .chlbl{font-size:12px}
+svg .chleg{font-size:12px}
+svg .chaxis{font-size:10px;fill:var(--ch-muted)}
+svg .chnote{font-size:12px;font-style:italic;fill:var(--ch-muted)}
+</style>
+<svg viewBox="0 0 680 410" role="img" aria-labelledby="hor-chart-title hor-chart-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="hor-chart-title">Horror is the minority on Amazon's Horror shelf</title>
+<desc id="hor-chart-desc">Bar chart of the Amazon Horror bestseller top 50 by dominant commercial engine, captured September 1, 2026. Horror-proper 28.0 percent, 14 titles. Romantasy, gothic romance, and dark fantasy 42.0 percent, 21 titles. Thriller-crossover 10.0 percent, 5 titles. Literary and other 20.0 percent, 10 titles.</desc>
+<defs>
+<pattern id="hor-hatch" patternUnits="userSpaceOnUse" width="7" height="7" patternTransform="rotate(45)">
+<rect width="7" height="7" fill="var(--ch-b)"></rect>
+<line x1="3.5" y1="0" x2="3.5" y2="7" stroke="var(--ch-hatch)" stroke-width="2"></line>
+</pattern>
+</defs>
+<rect x="0" y="0" width="680" height="410" fill="var(--ch-bg)"></rect>
+<text class="chtitle" x="16" y="26">Horror is the minority on Amazon's Horror shelf</text>
+<rect x="16" y="41" width="12" height="12" fill="var(--ch-a)"></rect>
+<text class="chleg" x="34" y="51">Horror-proper (14 of 50)</text>
+<rect x="230" y="41" width="12" height="12" fill="url(#hor-hatch)" stroke="var(--ch-b)" stroke-width="1"></rect>
+<text class="chleg" x="248" y="51">Not horror-proper (36 of 50)</text>
+<g stroke="var(--ch-grid)" stroke-width="1">
+<line x1="84" y1="316" x2="656" y2="316"></line>
+<line x1="84" y1="268" x2="656" y2="268"></line>
+<line x1="84" y1="220" x2="656" y2="220"></line>
+<line x1="84" y1="172" x2="656" y2="172"></line>
+<line x1="84" y1="124" x2="656" y2="124"></line>
+<line x1="84" y1="76" x2="656" y2="76"></line>
+</g>
+<g class="chaxis">
+<text text-anchor="end" x="72" y="320">0%</text>
+<text text-anchor="end" x="72" y="272">10%</text>
+<text text-anchor="end" x="72" y="224">20%</text>
+<text text-anchor="end" x="72" y="176">30%</text>
+<text text-anchor="end" x="72" y="128">40%</text>
+<text text-anchor="end" x="72" y="80">50%</text>
+</g>
+<rect x="112" y="181.6" width="88" height="134.4" fill="var(--ch-a)"></rect>
+<text class="chval" text-anchor="middle" x="156" y="172">28.0%</text>
+<text class="chlbl" text-anchor="middle" x="156" y="338">Horror-proper</text>
+<text class="chlbl" text-anchor="middle" x="156" y="356">(14)</text>
+<rect x="255" y="114.4" width="88" height="201.6" fill="url(#hor-hatch)" stroke="var(--ch-b)" stroke-width="1"></rect>
+<text class="chval" text-anchor="middle" x="299" y="105">42.0%</text>
+<text class="chlbl" text-anchor="middle" x="299" y="338">Romantasy, gothic,</text>
+<text class="chlbl" text-anchor="middle" x="299" y="356">dark fantasy (21)</text>
+<rect x="398" y="268" width="88" height="48" fill="url(#hor-hatch)" stroke="var(--ch-b)" stroke-width="1"></rect>
+<text class="chval" text-anchor="middle" x="442" y="259">10.0%</text>
+<text class="chlbl" text-anchor="middle" x="442" y="338">Thriller-</text>
+<text class="chlbl" text-anchor="middle" x="442" y="356">crossover (5)</text>
+<rect x="541" y="220" width="88" height="96" fill="url(#hor-hatch)" stroke="var(--ch-b)" stroke-width="1"></rect>
+<text class="chval" text-anchor="middle" x="585" y="211">20.0%</text>
+<text class="chlbl" text-anchor="middle" x="585" y="338">Literary /</text>
+<text class="chlbl" text-anchor="middle" x="585" y="356">other (10)</text>
+<text class="chnote" text-anchor="middle" x="370" y="392">Share of the 50-title bestseller list; the four counts sum to 50.</text>
+</svg>
+<figcaption>Amazon Horror browse node 49 bestsellers, top 50, captured September 1, 2026. Bars are shares of the 50-title list. Each title is assigned to exactly one bucket by its dominant commercial engine, judged from the title, series identity, and (for the nine rows carrying descriptions) the marketing copy: horror-proper = dread, fear, or the uncanny as the primary promise, no central romance arc, not a crime or psychological thriller; romantasy, gothic romance, and dark fantasy = a fantasy or gothic frame driven by a romance arc or an adventure-fantasy quest, darkness as atmosphere; thriller-crossover = a psychological or crime thriller shelved under Horror; literary/other = literary fiction, magical realism, or LitRPG and science fiction. Counts: 14 / 21 / 5 / 10, which sum to 50. Three of the fifty are low-confidence identifications (ranks 4, 11, 37); reassigning all three to horror-proper yields 17 against 19 and does not move horror-proper out of the minority. Genre Report Network analysis.</figcaption>
+</figure>
+    <p>Two node artifacts sit inside the literary/other ten and deserve a line rather than a story. The Dungeon Crawler Carl installments at #2 and #6 chart here by browse-node tagging, not by genre; our <a href="https://reports.stevepieper.com/science-fiction/q4-2026/">science-fiction desk</a> reads the series as the center of its own shelf, and this desk defers to it. <em>Loop Bound: A Shattered World</em> (#50, 39 ratings) is cross-listed on the horror and science-fiction bestseller lists in the same capture — one tagging event, not two data points, and it is flagged rather than counted as a horror trend.</p>
+    <p><strong>Why a working horror author cares:</strong> rank on this shelf tells you where Amazon filed a book, not what the book is. A #7 horror novel is the top horror novel on the Horror chart, and the six books above it are four romantasy titles (ranks 1, 3, 4, 5) and two Dungeon Crawler Carl installments (ranks 2, 6). If you use category rank to judge how your book is doing against horror readers, you are measuring against romance readers' purchases most of the time — and the corollary is that the reader who arrives here wanting dread finds only fourteen books in fifty that promise it.</p>
+  </section>
 
   <aside class="offer" aria-label="From Polymath">
     <div class="label">FROM POLYMATH</div>
@@ -106,6 +205,37 @@
     </div>
   </aside>
 
+  <section id="s3">
+    <h2><span class="sec">THE BACKLIST:</span> When Horror Does Chart, It Is Often Decades Old</h2>
+    <p>Within the fourteen horror-proper rows, the shelf's oldest books do a large share of the work. The rule: a horror-proper bestseller row whose underlying work was first published in or before 2000 — our classification by first-publication year, since the pack carries no publication-date field, and every counted title is listed with its year. Four qualify: <em>Frankenstein</em> (1818, #34), <em>Dracula</em> (1897, #35), <em>The Stand</em> (1978, #43), and <em>It</em> (1986, #30). That is 4 of 50 on the whole list, 8.0%, and 4 of the 14 horror-proper rows, 28.6% — two nineteenth-century gothic foundations and two Stephen King novels. The other ten horror-proper rows are contemporary: <em>The Whisper Man</em> (2019), <em>Ninth House</em> (2019), <em>Slewfoot</em> (2021), <em>Incidents Around the House</em> (2024), <em>The Buffalo Hunter Hunter</em> (2025), and five 2020s titles — <em>The Unknown</em>, the two Eating Woods books, <em>Dead Beat</em>, and <em>Mean Spirited</em>. So a little under a third of the horror that charts on the Horror shelf is public domain or forty-plus years old.</p>
+    <p>Two smaller clusters sharpen the picture. By an authorship rule — bestseller rows by Stephen King, attributed from the title — King holds 3 of the 50: <em>It</em> and <em>The Stand</em> are horror-proper, and <em>11-22-63</em> (#19) is not, because a time-travel novel about the Kennedy assassination is historical science fiction under the dominant-engine rule however its author is shelved. Even the genre's defining name charts a non-horror title here. By a premise rule — bestseller rows whose central supernatural premise is vampires, from the title or the book's established identity — 6 of the 50 are vampire titles, 12.0%, and they split four to two the wrong way for horror: the three Crowns of Nyaxia installments (#16, #31, #32) and <em>Empire of the Vampire</em> (#49) are romance or dark fantasy, while only <em>Dracula</em> (#35) and <em>The Buffalo Hunter Hunter</em> (#45) are horror-proper. Horror's signature monster leans romance on this shelf by two to one.</p>
+    <p>The <a href="https://www.amazon.com/gp/new-releases/books/49/">new-release chart</a> for the same node adds a footnote with a disclosure attached. The pack captured 14 of its 49 rows, and the nine highest-ranked — the rows with descriptions — all also sit on the bestseller top 50, so they are the bestseller list's newest rows seen again, not an independent sample; by the same four-bucket rule they run 1 horror-proper, 5 romance-adjacent, 2 literary/other, and 1 thriller. Only five captured rows (new-release ranks 19, 20, 37, 42, 45) are independent of the bestseller list, and three of those five are horror or horror-adjacent: <em>Other Worlds Than These: A Talisman Novel</em> (#20), <em>Queen of the Damned</em> (#37), and <em>The Library at Mount Char</em> (#42). That is a small positive note, and it comes with the same shape as the bestseller finding — the Talisman novel is a King-and-Straub estate continuation and <em>Queen of the Damned</em> is an Anne Rice reissue, so two of the three are lineage and backlist rather than new horror writing. Five rows from a 49-row chart we did not capture in full support a footnote, not a trend.</p>
+    <p><strong>Why a working horror author cares:</strong> the horror-proper slice of this shelf is not fourteen contemporary competitors; it is ten contemporaries plus Shelley, Stoker, and King twice. A new horror novel is being measured, on its own category page, against foundation texts a reader can get for nothing and a canon with decades of accumulated reviews — and the reader who came looking for horror is handed those first.</p>
+  </section>
+
+  <section id="s4">
+    <h2><span class="sec">THE NEIGHBORS:</span> The Shelf's Review Weight Sits With the Thrillers and the Romantasy</h2>
+    <p>Review counts are the one number a browsing reader sees beside every book on the shelf, and on this shelf they belong to the neighbors. The three heaviest rows are a thriller, a romantasy, and a thriller: <em>Pretty Girls: A Psychological Thriller</em> (#20) at 164,821 ratings, <em>The Serpent and the Wings of Night</em> (#16) at 163,619, and <em>Death Row</em> (#11) at 130,290, with <em>The Ashes and the Star-Cursed King</em> (#32) at 120,444 and <em>Hidden Pictures</em> (#21) at 112,421 rounding out the top five (all from the <a href="https://www.amazon.com/gp/bestsellers/books/49/">bestseller chart</a>, September 1). Review weight at the very top is split between the thriller and romance-adjacent buckets, and no horror-proper title is near it. The most-reviewed horror-proper title is <em>The Stand</em> at 58,607, and it is fifteenth on the shelf by that measure: fourteen rows out-review it — eight romance-adjacent (<em>The Serpent and the Wings of Night</em> 163,619; <em>The Ashes and the Star-Cursed King</em> 120,444; <em>Two Twisted Crowns</em> 108,509; <em>One Dark Window</em> 105,970; <em>Dire Bound</em> 83,565; <em>Glow</em> 70,814; <em>Phantasma</em> 65,293; <em>The Poison Daughter</em> 63,422), four thrillers (<em>Pretty Girls</em>, <em>Death Row</em>, <em>Hidden Pictures</em>, and <em>The Only One Left</em> at 62,498), and the two Dungeon Crawler Carl rows (82,347 and 63,277). Median review counts by bucket, rated rows only, tell the same story in one line: thriller-crossover 112,421 (n = 5), romance-adjacent 41,568 (n = 20), horror-proper 29,451 (n = 13), literary/other 13,461 (n = 9). Horror-proper is third of four. Treat those medians as an order-of-magnitude read rather than a ranking — the samples are small, and each bucket mixes new releases with decades-old backlist, which inflates the horror-proper median with <em>It</em> and <em>The Stand</em> and still leaves it third. Three rows carry no ratings at all, all of them new or forthcoming: <em>The Witches of Cambridge</em> (#10), <em>Burn of the Everflame</em> (#14), and <em>Dead Beat</em> (#40).</p>
+    <p>One author holds two of the five thriller rows. <em>Pretty Girls</em> and <em>The Secrets We Hide: A North Falls Thriller</em> (#26) are both Karin Slaughter titles — the second by its title string, which names her, the first by established identity — and the second is a book our <a href="https://reports.stevepieper.com/mystery/q4-2026/">mystery desk</a> took up in its own Q4 issue; here it matters only as a marker of how far the Horror node's tagging reaches into the crime shelf. The thriller-crossover contamination is small in count — five rows — and large in weight: those five carry the highest median review count of any bucket, and two of the three heaviest rows on the shelf — with the romantasy bucket holding the third.</p>
+    <p><strong>Why a working horror author cares:</strong> the social proof a browsing reader sees beside your book belongs to thrillers and romantasy. A horror launch's review count is compared, on the page where it lives, against six-figure totals earned by books that were never competing for the horror reader — so a few hundred ratings on a new horror novel is a smaller number than it looks, and the fourteen horror-proper rows are the ones to benchmark against, not the fifty.</p>
+  </section>
+
+  <section id="s5">
+    <h2><span class="sec">THE TIMES:</span> Zero of Fifteen, and What the Absence Tells a Horror Author</h2>
+    <p>No horror-proper title charts on the <a href="https://www.nytimes.com/books/best-sellers/2026/09/13/combined-print-and-e-book-fiction/">New York Times combined print and e-book fiction list</a> dated September 13, 2026. The rule is the same horror-proper definition as the shelf adjudication — dread, fear, or the uncanny as the dominant promise, no central romance arc, not a crime or psychological thriller — applied to each of the fifteen titles by its established identity, with the imprint irrelevant. Five are literary fiction: Allen Levi's <em>Theo of Golden</em> (#1, 39 weeks), Kathryn Stockett's <em>The Calamity Club</em> (#3), Caro Claire Burke's <em>Yesteryear</em> (#4), Ann Patchett's <em>Whistler</em> (#7), and Virginia Evans's <em>The Correspondent</em> (#12). Two are domestic fiction or domestic suspense: Liane Moriarty's <em>Big Little Truths</em> (#2, debut week) and Sally Hepworth's <em>Mad Mabel</em> (#9). Three are thrillers: Freida McFadden's <em>Brain Damage</em> (#6), James Patterson and James O. Born's <em>Delusional</em> (#8), and Jennifer Hillier's <em>Heart of Glass</em> (#13, debut week). Three are science fiction or LitRPG — Matt Dinniman's <em>Dungeon Crawler Carl</em> (#5) and <em>Carl's Doomsday Scenario</em> (#11) and Andy Weir's <em>Project Hail Mary</em> (#10) — and belong to our <a href="https://reports.stevepieper.com/science-fiction/q4-2026/">science-fiction desk</a>, which counts them under its own rule; this desk's zero is never added to that desk's three. T. Kingfisher's <em>Daggerbound</em> (#14, debut week, Bramble) is a fantasy romance by an author who has horror on her backlist, and the book is what gets counted, not the author. Colleen Hoover's <em>Verity</em> (#15, 99 weeks) is a dark romantic thriller with a gothic tint. The two nearest neighbors — <em>Heart of Glass</em>, a serial-killer thriller, and <em>Verity</em> — are thriller and romance, not horror. Zero of fifteen is the number, and no reading of the rule gets it to one.</p>
+    <p>The absence is the finding. The Times' combined list is the crossover list — the one that puts a book in front of the whole fiction-buying public — and this cycle horror is not on it while thrillers hold three slots and a romantic thriller is in its 99th week. Set that against the shelf sections above and the map of where horror sells this quarter is clear: on the Amazon subcategory, where it is a minority of its own chart, and on the backlist, where a 1978 novel and a 1986 novel are the genre's two most-reviewed rows. The route to horror readers this cycle runs through the category page and through catalog, not through the general-fiction list.</p>
+    <p><strong>Why a working horror author cares:</strong> do not plan a horror launch around a crossover-list breakout that the genre did not produce even once in this cycle's fifteen slots. Plan it around the two places horror demonstrably sells — the category shelf, where you compete with romantasy for the reader's eye and with the backlist for the reader's trust — and around the direct channels where you control who sees the book.</p>
+  </section>
+
+  <section id="s6">
+    <h2><span class="sec">HOOKS &amp; TROPES:</span> One Description in Nine Sells Fear</h2>
+    <p>The marketing copy tells the shelf story from the inside. Our pack carries the descriptions Amazon shows for the nine highest-ranked new releases in the Horror node — all nine also sit on the bestseller top 50, per the overlap note above. A description is a promise, not a receipt: it shows what a publisher decided a reader should want, and nothing about how many readers wanted it, so the counts below are counts of promises. Counting a description as selling dread when its lead promise is fear, vanishing, or the uncanny, exactly one of the nine qualifies: <em>The Unknown</em> (#3), whose copy opens "In 1926, five women disappeared from a remote island in Vermont. A century later it's happening again," and whose premise is a commune of spiritual mediums that vanished. Five of the nine are romance-driven — counted when the copy's promise is a love arc or a fated bond: <em>Crown Me Dead</em> (#2), which announces itself as "THE #1 BESTSELLING DARK ROMANTASY LEAVING READERS WORLDWIDE IN TEARS" and pitches a gravedigger's daughter seducing a king under the line "Wed me. Bed me. Slit my throat."; its finale <em>Crown Me Yours</em> (#4), "WRECK YOU, HEAL YOU, HAUNT YOU. Wed him. Bed him. Slit his throat. I killed the king," a forbidden love with Death; <em>Burn of the Everflame</em> (#6), where "Thrones will shatter, knees will bend" and "a heart without its mate will burn the world down"; Rachel Gillig's <em>The Knave and the Moon</em> (#1), sold on "the queen of gothic romantasy" returning; and Carissa Broadbent's <em>The Lion and the Deathless Dark</em> (#9), a human-versus-vampire war with a bounty hunter at its center, from a "NYT bestselling author and BookTok sensation." Four of the nine open on an author or blurb credential rather than on the hook — judged on what the first clause leads with: Gillig's title, Alice Hoffman's <em>The Witches of Cambridge</em> (#5, "from the bestselling author of Practical Magic," a secret society of witches at 1950s Radcliffe), Susanna Clarke's <em>Piranesi</em> (#7, led by Madeline Miller's "a miraculous and luminous feat of storytelling"), and Broadbent's. Karin Slaughter's <em>The Secrets We Hide</em> (#8) is "the next thrilling mystery in the North Falls series," a small-town murder for Sheriff Emmy Clifton — a thriller by its own copy. <em>Piranesi</em>, an infinite labyrinth house, is the one adjacent case: uncanny by premise, literary by pitch, and not counted as dread because its lead promise is a blurb, not a threat.</p>
+    <p>What stands out is the vocabulary. The romantasy copy on this shelf borrows horror's words — a slit throat, a haunting, Death as a love interest, a gravedigger's daughter — and attaches them to a romance promise. That is the contamination thesis in the publishers' own sentences: the genre's imagery is being used to sell a different genre's payoff, and the one description that promises fear promises it without a single horror keyword in its first line. The recurring trope across the five romance titles is forbidden or fated love with a lethal partner; the recurring device across the credential-led four is the author's name doing the work a hook would do.</p>
+    <p><strong>Why a working horror author cares:</strong> on this shelf your cover copy is competing with romantasy that sounds like horror, so sounding like horror is not enough to be found as horror. The one description in nine that sells dread does it with a date, a place, a number, and a recurrence — a concrete, checkable premise — and it is the highest-ranked horror novel on the chart. If you cannot lead with a name readers know, lead with the thing that happens; on this evidence it is the only hook in the nine that is not borrowed.</p>
+  </section>
+
+  <p class="src"><em>Sources and dates appear inline throughout. Amazon chart data captured September 1, 2026, from Amazon Best Sellers browse node 49 (Horror) — the bestseller top 50 and the 14 rows of the new-release chart the pack captured, with the marketing copy for its nine highest-ranked new releases. Amazon's author field is null across the pack, so author names on bestseller rows are our attribution from the title or series identity; the nine descriptions and the Times list name their own authors. New York Times ranking data from the combined print &amp; e-book fiction list dated September 13, 2026, via The New York Times Books API. Copyright (c) 2026 The New York Times Company. All Rights Reserved. Category market-conditions figures — Top-20 momentum, Top-20 demand, and competition — are from K-Lytics Kindle eBook Market Intelligence, Sub-Category Report, August 2026 (data as of 31 July 2026), used with attribution and limited to three discrete figures. Where we classify — the four-bucket dominant-engine rule, the pre-2000 backlist rule, the King and vampire clusters, the horror-proper reading of the Times list, and the hook counts — we print the rule at the point of use and the rule produces the count. Methods: this issue reads Amazon Horror node 49 bestsellers (50 rows) and new releases (14 of 49 rows captured), the NYT combined print &amp; e-book fiction list dated September 13, 2026 (15 rows), and K-Lytics HORROR category data (as of 31 July 2026), classifying each title by a printed dominant-engine rule that reproduces every published count. Genre Report Network analysis.</em></p>
+
   <div class="bottomcta">
     <p>Go deeper, stay informed, sell more copies:</p>
     <a class="btn" href="#subscribe">Subscribe</a>
@@ -115,8 +245,8 @@
 
 <footer>
   <p>© 2026 Polymath Consulting &amp; Publishing · <a href="https://stevepieper.com/">stevepieper.com</a> · Questions or corrections: <a href="mailto:reports@stevepieper.com">reports@stevepieper.com</a></p>
+  <p>Bestseller list data from The New York Times Books API. Copyright (c) 2026 The New York Times Company. All Rights Reserved. Amazon retail data retrieved via Rainforest API. K-lytics figures used with attribution by arrangement with K-lytics. All third-party estimates are labeled as such in the text.</p>
   <p>Subscriptions are free and double opt-in. We use your address to deliver Horror Quarterly and share a hashed (privacy-protected) copy with Meta to measure our advertising; we never sell your information. <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · Unsubscribe anytime with one click.</p>
-
   <details>
     <summary>About the $197,000 in testing</summary>
     <p>$197,000 spent by Polymath Consulting &amp; Publishing over a seven-month period (January–July 2026) to characterize the relative profitability of historically proven offers under the following advertising conditions:</p>
@@ -132,18 +262,9 @@
       <li>Meta conversion ads pointing to a privately owned web store, "Purchase" conversion event, restricted audience, restricted placements, no creative enhancements</li>
     </ul>
   </details>
-
 </footer>
 
 <script>
-  // consent_source records the page plus any UTM parameters that brought the visitor here.
-  const utm = [];
-  const q = new URLSearchParams(location.search);
-  for (const k of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term']) {
-    if (q.get(k)) utm.push(k + '=' + q.get(k));
-  }
-  const consentSource = ['horror-home'].concat(utm).join('|');
-
   document.getElementById('subform').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('subbtn');
@@ -153,7 +274,7 @@
     try {
       const r = await fetch('/api/subscribe', {
         method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({genre: 'horror', email, first_name: firstName, consent_source: consentSource})
+        body: JSON.stringify({genre: 'horror', email, first_name: firstName, consent_source: 'horror-issue-001'})
       });
       const j = await r.json();
       if (j.ok && j.state === 'confirmation-sent') btn.textContent = 'Check your inbox ✓';
@@ -162,13 +283,31 @@
     } catch { btn.textContent = 'Try again'; btn.disabled = false; }
   });
 
-  // Subscribe links: jump instantly to the very top (masthead form), no slow scroll
   document.querySelectorAll('a[href="#subscribe"]').forEach(a => {
     a.addEventListener('click', (e) => {
       e.preventDefault();
       window.scrollTo({top: 0, behavior: 'auto'});
       const em = document.querySelector('#subform input[type=email]');
       if (em) em.focus({preventScroll: true});
+    });
+  });
+
+  const topbar = document.querySelector('.topbar');
+  const masthead = document.querySelector('.masthead');
+  new IntersectionObserver(([entry]) => {
+    topbar.classList.toggle('show', !entry.isIntersecting);
+  }, {threshold: 0}).observe(masthead);
+
+  document.getElementById('archive').addEventListener('change', (e) => {
+    if (e.target.value) location.href = e.target.value;
+  });
+
+  const search = document.getElementById('issuesearch');
+  search.addEventListener('input', () => {
+    const q = search.value.trim().toLowerCase();
+    document.querySelectorAll('main section').forEach(sec => {
+      if (!q) { sec.classList.remove('hidden'); return; }
+      sec.classList.toggle('hidden', !sec.textContent.toLowerCase().includes(q));
     });
   });
 </script>

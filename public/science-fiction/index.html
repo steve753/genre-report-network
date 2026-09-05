@@ -2,31 +2,45 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="robots" content="noindex"><!-- remove at public launch -->
-<title>Science Fiction Quarterly — market intelligence for science fiction authors</title>
-<meta name="description" content="The business of the future, for the authors who write it. Free, quarterly, every claim cited.">
-<link rel="canonical" href="https://reports.stevepieper.com/science-fiction/">
+<title>Science Fiction Quarterly — Issue 001 · Q4 2026</title>
+<meta name="description" content="State of the Genre: series entries hold 30 of the 50 slots on Amazon's science-fiction bestseller chart and Dungeon Crawler Carl holds eight of them; three of the fifteen titles on the NYT combined fiction list are science fiction proper; and Andy Weir's two novels lead the shelf on review volume, with three 20th-century classics among the top eight.">
+<link rel="canonical" href="https://reports.stevepieper.com/science-fiction/q4-2026/">
 <style>
   :root{
-    --mast:#12151a; --mast-ink:#f5f2ea; --paper:#faf8f4; --ink:#1c1c1c; --ink-2:#444;
-    --accent:#0f7788; --accent-dark:#0b5a67; --muted:#857e72; --gold:#c1932b;
-    --rule:#e5e1d8; --col:42rem;
+    --ink:#1c1c1c; --ink-2:#444; --muted:#857e72;
+    --paper:#faf8f4; --panel:#f2eee6;
+    --mast:#12151a; --mast-ink:#f5f2ea;
+    --accent:#0f7788; --accent-dark:#0b5a67;
+    --context:#857e72; --rule:#e5e1d8; --gold:#c1932b;
+    --col:46rem;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
        color:var(--ink);background:var(--paper);line-height:1.7;font-size:1.05rem}
   a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:2px}
   a:hover{color:var(--accent)}
+
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--mast);color:var(--mast-ink);
+          border-bottom:1px solid var(--gold);padding:.5rem 1rem;
+          display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+          transform:translateY(-105%);transition:transform .25s ease}
+  .topbar.show{transform:translateY(0)}
+  .topbar .wordmark{font-weight:800;letter-spacing:.22em;font-size:.9rem;text-decoration:none;color:var(--mast-ink);white-space:nowrap}
+  .topbar .grow{flex:1}
+  .topbar select,.topbar input[type=search]{
+    background:#1d222a;color:var(--mast-ink);border:1px solid #333a44;border-radius:4px;
+    padding:.35rem .5rem;font-size:.85rem}
+  .topbar input[type=search]{width:11rem}
   .btn{display:inline-block;background:var(--accent);color:#fff;border:none;border-radius:4px;
        padding:.45rem .9rem;font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none}
   .btn:hover{background:var(--accent-dark);color:#fff}
 
-  .masthead{background:var(--mast);color:var(--mast-ink);padding:2.2rem 1.2rem 2.4rem;text-align:center;
-            border-bottom:2px solid var(--gold)}
+  .masthead{background:var(--mast);color:var(--mast-ink);padding:2.2rem 1.2rem 2.4rem;text-align:center}
   .masthead h1{margin:0;font-size:2rem;letter-spacing:.28em;font-weight:800}
   .masthead .tag{font-style:italic;opacity:.85;margin:.4rem 0 1.2rem}
   .capture{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
@@ -36,15 +50,15 @@
   .capture input[type=text]{min-width:10rem}
   .masthead .cadence{font-style:italic;opacity:.8;font-size:.9rem;margin-top:.8rem}
 
-  main{max-width:var(--col);margin:0 auto;padding:2.6rem 1.2rem 3.5rem}
+  main{max-width:var(--col);margin:0 auto;padding:2.4rem 1.2rem 4rem}
   .fromdesk{font-style:italic;color:var(--ink-2)}
   .kicker{font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:.9rem 0 .2rem}
-  h2{font-size:1.3rem;margin:0 0 1rem;letter-spacing:.02em}
-  ul.what{margin:0 0 1.4rem 1.2rem;padding:0}
-  ul.what li{margin:.6rem 0}
-  .promise{margin:0 0 1.8rem}
-  .firstissue{margin:0 0 2.2rem}
-  .fineprint{font-size:.85rem;color:var(--muted);border-top:1px solid var(--rule);padding-top:1.2rem}
+  .title{font-size:2.1rem;line-height:1.2;font-weight:800;margin:.1rem 0 1.4rem}
+  .lede{font-weight:800;text-transform:uppercase;letter-spacing:.02em}
+  h2{font-size:1.25rem;margin:2.6rem 0 .6rem;letter-spacing:.03em}
+  h2 .sec{color:var(--accent)}
+  .src{font-size:.85rem;color:var(--muted)}
+  section{scroll-margin-top:5.5rem}
 
   .offer{margin:2.4rem 0}
   .offer .label{font-size:.7rem;font-weight:800;letter-spacing:.14em;color:var(--muted);margin-bottom:.5rem}
@@ -53,6 +67,9 @@
   .offer .hook{font-size:1.15rem;font-weight:800;line-height:1.35;margin:0 0 .8rem}
   .offer .row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
   .offer .sub{font-size:.9rem;color:var(--ink-2);margin:0}
+
+  figure.databox{margin:1.6rem 0;padding:1.2rem 1.3rem;background:var(--panel);border-radius:6px}
+  figure.databox figcaption{font-size:.85rem;color:var(--muted);margin-top:.7rem}
 
   .bottomcta{margin:3rem 0 0;padding:1.6rem;background:var(--mast);color:var(--mast-ink);
              border-radius:6px;text-align:center}
@@ -64,9 +81,22 @@
   footer summary{cursor:pointer;font-weight:700}
   footer ul{margin:.5rem 0 0 1.1rem;padding:0}
   footer li{margin:.25rem 0}
+  .hidden{display:none}
+  mark{background:#f6e3a1}
 </style>
 </head>
 <body>
+
+<nav class="topbar" aria-label="Science Fiction Quarterly">
+  <a class="wordmark" href="/science-fiction/">SCIENCE&nbsp;FICTION&nbsp;QUARTERLY</a>
+  <span class="grow"></span>
+  <input type="search" id="issuesearch" placeholder="Search this issue…" aria-label="Search this issue">
+  <select id="archive" aria-label="Past issues">
+    <option value="">Archive</option>
+    <option value="/science-fiction/q4-2026/">Q4 2026 — Issue 001</option>
+  </select>
+  <a class="btn" href="#subscribe">Subscribe</a>
+</nav>
 
 <header class="masthead" id="subscribe">
   <h1>SCIENCE FICTION QUARTERLY</h1>
@@ -81,19 +111,24 @@
 
 <main>
   <p class="fromdesk">from the desk of Steve Pieper, Polymath Consulting &amp; Publishing.</p>
-  <p class="kicker">First issue in production</p>
+  <p class="kicker">State of the Genre · Q4 2026 · Nº 001</p>
+  <h1 class="title">Amazon's Science-Fiction Shelf Belongs to Franchises, Three of Fifteen NYT Fiction Titles Are Science Fiction, and Reader Response Still Runs to Weir and the Canon</h1>
 
-  <h2>Fifteen minutes a quarter on the business of writing science fiction.</h2>
+  <p class="lede">A read of Amazon's science-fiction shelf — browse node 16272, captured September 1, 2026 — and the New York Times combined print and e-book fiction list dated September 13, 2026, for the authors who write the genre.</p>
 
-  <ul class="what">
-    <li><strong>The decisions that touch your royalties</strong> — platform royalty changes, the Kindle Unlimited math, and retailer moves — explained while the deadlines are still ahead of you.</li>
-    <li><strong>What the quarter's bestselling new releases are actually selling</strong> — hooks, tropes, and blurb patterns — space opera to dystopian — pulled from the descriptions themselves, not from theory.</li>
-    <li><strong>The wider field</strong> — the genre's share of the bestseller lists, screen adaptations in the pipeline, and the convention dates worth booking.</li>
-  </ul>
+  <section id="s1">
+    <h2><span class="sec">THE MARKET:</span> A Crowded Category, Mid-Pack Demand, Low Prices</h2>
+    <p>The category-level numbers set the terms for everything the shelf shows below. Science Fiction is one of the most crowded corners of the Kindle store: about 523,662 competing titles, which ranks it 470th of 486 sub-categories for competition — only 16 sub-categories are more crowded. Demand is real but mid-pack: the category ranks 32nd of 486 for the sales volume of its Top-20 titles, with the average Top-20 title selling on the order of 223 copies per day, and it slipped 3 places month over month on that demand rank. And its bestsellers price low: an average Top-20 price of $7.02 places the category 320th of 486 on price, with a price floor of $0.99. Those three figures are the whole of what this issue takes from the category tables, and they are as of July 31, 2026. <em>Attribution: K-Lytics Kindle eBook Market Intelligence, Sub-Category Report, August 2026 (data as of 31 July 2026).</em></p>
+    <p>Read together, the three describe a discoverability problem rather than a demand problem. A field with more than half a million titles, a Top-20 that sells at a respectable but not exceptional rate, and a $7.02 average price is a field where the scarce resource is being found, not being wanted. The title-level data in the sections that follow shows how the shelf resolves that pressure: readers concentrate on long-running series and a handful of franchises, and on a backlist canon whose review counts run into six figures. In a category this saturated, accumulated series length and catalog reputation function as the discoverability advantage a new standalone does not have.</p>
+    <p><strong>Why a working science fiction author cares:</strong> you are launching into a category that only sixteen Kindle sub-categories out-crowd, at a price point readers expect to be low. Demand exists but is not exceptional, so the contest is for attention — and the next sections show what wins it: series depth, franchise weight, and decades of accumulated reviews.</p>
+  </section>
 
-  <p class="promise">Written for working science fiction authors. Every claim carries a citation, every figure names its source and date, and if a story doesn't matter to your career, it doesn't run.</p>
-
-  <p class="firstissue">Issue 001 is in research now; its permanent address is <a href="/science-fiction/q4-2026/">reports.stevepieper.com/science-fiction/q4-2026/</a>. For our fellow skeptics — to see exactly the standard it will meet: <a href="/thriller/aug-2026/">read a current issue from our thriller desk&nbsp;→</a></p>
+  <section id="s2">
+    <h2><span class="sec">THE SHELF:</span> Amazon's Science-Fiction Bestseller List Is a Franchise List</h2>
+    <p>Series entries hold 30 of the 50 slots on Amazon's <a href="https://www.amazon.com/gp/bestsellers/books/16272/">science-fiction bestseller chart</a> captured September 1, 2026 — 60.0%, against 20 standalones. Here is the rule that produced that number, applied to the title strings exactly as Amazon prints them: a row is a series entry if its title string carries an installment number in any form ("Book 1," "Book II," "Primal Hunter 15," "He Who Fights with Monsters 3") or a named book-series, saga, chronicle, or duology appended in parentheses or after a colon ("(Dungeon Crawler Carl)," ": The Silo Saga," ": Bobiverse," "(Backyard Starship Book 34)"). A row with neither marker is standalone under the rule, even where the book is in fact part of a series — and a colon-appended setting label with no installment number, or a genre tag such as ": A LitRPG Adventure," does not by itself qualify. Five rows fail the rule while belonging to series a reader would recognize: <em>Red Rising</em> (#7), <em>Iron Gold</em> (#22), and <em>Dark Age</em> (#29) are all Red Rising Saga entries whose titles omit the series name; <em>The Wicked and the Warped: Warhammer 40,000</em> (#27) carries a shared-universe label but no installment; and <em>The Primal Hunter: A LitRPG Adventure</em> (#41) is the first book of a series that only numbers its later volumes. Count those five and the series share rises to 35 of 50, 70.0%. The 60.0% figure is not an artifact of the box sets, either: three rows are collections rather than single novels (<em>The Big Book of Science Fiction</em> at #45, counted standalone; the Chronicles of Narnia audio collection at #49 and the Silo Series Collection at #50, counted series), and excluding all three from the base leaves series at 28 of 47, 59.6%.</p>
+    <p>Two authors hold the top of this chart, and one series holds most of it. Dungeon Crawler Carl — Matt Dinniman, Ace; our attribution from the title, since the Amazon author field is null across the pack — occupies 8 of the 50 rows: ranks 1, 2, 3, 4, 6, 14, 26, and 28. That is five of the top six slots, with <em>Project Hail Mary</em> at #5 the one interruption. Pierce Brown's Red Rising Saga is next: four rows name "Red Rising" in the title string (ranks 7, 9, 13, 33), and <em>Iron Gold</em> (#22) and <em>Dark Age</em> (#29) bring the saga to six rows by series knowledge. Together the two authors hold 14 of 50 slots — 12 on the title strings alone. Inside the top 10 the concentration is sharper still: 7 of the 10 are series entries by the strict rule (ranks 1, 2, 3, 4, 6, 9, 10), the three standalones being <em>Project Hail Mary</em> (#5), <em>Red Rising</em> (#7), and the MrBeast and James Patterson title <em>The Most Dangerous Games</em> (#8); admit the <em>Red Rising</em> near-miss and it is 8 of 10. Below the franchises the pattern repeats at smaller scale — four Silo Saga rows (ranks 16, 34, 36, 50), three Bobiverse rows (19, 23, 47), two each for Crescent City, The Primal Hunter, and He Who Fights with Monsters, and a twentieth Expeditionary Force installment at #35.</p>
+    <p><strong>Why a working science fiction author cares:</strong> the commercial top of this shelf is held by long-running series and by two authors. A standalone is competing for the 40% of slots the franchises do not occupy — and the rule that produced that 40% is generous to standalones, since five of the twenty are series books whose titles do not say so.</p>
+  </section>
 
   <aside class="offer" aria-label="From Polymath">
     <div class="label">FROM POLYMATH</div>
@@ -106,6 +141,101 @@
     </div>
   </aside>
 
+  <section id="s3">
+    <h2><span class="sec">THE CROSSOVER LIST:</span> Three of Fifteen NYT Fiction Titles Are Science Fiction</h2>
+    <p>The <a href="https://www.nytimes.com/books/best-sellers/2026/09/13/combined-print-and-e-book-fiction/">New York Times combined print and e-book fiction list</a> dated September 13, 2026, is a general fiction list, not a science-fiction one, and this desk counts only its own subset of the fifteen titles. The rule: a title is science fiction proper if its central speculative element is science, technology, space, aliens, or a future or systematically altered material world — as opposed to magic, a secondary fantasy world, or an unexplained device presented with no scientific frame. Applied to the fifteen descriptions, the rule yields exactly three: Matt Dinniman's <em>Dungeon Crawler Carl</em> (#5, 34 weeks on the list — aliens convert Earth into a dungeon game broadcast to a galactic civilization, and the game's mechanics are alien technology), Andy Weir's <em>Project Hail Mary</em> (#10, 64 weeks — interstellar survival with the science on the page), and Dinniman's <em>Carl's Doomsday Scenario</em> (#11, 5 weeks — the same alien-system premise). Two titles come close enough to name. Caro Claire Burke's <em>Yesteryear</em> (#4, 21 weeks) is the sharpest near-miss: its heroine wakes in 1855, and time travel is a classic science-fiction trope, but the device is unexplained and the book is marketed as book-club fiction, so under the rule as printed it stays out — not because time travel cannot be science fiction, but because nothing in this book's frame makes it so. T. Kingfisher's <em>Daggerbound</em> (#14, debut week) is secondary-world fantasy — SFF, not SF — and stays out on the fantasy clause. The remaining ten are thrillers, literary, and domestic fiction. Three of fifteen is the number; the rule does not stretch to four.</p>
+    <p>One note on the two Dinniman titles, since our <a href="https://reports.stevepieper.com/fantasy/q4-2026/">fantasy desk</a> counted the same two books in its Q4 issue under its own rule — the author's established primary genre and the book's marketing category. This desk reads the same premise as science fiction because the "game" is alien technology, not magic. Each desk prints its rule beside its count; the two counts overlap by design and must never be added together. What the fantasy desk does not have is the Amazon side of the story — the eight bestseller rows and five of the top six in the section above — which is why Dungeon Crawler Carl is a science-fiction shelf story here and a crossover footnote there.</p>
+    <p><strong>Why a working science fiction author cares:</strong> the list that puts an author in front of the whole fiction-buying public has room for the genre, but this cycle that room is one LitRPG phenomenon holding two slots and one hard-SF perennial in its 64th week. The mid-list science-fiction novel is not on it, and no near-miss on the list is a mid-list science-fiction novel either.</p>
+  </section>
+
+  <section id="s4">
+    <h2><span class="sec">READER RESPONSE:</span> The Most-Reviewed SF Titles Are Weir and the Canon</h2>
+    <p>Rank the bestseller top 50 by cumulative Amazon review count instead of by sales position and the shelf reorganizes around one author and the twentieth century. Andy Weir's <em>Project Hail Mary</em> leads with 278,813 ratings (4.7 stars), and his <em>The Martian</em> is second at 187,024 (4.6) — the two highest review counts on the chart belong to the same author, and his third novel, <em>Artemis</em>, sits at 52,641 (4.2). <em>The Handmaid's Tale</em> follows at 180,194, then <em>1984</em> at 126,016, <em>Dungeon Crawler Carl: Book 1</em> at 110,251, <em>Red Rising</em> at 109,775, <em>Dune</em> at 103,954, and <em>Dark Matter</em> at 92,017 (all figures from the <a href="https://www.amazon.com/gp/bestsellers/books/16272/">bestseller chart</a>, September 1). Three of those eight are 20th-century classics — by our first-publication-year classification, <em>The Handmaid's Tale</em> (1985), <em>1984</em> (1949), and <em>Dune</em> (1965) — and only two, <em>Project Hail Mary</em> and <em>Dungeon Crawler Carl: Book 1</em>, were first published in 2020 or later.</p>
+<figure class="databox">
+<svg viewBox="0 0 680 392" role="img" aria-labelledby="sf-chart-title sf-chart-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="sf-chart-title">Reader response: the most-reviewed science-fiction titles</title>
+<desc id="sf-chart-desc">Horizontal bar chart of cumulative Amazon ratings, in thousands, for the eight highest-review-count science-fiction-proper titles on the Amazon science-fiction bestseller top 50 as of September 1, 2026, excluding the two Crescent City romantasy crossovers. Project Hail Mary 278.8 thousand. The Martian 187.0 thousand. The Handmaid's Tale 180.2 thousand. 1984 126.0 thousand. Dungeon Crawler Carl Book 1 110.3 thousand. Red Rising 109.8 thousand. Dune 104.0 thousand. Dark Matter 92.0 thousand.</desc>
+<style>
+svg{--ch-ink:#222222;--ch-muted:#777777;--ch-grid:#e2ddd5;--ch-a:#0f7788;--ch-bg:transparent}
+:root[data-theme="dark"] svg{--ch-ink:#e6e1d8;--ch-muted:#a09a90;--ch-grid:#44403a;--ch-a:#4db6c7}
+svg text{font-family:Georgia,serif;fill:var(--ch-ink)}
+svg .chtitle{font-size:15px;font-weight:bold}
+svg .chlbl{font-size:12px}
+svg .chval{font-size:12px}
+svg .chaxis{font-size:10px;fill:var(--ch-muted)}
+svg .chnote{font-size:12px;font-style:italic}
+</style>
+<rect x="0" y="0" width="680" height="392" fill="var(--ch-bg)"/>
+<text class="chtitle" x="12" y="22">Reader response: the most-reviewed science-fiction titles</text>
+<g stroke="var(--ch-grid)" stroke-width="1">
+<line x1="210" y1="44" x2="210" y2="326"/>
+<line x1="343.3" y1="44" x2="343.3" y2="326"/>
+<line x1="476.7" y1="44" x2="476.7" y2="326"/>
+<line x1="610" y1="44" x2="610" y2="326"/>
+</g>
+<rect x="210" y="50" width="371.7" height="22" fill="var(--ch-a)"/>
+<text class="chlbl" text-anchor="end" x="200" y="66">Project Hail Mary</text>
+<text class="chval" text-anchor="start" x="588" y="66">278.8</text>
+<rect x="210" y="84" width="249.3" height="22" fill="var(--ch-a)"/>
+<text class="chlbl" text-anchor="end" x="200" y="100">The Martian</text>
+<text class="chval" text-anchor="start" x="466" y="100">187.0</text>
+<rect x="210" y="118" width="240.3" height="22" fill="var(--ch-a)"/>
+<text class="chlbl" text-anchor="end" x="200" y="134">The Handmaid's Tale</text>
+<text class="chval" text-anchor="start" x="457" y="134">180.2</text>
+<rect x="210" y="152" width="168.0" height="22" fill="var(--ch-a)"/>
+<text class="chlbl" text-anchor="end" x="200" y="168">1984</text>
+<text class="chval" text-anchor="start" x="384" y="168">126.0</text>
+<rect x="210" y="186" width="147.1" height="22" fill="var(--ch-a)"/>
+<text class="chlbl" text-anchor="end" x="200" y="202">Dungeon Crawler Carl: Book 1</text>
+<text class="chval" text-anchor="start" x="364" y="202">110.3</text>
+<rect x="210" y="220" width="146.4" height="22" fill="var(--ch-a)"/>
+<text class="chlbl" text-anchor="end" x="200" y="236">Red Rising</text>
+<text class="chval" text-anchor="start" x="363" y="236">109.8</text>
+<rect x="210" y="254" width="138.7" height="22" fill="var(--ch-a)"/>
+<text class="chlbl" text-anchor="end" x="200" y="270">Dune</text>
+<text class="chval" text-anchor="start" x="355" y="270">104.0</text>
+<rect x="210" y="288" width="122.7" height="22" fill="var(--ch-a)"/>
+<text class="chlbl" text-anchor="end" x="200" y="304">Dark Matter</text>
+<text class="chval" text-anchor="start" x="339" y="304">92.0</text>
+<line x1="210" y1="326" x2="610" y2="326" stroke="var(--ch-muted)" stroke-width="1"/>
+<g class="chaxis">
+<text text-anchor="middle" x="210" y="342">0</text>
+<text text-anchor="middle" x="343.3" y="342">100</text>
+<text text-anchor="middle" x="476.7" y="342">200</text>
+<text text-anchor="middle" x="610" y="342">300</text>
+<text text-anchor="middle" x="410" y="358">Cumulative Amazon ratings, thousands</text>
+</g>
+<text class="chnote" x="12" y="382">Two Weir novels lead; three of the eight are 20th-century classics.</text>
+</svg>
+<figcaption>Bars are Amazon ratings_total (cumulative review counts), Amazon Best Sellers browse node 16272 (Science Fiction), as of September 1, 2026, for the eight highest-review-count science-fiction-proper titles on the bestseller top 50, excluding the two Crescent City romantasy crossovers. Values shown in thousands, one decimal. The excluded Crescent City titles (House of Earth and Blood, 173,179; House of Sky and Breath, 139,173) out-review five of these eight but are romantasy shelved under the science-fiction node — see the genre-boundary section. Review volume is a cumulative lifetime signal, not a measure of current sales. Genre Report Network analysis.</figcaption>
+</figure>
+    <p>The canon is broader than the chart's top eight. Six rows on the bestseller top 50 are 20th-century classics — our classification, by first-publication year, since the pack carries no publication-date field, and every title in the count is listed with its year: <em>Dune</em> (1965, #42), <em>1984</em> (1949, #15), <em>Fahrenheit 451</em> (1953, #11), <em>Brave New World</em> (1932, #46), <em>Slaughterhouse-Five</em> (1969, #30), and <em>The Handmaid's Tale</em> (1985, #44). That is 6 of 50, 12.0% of the chart. Two other pre-2000 titles on the list — <em>A Game of Thrones</em> (1996) and the Chronicles of Narnia collection — are fantasy by our read and are excluded from the science-fiction canon count; the genre-boundary section takes them up.</p>
+    <p>The other end of the review scale is where new books live. Among the highest-ranked new releases, <em>The Primal Hunter 15</em> carries 6,424 ratings; <em>The Most Dangerous Games</em>, the #1 new release and the #8 bestseller, carries 28; <em>Under Story</em> carries 10. Three rows on the bestseller top 50 carry no ratings at all — <em>Scion</em> (#18), <em>The Infinite Extent: Bobiverse, Book 6</em> (#19), and <em>Last Ride: Expeditionary Force, Book 20</em> (#35) — and all three are recent releases that also chart as bestsellers, a sample overlap the next section spells out. A title can sit at #18 on this chart with zero reviews while the book at #24, <em>The Martian</em>, carries 187,024.</p>
+    <p><strong>Why a working science fiction author cares:</strong> on this shelf, review volume rewards catalog depth. A 1949 dystopia and a 2011 Mars novel out-review nearly everything published this year, so a new title's launch is measured against decades of accumulated reader response, not against the other books released the same month.</p>
+  </section>
+
+  <section id="s5">
+    <h2><span class="sec">THE PROGRESSION ENGINE:</span> LitRPG, Progression Fantasy, and Deep-Series Installments</h2>
+    <p>The fastest-moving part of this chart is a sub-genre that did not exist as a shelf label fifteen years ago. Counting a row when its title string carries the tag "A LitRPG Adventure," or when it is a Dungeon Crawler Carl title — LitRPG by genre, our classification, the series being untagged in its titles — the LitRPG and progression cluster holds 12 of the 50 bestseller slots, 24.0%. Four rows are self-labeled: <em>The Primal Hunter 15</em> (#10), <em>He Who Fights with Monsters 3</em> (#38), <em>The Primal Hunter</em> (#41), and <em>He Who Fights with Monsters 5</em> (#48). The other eight are the Dungeon Crawler Carl rows. The four tagged titles are as-printed; the eight-row Dinniman block is the one call in the count you have to take from us.</p>
+    <p>The <a href="https://www.amazon.com/gp/new-releases/books/16272/">new-release chart</a> for the same node shows what the progression readership is buying next, and it is not book one. Of the nine highest-ranked new releases, whose marketing copy the pack carries, 4 are numbered installments of Book 5 or later — the rule being that the title string must carry a numbered installment marker of Book 5 or higher: <em>The Primal Hunter 15</em> (#2), <em>The Infinite Extent: Bobiverse, Book 6</em> (#4), <em>An Ancient Light (Backyard Starship Book 34)</em> (#7), and <em>Past Tomorrows (Restarting the Apocalypse Book 5)</em> (#8). The other five carry no installment marker. Backyard Starship at Book 34 is the outer edge of the serial economy on this shelf; on the bestseller side, <em>Last Ride: Expeditionary Force, Book 20</em> (#35) makes the same point. One sampling disclosure applies to every new-release claim in this issue: the new-release chart's top seven rows all reappear on the bestseller top 50 — new-release ranks 1 through 7 sit at bestseller ranks 8, 10, 18, 19, 20, 27, and 43 (<em>The Most Dangerous Games</em>, <em>The Primal Hunter 15</em>, <em>Scion</em>, the Bobiverse installment, <em>Under Story</em>, the Warhammer title, and the Backyard Starship installment). Only new-release ranks 8 and 9, <em>Past Tomorrows</em> and <em>Starship Express</em>, are independent of the bestseller sample, so the "what's new" picture here is mostly the bestseller list's own newest rows.</p>
+    <p><strong>Why a working science fiction author cares:</strong> two of the strongest lanes on this shelf — LitRPG and long-run progression or space-opera serials — reward series length and release cadence over the standalone, and the readers in them will demonstrably follow a series into its double digits. If you write in either lane, the fifteenth book is not a liability; on this chart it is a #10.</p>
+  </section>
+
+  <section id="s6">
+    <h2><span class="sec">GENRE BOUNDARIES:</span> What Sits Under "Science Fiction" That Is Not</h2>
+    <p>The browse node that carries the genre's name is not a clean genre boundary. By our read — a row is flagged when the work is epic or secondary-world fantasy, romantasy, or a non-speculative thriller, judged from the title and known content, with anything the pack cannot support left uncounted and named — 5 of the 50 bestseller rows are not science fiction: Sarah J. Maas's two Crescent City novels, <em>House of Earth and Blood</em> (#17) and <em>House of Sky and Breath</em> (#21), which are romantasy; <em>A Game of Thrones</em> (#32), epic secondary-world fantasy; <em>The Chronicles of Narnia Complete Audio Collection</em> (#49), children's portal fantasy; and <em>The Most Dangerous Games</em> (#8), a survival-competition thriller. One more row, <em>Daggermouth (The Heart Duology Book 1)</em> at #12 with 48,196 ratings, is left uncounted rather than flagged: the pack carries no description for it, and we do not classify what we cannot check. The Crescent City rows are the notable case, because they out-review most of the shelf — 173,179 and 139,173 ratings, more than <em>1984</em> — while never competing for the science-fiction reader; that is why they are absent from the reader-response chart above. Our <a href="https://reports.stevepieper.com/romance/q4-2026/">romance desk</a> covers Maas as a romance story; here she is evidence that a science-fiction ranking is measured against books that were never science fiction.</p>
+    <p>The new-release side of the node carries the same mix. Its #1 is the MrBeast and James Patterson thriller; its #5, Chloe Benjamin's <em>Under Story</em>, is a GMA Book Club pick the pack notes as literary and speculative-adjacent; its #6 is a Warhammer 40,000 tie-in, a franchise product before it is a genre entry. Further down, <em>The Wildborn: A Sci-Fi Alien Romance (Starborn Book 1)</em> at #11 is a different kind of case — science-fiction romance is a genuine boundary genre with its own readership, not a contaminant, and it belongs in this node in a way the romantasy rows do not.</p>
+    <p><strong>Why a working science fiction author cares:</strong> your rank inside this node is measured against a romantasy blockbuster, a fantasy classic, and a celebrity thriller that were never competing for your reader. Treat a position on this chart as a position against the whole node's traffic, not against the genre — and treat the review counts of the books beside you the same way.</p>
+  </section>
+
+  <section id="s7">
+    <h2><span class="sec">HOOKS &amp; TROPES:</span> What the New-Release Copy Is Selling</h2>
+    <p>The marketing copy for the nine highest-ranked new releases — the pack's description blocks, read as positioning, meaning what each publisher chose to lead with, and never as bestseller evidence; seven of the nine also sit on the bestseller chart, per the overlap note above — is written mostly for readers who are already inside a series. Four of the nine sell the next installment of a running story and assume the reader knows the last one: <em>The Primal Hunter 15</em> opens with "Aftermath of the confrontation with Yip of Yore and Ell'Hakan" and promises that "the fight for the Milky Way approaches its end"; the Bobiverse copy is Bob's to-do list, ending "confront an old enemy; save the universe"; Backyard Starship's Van Tudor "faces simulacra — beings with no DNA"; and <em>Past Tomorrows</em> reports "Threshold broken, Harmonia pacified" before its civil war. That 4-of-9 count is the same deep-installment tally as the section above, adjudicated there on the title strings; the copy confirms what the numbering implies. Against those four, <em>Scion</em> is the one description in the nine built on a high-concept standalone premise: a "'John Wick meets Blade Runner'" cyberpunk thriller by James Islington whose hook is one line: "Legal assassination of 'lifers' — the ultrawealthy who bought immortality." It leads on comps and class stakes, not on continuity — and it is the #3 new release and #18 bestseller with no ratings yet, which says something about how far a name and a comp line carry. Two of the nine are set in Antarctica — the Patterson and MrBeast copy says "The Games begin in Antarctica" and <em>Under Story</em>'s biologist "hides as a dishwasher at McMurdo Station, Antarctica" — a coincidence worth a line, not a trend. The least conventional hook belongs to <em>Starship Express</em>, which frames its space stories as a dying psychiatric patient's tales and leaves an orderly "a shoebox of coded notes and a set of coordinates" — an aesthetic read, not a count. And the #1 new release sells a launch mechanic as much as a story: the Patterson and MrBeast copy carries a bonus-content preorder window running August 27 through September 30, 2026, which is a reason to order now rather than a reason to read.</p>
+    <p><strong>Why a working science fiction author cares:</strong> the copy at the top of the new-release chart is written for readers already inside a series, and it does not have to establish a world. A standalone's blurb has to do the work these do not — build a world and a reason to enter it from zero — and the one description in the nine that does that work is the one leading on a comp line and a class-stakes premise.</p>
+  </section>
+
+  <p class="src"><em>Sources and dates appear inline throughout. Amazon chart data captured September 1, 2026, from Amazon Best Sellers browse node 16272 (Science Fiction) — the bestseller top 50 and the new-release chart with the marketing copy for its nine highest-ranked new releases. New York Times ranking data from the combined print &amp; e-book fiction list dated September 13, 2026, via The New York Times Books API. Copyright (c) 2026 The New York Times Company. All Rights Reserved. Category market-conditions figures — competition, Top-20 demand rank, and price — are from K-Lytics Kindle eBook Market Intelligence, Sub-Category Report, August 2026 (data as of 31 July 2026), used with attribution and limited to three discrete figures. Where we classify or estimate — the series-share rule, the science-fiction-proper rule, the 20th-century backlist canon, the LitRPG cluster, the genre-boundary flags, and the reader-response chart — we state the method at the point of use. Author names are our attribution from the title string, as the Amazon author field is null. Methods: Amazon Best Sellers node 16272 (Science Fiction) as of September 1, 2026, the New York Times combined print &amp; e-book fiction list dated September 13, 2026, and category figures from K-Lytics Kindle eBook Market Intelligence, Sub-Category Report, August 2026 (data as of 31 July 2026). Genre Report Network analysis.</em></p>
+
   <div class="bottomcta">
     <p>Go deeper, stay informed, sell more copies:</p>
     <a class="btn" href="#subscribe">Subscribe</a>
@@ -115,8 +245,8 @@
 
 <footer>
   <p>© 2026 Polymath Consulting &amp; Publishing · <a href="https://stevepieper.com/">stevepieper.com</a> · Questions or corrections: <a href="mailto:reports@stevepieper.com">reports@stevepieper.com</a></p>
+  <p>Bestseller list data from The New York Times Books API. Copyright (c) 2026 The New York Times Company. All Rights Reserved. Amazon retail data retrieved via Rainforest API. K-lytics figures used with attribution by arrangement with K-lytics. All third-party estimates are labeled as such in the text.</p>
   <p>Subscriptions are free and double opt-in. We use your address to deliver Science Fiction Quarterly and share a hashed (privacy-protected) copy with Meta to measure our advertising; we never sell your information. <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · Unsubscribe anytime with one click.</p>
-
   <details>
     <summary>About the $197,000 in testing</summary>
     <p>$197,000 spent by Polymath Consulting &amp; Publishing over a seven-month period (January–July 2026) to characterize the relative profitability of historically proven offers under the following advertising conditions:</p>
@@ -132,18 +262,9 @@
       <li>Meta conversion ads pointing to a privately owned web store, "Purchase" conversion event, restricted audience, restricted placements, no creative enhancements</li>
     </ul>
   </details>
-
 </footer>
 
 <script>
-  // consent_source records the page plus any UTM parameters that brought the visitor here.
-  const utm = [];
-  const q = new URLSearchParams(location.search);
-  for (const k of ['utm_source','utm_medium','utm_campaign','utm_content','utm_term']) {
-    if (q.get(k)) utm.push(k + '=' + q.get(k));
-  }
-  const consentSource = ['science-fiction-home'].concat(utm).join('|');
-
   document.getElementById('subform').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('subbtn');
@@ -153,7 +274,7 @@
     try {
       const r = await fetch('/api/subscribe', {
         method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({genre: 'science-fiction', email, first_name: firstName, consent_source: consentSource})
+        body: JSON.stringify({genre: 'science-fiction', email, first_name: firstName, consent_source: 'science-fiction-issue-001'})
       });
       const j = await r.json();
       if (j.ok && j.state === 'confirmation-sent') btn.textContent = 'Check your inbox ✓';
@@ -162,13 +283,31 @@
     } catch { btn.textContent = 'Try again'; btn.disabled = false; }
   });
 
-  // Subscribe links: jump instantly to the very top (masthead form), no slow scroll
   document.querySelectorAll('a[href="#subscribe"]').forEach(a => {
     a.addEventListener('click', (e) => {
       e.preventDefault();
       window.scrollTo({top: 0, behavior: 'auto'});
       const em = document.querySelector('#subform input[type=email]');
       if (em) em.focus({preventScroll: true});
+    });
+  });
+
+  const topbar = document.querySelector('.topbar');
+  const masthead = document.querySelector('.masthead');
+  new IntersectionObserver(([entry]) => {
+    topbar.classList.toggle('show', !entry.isIntersecting);
+  }, {threshold: 0}).observe(masthead);
+
+  document.getElementById('archive').addEventListener('change', (e) => {
+    if (e.target.value) location.href = e.target.value;
+  });
+
+  const search = document.getElementById('issuesearch');
+  search.addEventListener('input', () => {
+    const q = search.value.trim().toLowerCase();
+    document.querySelectorAll('main section').forEach(sec => {
+      if (!q) { sec.classList.remove('hidden'); return; }
+      sec.classList.toggle('hidden', !sec.textContent.toLowerCase().includes(q));
     });
   });
 </script>
