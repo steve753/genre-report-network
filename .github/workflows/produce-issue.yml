@@ -101,7 +101,13 @@ jobs:
   produce:
     needs: plan
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    # Backstop only. The seats step has its own, shorter limit (below), and the
+    # runner's time budget stops at a seat boundary before either is reached,
+    # so a slow run fails through the normal path with a summary. GitHub
+    # reports a JOB-level timeout as "cancelled", which skips the publish job
+    # and writes no summary — this must stay at least 15 minutes above
+    # SEATS_STEP_TIMEOUT_MINUTES (npm test checks it before Prepare).
+    timeout-minutes: 270
     permissions:
       contents: read # this job can ship NOTHING — the gated publish job rebuilds and commits
     concurrency:
@@ -115,6 +121,9 @@ jobs:
     env:
       GENRE: ${{ matrix.genre }}
       MONTH: ${{ needs.plan.outputs.month }}
+      # The ONE number for the seats step: its GitHub timeout-minutes and the
+      # runner's time budget (this, less an 8-minute margin) both come from it.
+      SEATS_STEP_TIMEOUT_MINUTES: "250"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -127,6 +136,8 @@ jobs:
           node-version: 20
       - name: Install runner deps
         run: cd runner && npm install --no-audit --no-fund
+      - name: Runner self-tests (refuse to spend on a broken tree)
+        run: cd runner && npm test
       - name: Prepare (database credentials; runs BEFORE any seat)
         id: prepare
         env:
@@ -147,6 +158,12 @@ jobs:
       - name: Run seats (API key only; runner file-command channels neutralized)
         id: seats
         if: steps.prepare.outputs.outcome == 'ok'
+        # Backstop for a hung seat. A step timeout ends this step and fails the
+        # job rather than cancelling it, so the always() upload still runs and
+        # publish still evaluates its sibling desks (expected from GitHub's
+        # behaviour; not yet observed on this repo — confirm on the first run
+        # that hits it).
+        timeout-minutes: ${{ fromJSON(env.SEATS_STEP_TIMEOUT_MINUTES) }}
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           MODEL_RESEARCH: ${{ vars.MODEL_RESEARCH }}

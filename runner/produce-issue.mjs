@@ -28,6 +28,11 @@ import { fetchPack } from "./lib/pack.mjs";
 import { buildIssueHtml, writePages, validateDraft, chromeIsIssuePage, PERIOD_DIR } from "./lib/pages.mjs";
 import { readJson, writeFile, parseVerdict, permalinkFor, currentMonthDate, log } from "./lib/util.mjs";
 import { containmentHits, extractLines, quarantine } from "./lib/containment.mjs";
+import { makeBudget, budgetMinutesFromEnv } from "./lib/budget.mjs";
+
+// The seats step's GitHub time limit runs from roughly here; the time budget
+// counts from this instant, not from the first seat.
+const PROCESS_STARTED_MS = Date.now();
 
 const args = Object.fromEntries(
   process.argv.slice(2).map((a) => {
@@ -153,6 +158,9 @@ function skip(reason) {
 
 // ---------------------------------------------------------------------------
 async function phaseSeats() {
+  // Refuses before any spend when the step's time limit is not supplied.
+  const budget = makeBudget({ budgetMinutes: budgetMinutesFromEnv(), startedAtMs: PROCESS_STARTED_MS });
+  log(`time budget: ${budget.remaining().toFixed(1)} min for the seats phase`);
   const { models, prompt, runSeat } = await import("./lib/agents.mjs");
   const M = models();
   const usage = [];
@@ -160,7 +168,9 @@ async function phaseSeats() {
   const sdkVersion = readSdkVersion();
 
   async function seat(name, model, promptText, tools) {
+    const t0 = Date.now();
     const { usage: u } = await runSeat({ seat: name, model, promptText, cwd: ws, tools });
+    if (/^adversary-r\d+$/.test(name)) budget.record("adversary", Date.now() - t0);
     usage.push({ seat: name, model, ...u });
     writeFile(path.join(priv, "usage.json"), JSON.stringify(usage, null, 2));
     // Post-hoc guard: it cannot bound a single seat's spend mid-flight, but a
@@ -208,7 +218,13 @@ async function phaseSeats() {
   let round = 0;
   let released = false;
   const roundHistory = [];
+  let stoppedForTime = null; // set when the time budget refuses the next seat
   while (round < ROUNDS_MAX) {
+    const canReview = budget.canStartReview();
+    if (!canReview.ok) {
+      stoppedForTime = `time budget: ${canReview.remaining.toFixed(1)} min left before adversary round ${round + 1}, which needs about ${canReview.need.toFixed(1)} min with the pages and layout steps`;
+      break;
+    }
     round += 1;
     await seat(`adversary-r${round}`, M.adversary, prompt("adversary", { genre, round }), FULL);
     const reportPath = path.join(priv, `adversary-round${round}.md`);
@@ -226,15 +242,25 @@ async function phaseSeats() {
     if (!clean) {
       // A clean round below the minimum goes straight to the confirming
       // round — no fixes pass against a draft the adversary just cleared.
+      // A fix pass is only started if the review that judges it also fits.
+      const canFix = budget.canStartFixes();
+      if (!canFix.ok) {
+        stoppedForTime = `time budget: ${canFix.remaining.toFixed(1)} min left after adversary round ${round}; a fix pass plus the review that judges it needs about ${canFix.need.toFixed(1)} min`;
+        break;
+      }
+      const fixStarted = Date.now();
       await seat(`writer-fixes-r${round}`, M.writer, prompt("writer-fixes", { round }), WRITE_ONLY);
       await validateOrRepair(`after fixes round ${round}`);
+      budget.record("fixes", Date.now() - fixStarted); // includes any repair seat
     }
   }
   writeFile(path.join(priv, "rounds.json"), JSON.stringify(roundHistory, null, 2));
   if (!released) {
-    writeSummary({ ok: false, reason: "verification did not reach RELEASE within the round cap", roundHistory, sdk_version: sdkVersion });
+    const reason = stoppedForTime || "verification did not reach RELEASE within the round cap";
+    writeSummary({ ok: false, reason, roundHistory, time_budget: budget.snapshot(), sdk_version: sdkVersion });
     guardKlyticsQuarantine();
-    log("FAILED verification — escalating per the failure policy");
+    console.log(`::error title=${genre} ${monthDate} not released::${reason}`);
+    log(`FAILED verification (${reason}) — escalating per the failure policy`);
     process.exit(2);
   }
 

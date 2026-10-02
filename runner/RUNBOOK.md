@@ -106,6 +106,18 @@ Cowork production trigger exists or should be created (DR-0168).
   still publish — each publish leg checks its own artifact and skips absent
   or failed desks. Skips print a `::notice::` on the run page, so a skipped
   desk is visible, never silent.
+- Time limits nest, and the innermost one is the runner's own: the seats
+  phase gets a budget of `SEATS_STEP_TIMEOUT_MINUTES` (job env, 250) less 8
+  minutes, and refuses to start an adversary round, or a fix pass, that
+  cannot finish along with the review that judges it and the pages/layout
+  tail. It then fails the normal way: `summary.json` gives the time reason
+  and the rounds so far, and an `::error::` annotation shows it on the run
+  page. The seats step's own `timeout-minutes` (the same 250) is the backstop
+  for a hung seat, and the job's 270 is the last resort. A JOB-level timeout
+  is the one failure that writes no summary: GitHub reports it as cancelled,
+  which also skips publish (measured on the thriller shakedown, run
+  37050723376, 2026-10-02). `npm test` runs before Prepare on every run and
+  refuses a workflow whose limits do not nest.
 - Anything unpublished by EOD on the 2nd escalates to Steve with the
   adversary's last verdict — the failed run's email from GitHub plus the
   artifacts are the escalation payload.

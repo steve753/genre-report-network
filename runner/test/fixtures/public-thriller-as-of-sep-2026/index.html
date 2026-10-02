@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="robots" content="noindex"><!-- remove at public launch -->
+<title>Thriller Monthly — Issue 002 · September 2026</title>
+<meta name="description" content="ITW&#39;s extended Thriller Awards deadline, July&#39;s falling KU page rate, the $12.99 box-set ceiling, a three-adaptation September 16, and what the category&#39;s new releases are selling.">
+<link rel="canonical" href="https://reports.stevepieper.com/thriller/sep-2026/">
+<style>
+  :root{
+    --ink:#1a1d21; --ink-2:#4a4f56; --muted:#6e747c;
+    --paper:#fcfcfb; --panel:#f4f2ee;
+    --mast:#12151a; --mast-ink:#f5f2ec;
+    --accent:#a31621; --accent-dark:#7e0f18;
+    --context:#857e72; --rule:#e2ddd5; --gold:#c1932b;
+    --col:46rem;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+       color:var(--ink);background:var(--paper);line-height:1.7;font-size:1.05rem}
+  a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:2px}
+  a:hover{color:var(--accent)}
+
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--mast);color:var(--mast-ink);
+          border-bottom:1px solid var(--gold);padding:.5rem 1rem;
+          display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+          transform:translateY(-105%);transition:transform .25s ease}
+  .topbar.show{transform:translateY(0)}
+  .topbar .wordmark{font-weight:800;letter-spacing:.22em;font-size:.9rem;text-decoration:none;color:var(--mast-ink);white-space:nowrap}
+  .topbar .grow{flex:1}
+  .topbar select,.topbar input[type=search]{
+    background:#1d222a;color:var(--mast-ink);border:1px solid #333a44;border-radius:4px;
+    padding:.35rem .5rem;font-size:.85rem}
+  .topbar input[type=search]{width:11rem}
+  .btn{display:inline-block;background:var(--accent);color:#fff;border:none;border-radius:4px;
+       padding:.45rem .9rem;font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none}
+  .btn:hover{background:var(--accent-dark);color:#fff}
+
+  .masthead{background:var(--mast);color:var(--mast-ink);padding:2.2rem 1.2rem 2.4rem;text-align:center}
+  .masthead h1{margin:0;font-size:2rem;letter-spacing:.28em;font-weight:800}
+  .masthead .tag{font-style:italic;opacity:.85;margin:.4rem 0 1.2rem}
+  .capture{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+  .capture input{padding:.55rem .8rem;border-radius:4px;border:1px solid #3a414b;
+    background:#fff;color:var(--ink);font-size:.95rem}
+  .capture input[type=email]{min-width:16rem}
+  .capture input[type=text]{min-width:10rem}
+  .masthead .cadence{font-style:italic;opacity:.8;font-size:.9rem;margin-top:.8rem}
+
+  main{max-width:var(--col);margin:0 auto;padding:2.4rem 1.2rem 4rem}
+  .fromdesk{font-style:italic;color:var(--ink-2)}
+  .kicker{font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:.9rem 0 .2rem}
+  .title{font-size:2.1rem;line-height:1.2;font-weight:800;margin:.1rem 0 1.4rem}
+  .lede{font-weight:800;text-transform:uppercase;letter-spacing:.02em}
+  h2{font-size:1.25rem;margin:2.6rem 0 .6rem;letter-spacing:.03em}
+  h2 .sec{color:var(--accent)}
+  .src{font-size:.85rem;color:var(--muted)}
+  section{scroll-margin-top:5.5rem}
+
+  .offer{margin:2.4rem 0}
+  .offer .label{font-size:.7rem;font-weight:800;letter-spacing:.14em;color:var(--muted);margin-bottom:.5rem}
+  .offer .card{border:1px solid var(--rule);border-left:4px solid var(--accent);border-radius:6px;
+               padding:1.1rem 1.3rem;background:#fff}
+  .offer .hook{font-size:1.15rem;font-weight:800;line-height:1.35;margin:0 0 .8rem}
+  .offer .row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+  .offer .sub{font-size:.9rem;color:var(--ink-2);margin:0}
+
+  figure.slotshare{margin:1.6rem 0;padding:1.2rem 1.3rem;background:var(--panel);border-radius:6px}
+  figure.slotshare figcaption{font-size:.85rem;color:var(--muted);margin-top:.7rem}
+  .statrow{display:flex;align-items:baseline;gap:.9rem;flex-wrap:wrap;margin-bottom:.6rem}
+  .stat{font-size:2.6rem;font-weight:800;color:var(--accent);line-height:1}
+  .statlab{font-size:.95rem;color:var(--ink-2)}
+  .unitlabels{display:flex;gap:1.4rem;font-size:.85rem;margin-top:.5rem}
+  .swatch{display:inline-block;width:.75rem;height:.75rem;border-radius:2px;margin-right:.35rem;vertical-align:-1px}
+
+  .bottomcta{margin:3rem 0 0;padding:1.6rem;background:var(--mast);color:var(--mast-ink);
+             border-radius:6px;text-align:center}
+  .bottomcta p{font-weight:700;font-size:1.1rem;margin:0 0 1rem}
+  .bottomcta .btn.ghost{background:#3d0000;border:1px solid var(--gold);color:var(--mast-ink)}
+  footer{border-top:1px solid var(--rule);margin-top:3rem;padding:1.6rem 1.2rem 3rem;
+         max-width:var(--col);margin-left:auto;margin-right:auto;font-size:.85rem;color:var(--muted)}
+  footer details{margin-top:1rem}
+  footer summary{cursor:pointer;font-weight:700}
+  footer ul{margin:.5rem 0 0 1.1rem;padding:0}
+  footer li{margin:.25rem 0}
+  .hidden{display:none}
+  mark{background:#f6e3a1}
+</style>
+</head>
+<body>
+
+<nav class="topbar" aria-label="Thriller Monthly">
+  <a class="wordmark" href="/thriller/">THRILLER&nbsp;MONTHLY</a>
+  <span class="grow"></span>
+  <input type="search" id="issuesearch" placeholder="Search this issue…" aria-label="Search this issue">
+  <select id="archive" aria-label="Past issues">
+    <option value="">Archive</option>
+    <option value="/thriller/sep-2026/">September 2026 — Issue 002</option>
+    <option value="/thriller/aug-2026/">August 2026 — Issue 001</option>
+  </select>
+  <a class="btn" href="#subscribe">Subscribe</a>
+</nav>
+
+<header class="masthead" id="subscribe">
+  <h1>THRILLER MONTHLY</h1>
+  <p class="tag">The business of suspense, for the authors who write it.</p>
+  <form class="capture" id="subform">
+    <input type="text" name="first_name" autocomplete="given-name" placeholder="First name (optional)" aria-label="First name (optional)">
+    <input type="email" name="email" required placeholder="you@example.com" aria-label="Email address">
+    <button class="btn" type="submit" id="subbtn">Subscribe free</button>
+  </form>
+  <p class="cadence">Every claim cited, every figure sourced. Published monthly.</p>
+</header>
+
+<main>
+  <p class="fromdesk">from the desk of Steve Pieper, Polymath Consulting &amp; Publishing.</p>
+  <p class="kicker">Issue of September 2026 · Nº 002</p>
+  <h1 class="title">Three Days to a Free Awards Deadline, the KU Rate Slides Again, and September 16 Gets Crowded</h1>
+
+  <p class="lede">If you published a thriller before August 1, you have until Sunday to enter it for one of the genre's major awards — with no entry fee, if your free ITW membership application clears.</p>
+  <p>More below, along with the Kindle Unlimited number for your fall spreadsheet, what the new $12.99 ceiling means for a finished series, a three-adaptation collision on September 16, and the deadlines with real money attached. But first: Sunday.</p>
+
+  <section id="s1">
+    <h2><span class="sec">THE HEADLINE:</span> ITW Extended Its Thriller Awards Deadline to September 6 — Indies Enter Free</h2>
+    <p>On the <a href="https://thrillerwriters.org/thriller-awards/">International Thriller Writers awards page</a>: "Works published on or before July 31, 2026 must be submitted by August 31, 2026 (Extended To September 6, 2026)." That is this Sunday. Works published August 1 or later have until October 31 — "No submissions will be accepted after October 31, 2026." Six categories are open for the 2027 Thriller Awards, including Best Audiobook; finalists announce in early February 2027, winners at the ThrillerFest banquet on May 1, 2027.</p>
+    <p>The part that matters for this readership, from <a href="https://thrillerwriters.org/faq-for-awards/">ITW's awards FAQ</a>: "Self-published novels, short stories, and audiobooks are eligible for the 2027 Thriller Awards provided the author is an ITW Active member." And Active membership is not a paywall: <a href="https://thrillerwriters.org/about-itw/how-to-join/">ITW's membership page</a> recommends earnings above $5,000 in the previous 12 calendar months, with proof of earnings, for consideration — ITW reviews applications rather than applying an automatic bar — and states plainly that "Membership is free." If your application clears, ITW's pages list no entry fee — the deadline is the only cost we can find.</p>
+    <p>One inconsistency, so you don't trip on it: ITW's own FAQ page still shows the un-extended August 31 date. The awards page carries the extension; treat it as governing and submit today rather than litigating the difference on September 7.</p>
+  </section>
+
+  <section id="s2">
+    <h2><span class="sec">YOUR MONEY:</span> A Bigger KU Fund Paid Thriller Pages Less in July</h2>
+    <p><a href="https://reports.stevepieper.com/thriller/aug-2026/">Our August issue</a> reported the June Kindle Unlimited page rate at $0.004615 and called the trend mildly down. The July number ends the "mildly." Per <a href="https://www.writtenwordmedia.com/kdp-global-fund-payouts/">Written Word Media's KDP payout tracker, updated August 18</a>, July's US per-page rate is $0.004221 — an 8.5% drop from June, the steepest month-over-month fall the tracker shows anywhere in 2026, and 13.6% below May's high of $0.004888. These are tracked rather than published figures: Amazon announces the fund but not the rate, which trackers derive, and we found no second tracker with July posted.</p>
+    <p>The denominator is the story. Amazon did not shrink the pot — <a href="https://www.writtenwordmedia.com/kdp-global-fund-payouts/">the same tracker shows the global fund rising from $63.6M in June to $67.6M in July</a>, up 6.3%. A bigger fund paying a smaller rate means total pages read grew faster than the money behind them: you are competing with more borrowed pages, not less cash. In thriller terms, a full read-through of a 400-KENP novel now returns about $1.69 in the US marketplace, against the roughly $1.85 we printed last month. Across 500 full reads, that is a $79 difference that arrived without any change in your writing, your ads, or your covers. The tracker has not posted an August rate; as of September 3 we found none elsewhere either.</p>
+  </section>
+
+  <aside class="offer" aria-label="From Polymath">
+    <div class="label">FROM POLYMATH</div>
+    <div class="card">
+      <p class="hook">Author-Direct Sales: The guy who told you to wait just spent $197k proving himself wrong.</p>
+      <div class="row">
+        <a class="btn" href="https://stevepieper.com/">Learn More</a>
+        <p class="sub">Testing details in the disclosure at the bottom of this page.</p>
+      </div>
+    </div>
+  </aside>
+
+
+  <section id="s3">
+    <h2><span class="sec">YOUR MONEY:</span> The $12.99 Ceiling Is a Box-Set Raise With No Published Data We Can Find</h2>
+    <p>Amazon's July 7 move gets its thriller reading, because a completed series is the exact shape the change rewards. Per <a href="https://kdp.amazon.com/en_US/help/topic/G200634560">KDP's eBook List Price Requirements page</a>, a box set can now carry a $12.99 price on Amazon.com and keep the 70% royalty; the previous $9.99 ceiling had stood since the band's creation in 2010 (<a href="https://techcrunch.com/?p=137316">TechCrunch's contemporaneous report</a>) — a limit the <a href="https://authorsguild.org/news/statement-on-amazon-kdp-raising-70-percent-royalty-ceiling/">Authors Guild</a> said "put authors of longer works, box sets, and specialized nonfiction at a disadvantage." Our arithmetic from <a href="https://kdp.amazon.com/en_US/help/topic/G200634500">KDP's published royalty terms</a> (70% of list price net of US delivery at $0.15/MB — that is, 0.70 × (price − $0.45) on a 3MB file): a 3MB three-book omnibus at $9.99 netted about $6.68; at $12.99 it now nets about $8.78 — $2.10 more per sale, up 31%. The same $12.99 price before July 7 sat in the 35% band and paid about $4.55.</p>
+    <p>Set that against s2 and a portfolio question falls out: one $12.99 box-set sale now returns roughly what 5.2 full KU read-throughs of a single novel return. That is not an argument for leaving Kindle Unlimited — page reads ride a discovery engine a bundle does not have — but it is an argument for asking which titles are earning their exclusivity. What we found no published market evidence of is the response: <a href="https://www.builtwritten.com/blog/amazon-changed-book-pricing-rules-2026">Built &amp; Written's July 31 analysis (updated August 12)</a> identifies bundles as the beneficiary — "That same bundle can now sit anywhere up to $12.99 and keep the full 70% royalty" — but publishes no data on repricing or unit volume. Eight weeks in, that gap is the story. Run the test on your own backlist and you will know more about your list than any published analysis currently offers.</p>
+  </section>
+
+  <section id="s4">
+    <h2><span class="sec">ON SCREEN:</span> September 16 Is a Three-Title Collision — Plan Around It, Not Inside It</h2>
+    <p>Our August issue flagged the <em>Reacher</em> Season 4 finale for September 16. It is now a three-title collision. <a href="https://www.aboutamazon.com/news/entertainment/prime-video-reacher-how-to-watch">Amazon's own viewing guide</a> has Season 4 dropping weekly through a September 16 finale; the same day, <a href="https://press.amazonmgmstudios.com/us/en/press-release/prime-video-releases-ineagleyi-official-trailer-st">Amazon MGM Studios releases all eight episodes of <em>Neagley</em></a> — a <em>Reacher</em>-universe spin-off, in more than 240 countries and territories; and in-window, <a href="https://www.apple.com/tv-pr/news/2026/08/apple-tv-debuts-enthralling-trailer-for-season-six-of-emmy-and-bafta-award-winning-espionage-drama-slow-horses-starring-academy-award-winner-sir-gary-oldman/">Apple TV announced</a> that <em>Slow Horses</em> season six — from Mick Herron's Slough House novels — premieres globally the same Wednesday. Two more book-derived series bracket the date: <a href="https://www.apple.com/tv-pr/news/2026/05/apple-tv-unveils-first-look-at-gripping-new-thriller-last-seen-starring-patrick-brammall-and-sets-global-premiere-for-wednesday-september-9-2026/"><em>Last Seen</em> (from Ryan David Jahn's <em>The Dispatcher</em>) on September 9</a>, and the Hiaasen-derived <em>R.J. Decker</em> on September 15 (per <a href="https://bookriot.com/mystery-and-thriller-adaptations-september-2026/">Book Riot's September adaptation roundup</a>). Our working hypothesis from August stands, restated as a hypothesis: premiere windows tend to lift attention on adjacent comps, so Child, Herron, and espionage-adjacent targeting is worth testing the week of the 16th — against your own baseline.</p>
+    <p>And the backlist flywheel now has a number attached, with its caveats attached too. Netflix's <a href="https://www.netflix.com/tudum/top10/most-popular/tv">most-popular ranking</a> shows the Harlan Coben limited series <em>I Will Find You</em> at 117.5 million views, sixth all-time among English-language TV — up from 101.8 million when <a href="http://about.netflix.com/en/news/i-will-find-you-tracks-down-most-popular-list">Netflix's July 28 announcement</a> quoted Grand Central's Beth de Guzman: "Since the series announcement and teaser trailer drop on June 1, sales of <em>I Will Find You</em> have increased over 500%" — for a novel published three years earlier. A publisher-stated figure with no published baseline, quoted by the platform with an interest in it; the direction, not the precision, is the lesson.</p>
+  </section>
+
+  <section id="s5">
+    <h2><span class="sec">THE CLOCK &amp; THE CALENDAR:</span> 119 Days on Audible, 27 on Bouchercon's Price</h2>
+    <p>The Audible clock from <a href="https://reports.stevepieper.com/thriller/aug-2026/">our August headline</a> keeps running with nothing new from the company: we checked the <a href="https://www.acx.com/mp/blog">ACX blog index</a>, the Audible newsroom, and the Authors Guild feed on September 3 and found no statement dated inside our window — the newest ACX post still reads April 28. <a href="https://www.audible.com/about/newsroom/audibles-new-royalty-model-more-opportunities-for-authors-and-publishers">Audible's newsroom page</a> states the position plainly: "The legacy model will be discontinued at year-end, and all creators will need to enroll their titles on our new model for continued distribution." That is 119 days out if "year-end" means December 31 — Audible has published no calendar day; we are assuming the obvious one. Robin Sullivan's <a href="https://www.change.org/p/convince-audible-to-revise-its-new-royalty-model">Change.org petition</a> read 30,367 signatures on September 3; we have no in-window baseline, so we make no claim about its growth rate.</p>
+    <p>Nearer money: <a href="https://bouchercon2026.com/registration/">Bouchercon 2026 registration</a> lists exactly one rate — $260 USD, good through September 30 — with no later band published; the <a href="https://bouchercon2026.com/anthony-awards/">Anthony Awards</a> require attendance to vote on the final ballot, ceremony October 24. Killer Nashville ran <a href="https://www.killernashville.com/schedule/">August 20–23</a> and, per an <a href="https://pjmedia.com/amy-denton/2026/08/26/the-best-writing-conference-youve-never-heard-of-n4956551">attendee account</a>, sold out its conference hotel "for only the second time"; the Claymore and Silver Falchion winners were awarded but not yet posted to a citable source as of September 3, so we name none. Two awards did land in-window with sources: the <a href="https://mysteryreadersinc.blogspot.com/2026/08/2026-hammett-prize-winner.html">Hammett Prize went to Ron Currie's <em>The Savage Noble Death of Babs Dionne</em></a>, and the <a href="https://mysteryreadersinc.blogspot.com/2026/08/ned-kelly-awards-short-lists-australian.html">Ned Kelly Best Crime Fiction shortlist</a> includes Sally Hepworth's <em>Mad Mabel</em> — the same title our August issue clocked at #15 on the NYT list. Booking forward: <a href="https://bouchercon2027.com/">Bouchercon 2027 is Washington, D.C., September 1–5</a>, with Laura Lippman receiving Lifetime Achievement honors.</p>
+    <p>---</p>
+  </section>
+
+  <section id="s6">
+    <h2><span class="sec">HOOKS &amp; TROPES:</span> What This Month's New Releases Are Selling</h2>
+    <p>Nine descriptions, harvested from Amazon's Mystery, Thriller &amp; Suspense new-release rack via Rainforest API on September 3. Small sample, stated plainly: these patterns describe nine descriptions, not the genre wholesale. <strong>The isolation trap held its grip</strong> — and this month it is the new entries doing the holding: Noelle W. Ihli's <em>The Last to Drown</em> strands twenty strangers on eighty-four miles of whitewater ("Five days. Twenty strangers. No way out."), the MrBeast–James Patterson collaboration opens its competition "in Antarctica, where one wrong step on the ice kills you," and Loreth Anne White's <em>The Black Orchid</em> — which appeared in our August sample as a pre-release — published September 1, holds the #6 slot in our nine, and is still selling a doomed maiden voyage: nine guests, a catastrophic storm, a sinking ("By invitation only, nine elite guests board the luxurious Black Orchid for its maiden voyage… Not all of them will survive."). <strong>The countable hook</strong> is the month's sharpest craft pattern, though it rarely gets the first line: Ihli's description reaches it immediately after a blurb, the MrBeast–Patterson description gets there after a purchase-window offer ("A thousand strangers receive the invitation. One hundred make the cut."), and White's opens on a count of nine guests before naming anyone. The sharpest version of the hook is not in a description at all — it is in the Amazon title of the MrBeast–Patterson book: "A secret competition. 100 players. $1 billion. ARE YOU THE ONE?"</p>
+    <p><strong>Brand-stacking is the other story.</strong> The top slot belongs to Liane Moriarty's <em>Big Little Truths</em>, carrying "Reese's Book Club" in its Amazon title itself and a blurb from Freida McFadden; the MrBeast–Patterson entry stacks "the world's #1 creator" against "the world's #1 bestselling author" and embeds a purchase-window bonus-content offer directly in the book description — retail mechanics living where the hook used to. Series entries take at least four of nine slots (Martini Club #3, North Falls #2, a Michael Bennett, plus the <em>Big Little Lies</em> sequel), and the buried-past engine drives three (a thirty-year-old Cold War mission, a 1904 unsolved drowning, small-town secrets). One category-shelf observation, offered as context: the Mystery, Thriller &amp; Suspense new-release rack's top nine includes a book-club family drama at #1 and a biblical-prophecy title at #5 — the shelf is porous at the top.</p>
+  </section>
+
+  <section id="s7">
+    <h2><span class="sec">SALES SIGNALS</span></h2>
+    <figure class="slotshare">
+      <div class="statrow">
+        <span class="stat">4 of 15</span>
+        <span class="statlab"><strong>slots on the NYT Combined Print &amp; E-Book Fiction list</strong> went to thrillers this week (27%)</span>
+      </div>
+      <svg viewBox="0 0 630 42" width="100%" height="42" role="img"
+           aria-label="Unit chart: 15 list slots, 4 held by thrillers, 11 by other fiction">
+        <g>
+          <rect x="0" y="0" width="38" height="38" rx="4" fill="#a31621"/>
+          <rect x="42" y="0" width="38" height="38" rx="4" fill="#a31621"/>
+          <rect x="84" y="0" width="38" height="38" rx="4" fill="#a31621"/>
+          <rect x="126" y="0" width="38" height="38" rx="4" fill="#a31621"/>
+          <rect x="168" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="210" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="252" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="294" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="336" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="378" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="420" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="462" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="504" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="546" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+          <rect x="588" y="0" width="38" height="38" rx="4" fill="#857e72"/>
+        </g>
+      </svg>
+      <div class="unitlabels">
+        <span><span class="swatch" style="background:#a31621"></span>Thriller: 4</span>
+        <span><span class="swatch" style="background:#857e72"></span>Other fiction: 11</span>
+      </div>
+      <figcaption>List dated September 13, 2026 (sales week ending August 29) · Source: NYT Books API, pulled September 3 · Data © The New York Times, used with attribution per API terms.</figcaption>
+    </figure>
+    <p>The four: Freida McFadden's <em>Brain Damage</em> at #6 in its second week, James Patterson and James O. Born's <em>Delusional</em> at #8 in its second, Sally Hepworth's <em>Mad Mabel</em> at #9 in its fifth — climbing from the #15 slot <a href="https://reports.stevepieper.com/thriller/aug-2026/">we recorded in August</a> — and Jennifer Hillier's <em>Heart of Glass</em> debuting at #13. That is up from August's 3 of 15. Classification method, unchanged from last issue so the two counts compare: a title counts when the author's established primary genre and the book's marketing category are both thriller/suspense/crime. The judgment call this week is Colleen Hoover's <em>Verity</em> (#15, 99 weeks): the book reads as suspense, but the author's established primary genre is romance, so it fails the method's author prong and we exclude it — count it and the share is 5 of 15. Our Romance desk exists for exactly that reason.</p>
+    <p>Per the K-lytics August 2026 sub-category report (data per July 31, 2026): the Kindle "Mystery, Thriller &amp; Suspense — Suspense" sub-category ranks third of the 486 sub-categories K-lytics tracks by estimated sales volume of its top 20 titles; those top-20 titles improved 32% month-over-month on K-lytics' sales-rank momentum measure; and the average top-20 title carries a $5.77 list price. That last figure connects to the pricing story above: the volume end of this market lives a long way below the new $12.99 ceiling, and the box-set opportunity in s3 is about a different shelf than the one driving these rankings.</p>
+    <p class="src">Amazon category-level new-release patterns appear in Hooks &amp; Tropes above.</p>
+  </section>
+
+  <div class="bottomcta">
+    <p>Go deeper, stay informed, sell more copies:</p>
+    <a class="btn" href="#subscribe">Subscribe</a>
+    <a class="btn ghost" href="https://stevepieper.com/">Get help with Direct Sales</a>
+  </div>
+</main>
+
+<footer>
+  <p>© 2026 Polymath Consulting &amp; Publishing · <a href="https://stevepieper.com/">stevepieper.com</a> · Questions or corrections: <a href="mailto:reports@stevepieper.com">reports@stevepieper.com</a></p>
+  <p>Bestseller list data © The New York Times, via the NYT Books API, used with attribution. Amazon retail data retrieved via Rainforest API. K-lytics figures used with attribution by arrangement with K-lytics. All third-party estimates are labeled as such in the text.</p>
+  <p>Subscriptions are free and double opt-in. We use your address to deliver Thriller Monthly and share a hashed (privacy-protected) copy with Meta to measure our advertising; we never sell your information. <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · Unsubscribe anytime with one click.</p>
+  <details>
+    <summary>About the $197,000 in testing</summary>
+    <p>$197,000 spent by Polymath Consulting &amp; Publishing over a seven-month period (January–July 2026) to characterize the relative profitability of historically proven offers under the following advertising conditions:</p>
+    <ul>
+      <li>Meta traffic ads, Advantage+ audience and placements, full enhancements, pointing directly to a retail site product page</li>
+      <li>Meta traffic ads, Advantage+ audience, restricted placements, no enhancements, pointing directly to a retail site product page</li>
+      <li>Meta traffic ads, restricted audience, restricted placements, no enhancements, pointing directly to a retail site product page</li>
+      <li>Meta conversion ads pointing to an interstitial page containing a button pointing to a retail site product page, "ViewContent" conversion event, Advantage+ audience, restricted placements, no enhancements</li>
+      <li>Meta conversion ads pointing to an interstitial page containing a button pointing to a retail site product page, "ViewContent" conversion event, full Advantage+ audience selection, placements, and creative enhancements</li>
+      <li>Meta conversion ads pointing to an interstitial page containing a button pointing to a retail site product page, "ViewContent" conversion event, restricted audience, restricted placements, no creative enhancements</li>
+      <li>Meta conversion ads pointing to a privately owned web store, "Purchase" conversion event, full Advantage+ audience selection and creative enhancements</li>
+      <li>Meta conversion ads pointing to a privately owned web store, "Purchase" conversion event, full Advantage+ audience, restricted placements, no creative enhancements</li>
+      <li>Meta conversion ads pointing to a privately owned web store, "Purchase" conversion event, restricted audience, restricted placements, no creative enhancements</li>
+    </ul>
+  </details>
+</footer>
+
+<script>
+  document.getElementById('subform').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('subbtn');
+    const email = e.target.email.value;
+    const firstName = e.target.first_name.value.trim();
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      const r = await fetch('/api/subscribe', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({genre: 'thriller', email, first_name: firstName, consent_source: 'thriller-issue-002'})
+      });
+      const j = await r.json();
+      if (j.ok && j.state === 'confirmation-sent') btn.textContent = 'Check your inbox ✓';
+      else if (j.ok && j.state === 'already-subscribed') btn.textContent = 'Already aboard ✓';
+      else { btn.textContent = 'Try again'; btn.disabled = false; }
+    } catch { btn.textContent = 'Try again'; btn.disabled = false; }
+  });
+
+  document.querySelectorAll('a[href="#subscribe"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({top: 0, behavior: 'auto'});
+      const em = document.querySelector('#subform input[type=email]');
+      if (em) em.focus({preventScroll: true});
+    });
+  });
+
+  const topbar = document.querySelector('.topbar');
+  const masthead = document.querySelector('.masthead');
+  new IntersectionObserver(([entry]) => {
+    topbar.classList.toggle('show', !entry.isIntersecting);
+  }, {threshold: 0}).observe(masthead);
+
+  document.getElementById('archive').addEventListener('change', (e) => {
+    if (e.target.value) location.href = e.target.value;
+  });
+
+  const search = document.getElementById('issuesearch');
+  search.addEventListener('input', () => {
+    const q = search.value.trim().toLowerCase();
+    document.querySelectorAll('main section').forEach(sec => {
+      if (!q) { sec.classList.remove('hidden'); return; }
+      sec.classList.toggle('hidden', !sec.textContent.toLowerCase().includes(q));
+    });
+  });
+</script>
+</body>
+</html>

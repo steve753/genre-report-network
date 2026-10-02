@@ -13,7 +13,9 @@ assert.deepEqual([v.verdict, v.sev1, v.sev2, v.sev3, v.parsed], ["REJECT", 9, 18
 assert.equal(parseVerdict("no verdict line").verdict, "REJECT");
 
 const cfg = JSON.parse(fs.readFileSync(path.join(ROOT, "config/genres.json"), "utf8"));
-assert.deepEqual(genresDue(cfg, "2026-11-01"), ["thriller"]);
+// derived from the config, so adding a desk does not break the check
+assert.deepEqual(genresDue(cfg, "2026-11-01"), cfg.genres.filter((g) => g.tier === "monthly").map((g) => g.slug));
+assert.ok(genresDue(cfg, "2026-11-01").includes("thriller"));
 assert.equal(genresDue(cfg, "2026-10-01").length, cfg.genres.length);
 
 assert.equal(permalinkFor("thriller", "monthly", "2026-10-01"), "/thriller/oct-2026/");
@@ -103,12 +105,25 @@ for (const bad of [
 assertFigureSafe('<figure><svg viewBox="0 0 10 10"><rect/></svg><figcaption>ok</figcaption></figure>');
 
 // chrome contract: live issue pages pass, placeholders fail
-assert.ok(chromeIsIssuePage(fs.readFileSync(path.join(ROOT, "public/thriller/index.html"), "utf8")), "thriller home is an issue page");
-assert.ok(!chromeIsIssuePage(fs.readFileSync(path.join(ROOT, "public/horror/index.html"), "utf8")), "horror home is a placeholder");
+const FIXTURE_THRILLER = path.join(ROOT, "runner/test/fixtures/public-thriller-as-of-sep-2026");
+assert.ok(chromeIsIssuePage(fs.readFileSync(path.join(FIXTURE_THRILLER, "index.html"), "utf8")), "a published issue home is an issue page");
+// The placeholder case uses a page derived from a frozen issue page with one
+// required element removed, NOT a live genre home: every desk's home became an
+// issue page as desks launched (Horror on 2026-09-05), which silently broke
+// the earlier live-page form of this check while nothing ran the tests.
+const thrillerHome = fs.readFileSync(path.join(FIXTURE_THRILLER, "index.html"), "utf8");
+assert.ok(thrillerHome.includes('<aside class="offer"'), "fixture source carries the offer aside");
+assert.ok(!chromeIsIssuePage(thrillerHome.replaceAll('<aside class="offer"', '<aside class="gone"')), "a page missing the offer aside is not an issue page");
+assert.ok(!chromeIsIssuePage("<html><body><h1>Coming soon</h1></body></html>"), "a coming-soon page is not an issue page");
 
 // build-pages end to end into a temp copy of the repo tree
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "runner-test-"));
-fs.cpSync(path.join(ROOT, "public/thriller"), path.join(tmp, "public/thriller"), { recursive: true });
+// From a FROZEN copy of the thriller desk as it stood after Issue 002
+// (Sep 2026), not from live public/thriller: once the October issue is
+// published, the live tree already holds /thriller/oct-2026/ and the build
+// refuses to overwrite it, which would fail every later production run at the
+// self-tests step.
+fs.cpSync(FIXTURE_THRILLER, path.join(tmp, "public/thriller"), { recursive: true });
 fs.cpSync(path.join(ROOT, "config"), path.join(tmp, "config"), { recursive: true });
 fs.cpSync(path.join(ROOT, "runner/lib"), path.join(tmp, "runner/lib"), { recursive: true });
 fs.cpSync(path.join(ROOT, "runner/build-pages.mjs"), path.join(tmp, "runner/build-pages.mjs"));
@@ -199,5 +214,61 @@ assert.ok(fs.existsSync(path.join(qpriv, "quarantine", "public__x__index.html"))
 const marker = fs.readFileSync(path.join(qpub, "CONTAINMENT_FAILURE.md"), "utf8");
 assert.ok(marker.includes("seat exploded"), "marker carries the original error");
 fs.rmSync(qtmp, { recursive: true, force: true });
+
+// ---- seats-phase time budget (thriller shakedown 2026-10-02: the job was
+// killed mid-round, leaving no summary and no escalation) ----
+import { makeBudget, budgetMinutesFromEnv, BUDGET_MARGIN_MINUTES, DEFAULT_FLOORS_MINUTES } from "../lib/budget.mjs";
+{
+  // refuses without a step limit
+  for (const bad of [{}, { SEATS_STEP_TIMEOUT_MINUTES: "" }, { SEATS_STEP_TIMEOUT_MINUTES: "abc" }, { SEATS_STEP_TIMEOUT_MINUTES: String(BUDGET_MARGIN_MINUTES) }]) {
+    assert.throws(() => budgetMinutesFromEnv(bad), /SEATS_STEP_TIMEOUT_MINUTES/, "budget refuses " + JSON.stringify(bad));
+  }
+  assert.equal(budgetMinutesFromEnv({ SEATS_STEP_TIMEOUT_MINUTES: "250" }), 250 - BUDGET_MARGIN_MINUTES);
+
+  // fake clock replaying the shakedown: research+writer 37 min, then rounds
+  let t = 0;
+  const min = (m) => m * 60000;
+  const b = makeBudget({ budgetMinutes: 142, startedAtMs: 0, nowMs: () => t });
+  t = min(37);
+  assert.ok(b.canStartReview().ok, "first review fits");
+  // floors apply before anything is observed
+  assert.equal(b.estimate("adversary"), DEFAULT_FLOORS_MINUTES.adversary);
+  b.record("adversary", min(33.5));
+  assert.equal(Number(b.estimate("adversary").toFixed(1)), 33.5, "a review longer than the floor raises the estimate");
+  b.record("adversary", min(18.5));
+  assert.equal(Number(b.estimate("adversary").toFixed(1)), 33.5, "a shorter review never lowers it");
+  b.record("fixes", min(4));
+  assert.equal(b.estimate("fixes"), DEFAULT_FLOORS_MINUTES.fixes, "floor holds when observed is shorter");
+  // with 142 - 95 = 47 min left: a review (33.5) + tail (12) = 45.5 fits; fixes (8) + review + tail = 53.5 does not
+  t = min(95);
+  assert.ok(b.canStartReview().ok, "a review that fits is allowed");
+  assert.ok(!b.canStartFixes().ok, "a fix pass whose judging review cannot fit is refused");
+  t = min(100);
+  assert.ok(!b.canStartReview().ok, "a review that cannot finish with the tail is refused");
+  const snap = b.snapshot();
+  assert.equal(snap.budget_minutes, 142);
+  assert.equal(snap.remaining_minutes, 42);
+}
+
+// ---- the workflow's time limits must nest: job > seats step > runner budget ----
+{
+  const wf = fs.readFileSync(path.join(ROOT, ".github/workflows/produce-issue.yml"), "utf8");
+  const produceJob = wf.slice(wf.indexOf("\n  produce:\n"), wf.indexOf("\n  publish:\n"));
+  assert.ok(produceJob.length > 0, "produce job located");
+  const jobLimit = Number((produceJob.match(/^    timeout-minutes: (\d+)\s*$/m) || [])[1]);
+  const stepLimit = Number((produceJob.match(/^      SEATS_STEP_TIMEOUT_MINUTES: "(\d+)"\s*$/m) || [])[1]);
+  assert.ok(jobLimit > 0 && stepLimit > 0, `both limits parsed (job ${jobLimit}, step ${stepLimit})`);
+  assert.ok(jobLimit >= stepLimit + 15, `job limit ${jobLimit} must be at least 15 minutes above the seats step limit ${stepLimit}`);
+  const seatsStep = produceJob.slice(produceJob.indexOf("id: seats"), produceJob.indexOf("- name: Upload review artifacts"));
+  assert.ok(seatsStep.includes("timeout-minutes: ${{ fromJSON(env.SEATS_STEP_TIMEOUT_MINUTES) }}"), "seats step takes its limit from the one shared number");
+  // the budget must fit research + writer (37 min measured) plus the DR-0151
+  // minimum of two reviews, one fix pass and the pages/layout tail
+  const F = DEFAULT_FLOORS_MINUTES;
+  const minimumRun = 40 + 2 * F.adversary + F.fixes + F.tail;
+  assert.ok(stepLimit - BUDGET_MARGIN_MINUTES >= minimumRun, `budget ${stepLimit - BUDGET_MARGIN_MINUTES} min cannot fit the minimum run of ${minimumRun} min`);
+  // the self-tests step runs before any credential or spend
+  const selfTests = produceJob.indexOf("        run: cd runner && npm test\n");
+  assert.ok(selfTests > 0 && selfTests < produceJob.indexOf("id: prepare"), "self-tests step runs before Prepare");
+}
 
 console.log("all runner tests PASS");
