@@ -336,6 +336,27 @@ import { figureClassList } from "../lib/pages.mjs";
   }
 }
 
+// A desk that has published an issue no longer tells a visitor its first issue is "in production", and its
+// skeptics' link goes to its OWN desk home, which always serves the current issue -- not to a fixed issue address
+// that goes stale when the next issue publishes, and not to another desk (2026-10-03: four desks still said
+// "Issue 001 is in production" and pointed at the thriller desk after their Q4 issues went live).
+{
+  const pub = path.join(ROOT, "public");
+  for (const { slug } of cfg.genres) {
+    const dir = path.join(pub, slug);
+    const issues = fs.existsSync(dir) ? fs.readdirSync(dir, { withFileTypes: true })
+      .filter((e) => e.isDirectory() && !["subscribe", "check-your-inbox"].includes(e.name) && fs.existsSync(path.join(dir, e.name, "index.html"))) : [];
+    if (!issues.length) continue;
+    const sub = path.join(dir, "subscribe", "index.html");
+    assert.ok(fs.existsSync(sub), `${sub} exists`);
+    const para = (fs.readFileSync(sub, "utf8").match(/<p class="firstissue">([\s\S]*?)<\/p>/) || [])[1];
+    assert.ok(para, `${sub}: carries its first-issue paragraph`);
+    assert.ok(!/in production/i.test(para), `${sub}: a desk with a published issue does not say it is in production`);
+    const hrefs = [...para.matchAll(/href="([^"]*)"/g)].map((m) => m[1]);
+    assert.deepStrictEqual(hrefs, [`https://reports.stevepieper.com/${slug}/`], `${sub}: the skeptics' link goes to the ${slug} desk home`);
+  }
+}
+
 // The site Worker's Conversions API events (src/index.js), checked offline against a copy that loads its JSON config
 // with an import attribute (Wrangler bundles the bare import; Node needs the attribute).
 {
