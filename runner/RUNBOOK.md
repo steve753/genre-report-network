@@ -97,10 +97,15 @@ package):
   screenshots).
 
 After a clean end-to-end issue — pages live, row published, notify received,
-send clicked — do two things: (a) generate `runner/package-lock.json` on any
-machine with npm access (`cd runner && npm install`), commit it, and switch
-both `npm install` workflow steps to `npm ci`; (b) flip
-`RUNNER_SCHEDULE_ENABLED` to `true`. The runner then owns the schedule; no
+send clicked — two things follow. (a) DONE 2026-10-03: the SDK is pinned to
+0.3.288 (the version the first clean run, Thriller Issue 003, used),
+`runner/package-lock.json` records every installed package, and the produce
+job installs with `npm ci`, which refuses a lock that disagrees with
+`package.json`. To upgrade the SDK: change the version in
+`runner/package.json`, run `npm install --package-lock-only` in `runner/`,
+run the tests, and commit both files together. (b) Steve flips the repository
+variable `RUNNER_SCHEDULE_ENABLED` to `true` in GitHub (Settings → Secrets and
+variables → Actions → Variables). The runner then owns the schedule; no
 Cowork production trigger exists or should be created (DR-0168).
 
 ## Failure and skip behavior

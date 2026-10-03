@@ -25,7 +25,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fetchPack } from "./lib/pack.mjs";
-import { buildIssueHtml, writePages, validateDraft, chromeIsIssuePage, PERIOD_DIR } from "./lib/pages.mjs";
+import { buildIssueHtml, writePages, validateDraft, readabilityProblems, chromeIsIssuePage, PERIOD_DIR } from "./lib/pages.mjs";
 import { readJson, writeFile, parseVerdict, permalinkFor, currentMonthDate, log } from "./lib/util.mjs";
 import { containmentHits, extractLines, quarantine } from "./lib/containment.mjs";
 import { makeBudget, budgetMinutesFromEnv } from "./lib/budget.mjs";
@@ -369,7 +369,8 @@ function draftProblems(when) {
   if (!fs.existsSync(p)) return [`no draft.md ${when}`];
   try {
     const v = validateDraft(fs.readFileSync(p, "utf8"));
-    return v.ok ? [] : v.problems;
+    // structure first; the readability limits apply only here, in production
+    return [...v.problems, ...readabilityProblems(v.frontmatter || {})];
   } catch (e) {
     return [e.message];
   }

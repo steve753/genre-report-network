@@ -425,6 +425,66 @@ import { snapshotTree, restoreTree } from "../lib/public-snapshot.mjs";
   assert.deepStrictEqual(restoreTree(r, snap), { rewritten: [], removed: [] }, "an untouched tree needs nothing");
 }
 
+// Readability limits (2026-10-03, Steve: issues should read "less forensic and more friendly"): the title and lede caps
+// and the dates-not-countdowns rule are REFUSED in code, so the writer-repair pass fixes them before any review spend,
+// and the writer prompt states the same numbers as the code.
+import { readabilityProblems, TITLE_MAX_WORDS, LEDE_MAX_WORDS } from "../lib/pages.mjs";
+{
+  const refused = (fm) => readabilityProblems({ title: "t", lede: "l", ...fm }).length > 0;
+  for (const c of ["30 days to ITW's last 2026 deadline", "Three Days to a Free Awards Deadline", "Two weeks left to enter", "Entries close in 10 days", "until Sunday", "this week", "tomorrow",
+    "ITW's deadline arrives in 28 days", "In 28 days ITW stops taking entries", "A month left to enter", "A week to go", "by Friday", "30 days until the deadline",
+    "Two Weeks Left to Enter ITW's 2026 Awards", "30 Days Remaining for ITW's 2026 Awards", "ITW's Deadline Is This Week", "ITW closes 2026 entries tomorrow", "Entries Close in 10 Days"]) {
+    assert.ok(refused({ email_subject: c }), `a countdown or relative day is refused: ${c}`);
+  }
+  for (const c of ["sold 500 copies in 30 days", "Audible pays within 90 days of the sale", "Thirty days of the thriller business", "Verity topped the chart one day before its film opened", "Enter by October 31", "the trailing ninety days, June 5 through September 3",
+    "Reacher returns in Gone Tomorrow", "USA Today bestsellers", "the TODAY show book club pick", "Entries close on Friday, October 31", "by Friday, Oct. 31", "took three weeks to reach No. 1", "stay exclusive 90 days to qualify", "90 days until it auto-renews", "sold 500 copies in 30 days to lead the chart",
+    "KDP extends its payment window from 60 days to 90 days", "Amazon cuts the ebook return window from 14 days to 7", "Audible lowers its minimum length from 3 hours to 1",
+    "Audible's revenue rose 12% in the 12 months to June", "Thriller sales rose 4% in the 90 days to September 3", "KDP royalties arrive within 60 days of the month's end",
+    "Ebook returns are due within 14 days of purchase", "The Women took 11 weeks to No. 1 on the NYT list", "Fourth Wing climbed in two weeks to the top of the chart",
+    "Amazon Lifts the Royalty Ceiling, KU Thins the Page, and Two Authors Hold 16 of 50 Slots"]) {
+    assert.ok(!refused({ email_subject: c }), `an ordinary duration or a date is allowed: ${c}`);
+  }
+  assert.ok(refused({ teaser_bullets: ["fine", "Two weeks left to enter"] }), "teasers are checked");
+  assert.ok(refused({ stories: ["Closes in 3 days"] }), "story lines are checked");
+  assert.ok(refused({ title: Array(TITLE_MAX_WORDS + 1).fill("w").join(" ") }) && !refused({ title: Array(TITLE_MAX_WORDS).fill("w").join(" ") }), `title limit is ${TITLE_MAX_WORDS} words`);
+  assert.ok(refused({ lede: Array(LEDE_MAX_WORDS + 1).fill("w").join(" ") }) && !refused({ lede: Array(LEDE_MAX_WORDS).fill("w").join(" ") }), `lede limit is ${LEDE_MAX_WORDS} words`);
+  assert.ok(validateDraft(fs.readFileSync(path.join(ROOT, "runner/test/fixture-draft.md"), "utf8").replace("title: A Test Headline", "title: " + Array(30).fill("w").join(" "))).ok, "validateDraft stays structural: the readability limits never block an approved draft at publish");
+  assert.ok(fs.readFileSync(path.join(ROOT, "runner/produce-issue.mjs"), "utf8").includes("...readabilityProblems(v.frontmatter || {})"), "the produce job's draft check applies the readability limits");
+  const fx = validateDraft(fs.readFileSync(path.join(ROOT, "runner/test/fixture-draft.md"), "utf8"));
+  assert.ok(fx.ok, `fixture draft still validates: ${fx.problems.join("; ")}`);
+  const wp = fs.readFileSync(path.join(ROOT, "runner/prompts/writer.md"), "utf8");
+  for (const f of ["writer.md", "writer-fixes.md", "writer-repair.md"]) {
+    const t = fs.readFileSync(path.join(ROOT, "runner/prompts", f), "utf8");
+    const nums = [...t.matchAll(/(?:at most|over) (\d+) words/g)].map((m) => Number(m[1]));
+    assert.ok(nums.length >= 2 && nums.every((n) => n === TITLE_MAX_WORDS || n === LEDE_MAX_WORDS) && nums.includes(TITLE_MAX_WORDS) && nums.includes(LEDE_MAX_WORDS), `${f} states the same word limits the code enforces (${nums.join(", ")})`);
+  }
+  assert.ok(wp.includes("## METHODS: How we counted"), "the writer prompt sends method detail to the METHODS section");
+  const ap = fs.readFileSync(path.join(ROOT, "runner/prompts/adversary.md"), "utf8");
+  assert.ok(ap.includes("METHODS: How we counted") && /Never prescribe an added hedge/.test(ap), "the adversary checks rules printed in METHODS and fixes by narrowing, not hedging");
+}
+
+// The runner's dependencies are pinned and locked (2026-10-03): an unpinned SDK could change between the reviewed
+// shakedown and an unattended run. A drift back to "latest", a missing lock, a lock that disagrees with package.json,
+// or a workflow that installs with anything but `npm ci` fails here.
+{
+  const pj = JSON.parse(fs.readFileSync(path.join(ROOT, "runner/package.json"), "utf8"));
+  const lockPath = path.join(ROOT, "runner/package-lock.json");
+  assert.ok(fs.existsSync(lockPath), "runner/package-lock.json exists");
+  const lock = JSON.parse(fs.readFileSync(lockPath, "utf8"));
+  for (const [name, want] of Object.entries(pj.dependencies || {})) {
+    assert.ok(/^\d+\.\d+\.\d+$/.test(want), `${name} is pinned to an exact version (got ${want})`);
+    assert.strictEqual(lock.packages?.[""]?.dependencies?.[name], want, `the lock's root records ${name}@${want}`);
+    assert.strictEqual(lock.packages?.[`node_modules/${name}`]?.version, want, `the lock installs ${name}@${want}`);
+  }
+  for (const [k, v] of Object.entries(lock.packages || {})) {
+    if (!k) continue;
+    assert.ok(!v.resolved || v.resolved.startsWith("https://registry.npmjs.org/"), `${k} resolves from the public npm registry`);
+    assert.ok(v.integrity || v.link, `${k} carries an integrity hash`);
+  }
+  const wf = fs.readFileSync(path.join(ROOT, ".github/workflows/produce-issue.yml"), "utf8");
+  assert.ok(/cd runner && npm ci\b/.test(wf) && !/npm install\b/.test(wf.replace(/#.*$/gm, "")), "the produce workflow installs with npm ci only");
+}
+
 // The site Worker's Conversions API events (src/index.js), checked offline against a copy that loads its JSON config
 // with an import attribute (Wrangler bundles the bare import; Node needs the attribute).
 {

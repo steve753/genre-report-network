@@ -134,8 +134,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install runner deps
-        run: cd runner && npm install --no-audit --no-fund
+      - name: Install runner deps (exactly the locked versions; refuses a lock that disagrees with package.json)
+        run: cd runner && npm ci --no-audit --no-fund
       - name: Runner self-tests (refuse to spend on a broken tree)
         run: cd runner && npm test
       - name: Prepare (database credentials; runs BEFORE any seat)

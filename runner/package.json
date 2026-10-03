@@ -2,12 +2,12 @@
   "name": "genre-report-runner",
   "private": true,
   "type": "module",
-  "description": "Unattended issue production per DR-0168: GitHub Actions + Claude Agent SDK on the Polymath API account. No credential lives in this tree; everything arrives as environment variables from GitHub secrets/variables. DEPENDENCY PINNING: the container that authored this tree cannot reach the npm registry for this package (egress 403), so the SDK is declared at 'latest' for the shakedown; after the first green run, generate package-lock.json (npm install on any machine with registry access), commit it, and switch the workflow's install step from 'npm install' to 'npm ci'.",
+  "description": "Unattended issue production per DR-0168: GitHub Actions + Claude Agent SDK on the Polymath API account. No credential lives in this tree; everything arrives as environment variables from GitHub secrets/variables. DEPENDENCY PINNING: the SDK is pinned to the exact version the first clean production run used (0.3.288, Thriller Issue 003, 2026-10-01), package-lock.json records every installed package, and the workflow installs with `npm ci`, which refuses to run if the lock and package.json disagree. To upgrade: change the version here, run `npm install --package-lock-only` in runner/, and commit both files together.",
   "scripts": {
     "produce": "node produce-issue.mjs",
     "test": "node test/run-tests.mjs"
   },
   "dependencies": {
-    "@anthropic-ai/claude-agent-sdk": "latest"
+    "@anthropic-ai/claude-agent-sdk": "0.3.288"
   }
 }

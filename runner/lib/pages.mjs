@@ -199,6 +199,66 @@ export function validateDraft(draftText) {
   return { ok: problems.length === 0, problems, frontmatter: fm };
 }
 
+// Readability limits the writer prompt states. The produce job's draft check
+// (produce-issue.mjs draftProblems) REFUSES a draft that breaks them into the
+// writer-repair pass. They are deliberately NOT part of validateDraft, which
+// also runs at publish time: a limit changed after Steve approved a draft must
+// never block that approved draft from publishing
+// (2026-10-03, Steve: issues should read "less forensic and more friendly").
+// Calibrated on the live issues: the ones that read well have titles of 15-18
+// words and ledes of 19-38; Thriller 003 shipped a 34-word title, a 61-word
+// lede, and the subject "30 days to ITW's last 2026 deadline", which was
+// already wrong (28 days) on the day it was sent.
+export const TITLE_MAX_WORDS = 18;
+export const LEDE_MAX_WORDS = 40;
+const NUMWORD = "(?:\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|ninety|a few|a couple of|an?)";
+const UNIT = "(?:days?|weeks?|months?|hours?)";
+const MONTHS = "(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept?|Oct|Nov|Dec)\\.?";
+const WEEKDAY = "(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)";
+const DEADLINE_WORD = "(?:deadline|cutoff|cut-off|closes?|closing|entries|submissions|registration|sign-?ups?|launch|release|premiere|kickoff|opens?|opening)";
+// NARROW ON PURPOSE: only forms that are false on the day a reader sees them,
+// whatever the surrounding words. Durations, policy terms and dated data
+// windows ("from 60 days to 90 days", "within 60 days of the month's end",
+// "the 12 months to June", "11 weeks to No. 1") are not countdowns and pass.
+// The adversary's severity-1 for any countdown in frontmatter is the broad
+// backstop; this is the certain, cheap first line. (Adversary rounds 1-2,
+// 2026-10-03.)
+const COUNTDOWNS = [
+  // "Two Weeks Left", "a week to go", "30 days remaining"
+  new RegExp(`\\b${NUMWORD}[\\s-]+${UNIT}\\s+(?:left|to go|remain(?:ing)?)\\b`, "i"),
+  // "30 days to ITW's last 2026 deadline", "Three Days to a Free Awards Deadline":
+  // a span to or until something that closes, opens or launches
+  new RegExp(`(?<!\\bfrom\\s)\\b${NUMWORD}[\\s-]+${UNIT}\\s+(?:to|until|till)\\b[^.;:!?]{0,40}?\\b${DEADLINE_WORD}\\b`, "i"),
+  // "Entries close in 10 days", "the deadline arrives in 28 days" -- "in", not "within"
+  new RegExp(`\\b(?:clos(?:e|es|ing)|end(?:s|ing)?|open(?:s|ing)?|due|expir(?:e|es|ing)|start(?:s|ing)?|arriv(?:e|es|ing)|deadline(?:\\s+is)?|launch(?:es|ing)?|goes live)\\s+in\\s+${NUMWORD}[\\s-]+${UNIT}\\b(?!\\s+(?:of|after|from|following)\\b)`, "i"),
+  // a field that opens "In 28 days ..."
+  new RegExp(`^\\s*in\\s+${NUMWORD}[\\s-]+${UNIT}\\b`, "i"),
+  // relative days. today/tonight/tomorrow/yesterday lowercase only: capitalized
+  // they are usually names ("Gone Tomorrow", "USA Today", the TODAY show)
+  /\b(?:today|tonight|tomorrow|yesterday)\b/,
+  /\b(?:this|next|last)\s+week(?:end)?\b/i,
+  // "until Sunday", "By Friday" -- but "by Friday, October 31" is a date
+  new RegExp(`\\b(?:until|till|by|this|next)\\s+${WEEKDAY}\\b(?!,?\\s+${MONTHS}\\s+\\d)`, "i"),
+];
+export function countdownIn(text) {
+  for (const rx of COUNTDOWNS) { const m = String(text || "").match(rx); if (m) return m[0]; }
+  return null;
+}
+const words = (t) => String(t || "").trim().split(/\s+/).filter(Boolean).length;
+
+export function readabilityProblems(fm) {
+  const problems = [];
+  if (words(fm.title) > TITLE_MAX_WORDS) problems.push(`title is ${words(fm.title)} words; at most ${TITLE_MAX_WORDS}`);
+  if (words(fm.lede) > LEDE_MAX_WORDS) problems.push(`lede is ${words(fm.lede)} words; at most ${LEDE_MAX_WORDS}`);
+  const fields = [["title", fm.title], ["lede", fm.lede], ["email_subject", fm.email_subject], ["meta_description", fm.meta_description]];
+  for (const k of ["teaser_bullets", "stories"]) if (Array.isArray(fm[k])) fm[k].forEach((v, i) => fields.push([`${k}[${i + 1}]`, v]));
+  for (const [name, v] of fields) {
+    const m = typeof v === "string" && countdownIn(v);
+    if (m) problems.push(`${name} counts down or uses a relative day ("${m}") — readers see it later; give the calendar date instead`);
+  }
+  return problems;
+}
+
 // The page's figure class is the chrome's panel class (databox/slotshare),
 // but a draft figure's <style> may anchor its selectors on the figure's OWN
 // .ch* class (the scope rule above allows exactly that). Replacing the class
