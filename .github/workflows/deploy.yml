@@ -15,6 +15,13 @@ jobs:
         with:
           node-version: 20
 
+      # Refuse to deploy a tree that fails its own checks (2026-10-03, Steve). The suite is offline and needs no
+      # npm install: it reads public/, config/ and src/ and builds a page in a temp folder. A failure here stops
+      # both automated routes to the live site: a push to main, and the publish job, which dispatches this
+      # workflow and waits for it before recording the issue as published. A wrangler deploy run by hand skips it.
+      - name: Site and runner self-tests (refuse to deploy a broken tree)
+        run: node runner/test/run-tests.mjs
+
       - name: Deploy with Wrangler
         uses: cloudflare/wrangler-action@v3
         with:
