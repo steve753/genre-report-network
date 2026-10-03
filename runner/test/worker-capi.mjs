@@ -59,4 +59,34 @@ subStatus = "pending"; metaCalls.length = 0; waits.length = 0;
 await worker.fetch(new Request("https://reports.stevepieper.com/api/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ genre: "thriller", email: "a@b.co" }) }), { ...env, META_CAPI_TOKEN: "" }, ctx);
 await Promise.all(waits);
 assert.equal(metaCalls.length, 0, "no token -> no Meta call");
+// a network failure whose message quotes the request URL must not put the access token in the logs (2026-10-03)
+const SECRET = "capi-secret-TOKEN-xyz";
+const logged = [];
+const origErr = console.error, origLog = console.log;
+console.error = (...a) => logged.push(a.map(String).join(" "));
+console.log = (...a) => logged.push(a.map(String).join(" "));
+const realFetch = globalThis.fetch;
+globalThis.fetch = async (url, init) => {
+  if (String(url).startsWith("https://graph.facebook.com/")) throw new TypeError(`error sending request for url (${url}): connection reset`);
+  return realFetch(url, init);
+};
+waits.length = 0;
+await worker.fetch(new Request("https://reports.stevepieper.com/api/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ genre: "thriller", email: "a@b.co" }) }), { ...env, META_CAPI_TOKEN: SECRET }, ctx);
+await Promise.all(waits);
+console.error = origErr; console.log = origLog; globalThis.fetch = realFetch;
+assert.ok(logged.some((l) => l.startsWith("meta_capi_exception")), "the network failure was logged");
+assert.ok(!logged.some((l) => l.includes(SECRET)), "the access token never reaches the logs");
+// an error RESPONSE that echoes the token (or a re-encoded spelling of it) is blanked too
+logged.length = 0;
+console.error = (...a) => logged.push(a.map(String).join(" "));
+globalThis.fetch = async (url, init) => {
+  if (String(url).startsWith("https://graph.facebook.com/")) return new Response(`{"error":"bad request to /events?access_token=${SECRET}%0A&x=1"}`, { status: 400 });
+  return realFetch(url, init);
+};
+waits.length = 0;
+await worker.fetch(new Request("https://reports.stevepieper.com/api/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ genre: "thriller", email: "a@b.co" }) }), { ...env, META_CAPI_TOKEN: SECRET + "\n" }, ctx);
+await Promise.all(waits);
+console.error = origErr; globalThis.fetch = realFetch;
+assert.ok(logged.some((l) => l.startsWith("meta_capi_error")), "the error response was logged");
+assert.ok(!logged.some((l) => l.includes(SECRET)), "a token echoed in an error response, even one stored with a stray newline, never reaches the logs");
 console.log("CAPI harness PASS");

@@ -1012,11 +1012,21 @@ async function sendMetaEvent(env, request, { eventName, eventId, email, fbp, fbc
       `https://graph.facebook.com/v23.0/${env.META_PIXEL_ID}/events?access_token=${env.META_CAPI_TOKEN}`,
       { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
     );
-    if (!res.ok) console.error("meta_capi_error", eventName, "pixel_id", env.META_PIXEL_ID, res.status, await res.text());
+    if (!res.ok) console.error("meta_capi_error", eventName, "pixel_id", env.META_PIXEL_ID, res.status, redactSecret(await res.text(), env.META_CAPI_TOKEN));
     else console.log("meta_capi_sent", eventName, "pixel_id", env.META_PIXEL_ID, "status", res.status);
   } catch (err) {
-    console.error("meta_capi_exception", eventName, err.stack || String(err));
+    // The token rides in the access_token query parameter, as Meta's Conversions API documentation
+    // specifies; a network error may quote the request URL, so it is blanked before logging (2026-10-03).
+    console.error("meta_capi_exception", eventName, redactSecret(err.stack || String(err), env.META_CAPI_TOKEN));
   }
+}
+
+// Blank out a secret wherever it might appear in text bound for the logs.
+// Also blanks whatever follows "access_token=", so a token stored with a stray newline, or
+// re-encoded inside a quoted URL, is caught too.
+function redactSecret(text, secret) {
+  const out = secret ? String(text).split(secret).join("[redacted]") : String(text);
+  return out.replace(/access_token=[^&\s)"']*/g, "access_token=[redacted]");
 }
 
 function parseCookies(header) {
