@@ -178,6 +178,9 @@ export function validateDraft(draftText) {
   for (const fig of body.match(/<figure\b[^>]*>[\s\S]*?<\/figure>/g) || []) {
     try {
       assertFigureSafe(fig);
+      // checked here too, so a style/class mismatch reaches the writer-repair
+      // pass in the produce job instead of failing the publish after approval
+      figureClassList(fig, "panel");
     } catch (e) {
       problems.push(e.message);
     }
@@ -196,6 +199,46 @@ export function validateDraft(draftText) {
   return { ok: problems.length === 0, problems, frontmatter: fm };
 }
 
+// The page's figure class is the chrome's panel class (databox/slotshare),
+// but a draft figure's <style> may anchor its selectors on the figure's OWN
+// .ch* class (the scope rule above allows exactly that). Replacing the class
+// outright silently unstyled every such chart — Thriller issue 003's charts
+// shipped to preview as solid black bars with no gridlines or dashed second
+// series (run 37070763676, 2026-10-03). Keep the draft's .ch* class tokens
+// beside the chrome class, and REFUSE a figure whose <style> anchors on a
+// .ch* class that no element in the figure carries, so the mismatch cannot
+// recur silently in either direction.
+export function figureClassList(figureHtml, figClass) {
+  const open = figureHtml.match(/^<figure\b([^>]*)>/);
+  const own = ((open && open[1].match(/(?:^|\s)class="([^"]*)"/)) || [, ""])[1]
+    .split(/\s+/)
+    .filter((c) => /^ch[\w-]*$/i.test(c));
+  const carried = new Set();
+  for (const m of figureHtml.matchAll(/\sclass="([^"]*)"/g)) for (const c of m[1].split(/\s+/)) if (c) carried.add(c);
+  // Only the ANCHOR of each selector matters: the first compound that is
+  // svg/figure/figcaption or carries a .ch* class (the same anchor the scope
+  // rule in assertFigureSafe requires). An anchor class nothing carries means
+  // the whole rule styles nothing. Comments and strings are blanked first,
+  // as in assertFigureSafe, so their contents are never read as selectors.
+  for (const st of figureHtml.match(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi) || []) {
+    const body = st.replace(/^<style\b[^>]*>/i, "").replace(/<\/style\s*>$/i, "");
+    const scan = body.replace(/\/\*[\s\S]*?\*\/|"[^"\n\r\f]*"|'[^'\n\r\f]*'/g, (t) => (t[0] === "/" ? " " : "_"));
+    const segs = scan.split("{");
+    for (let k = 0; k < segs.length - 1; k++) {
+      const sel = segs[k].slice(segs[k].lastIndexOf("}") + 1).trim();
+      if (!sel || sel.startsWith("@")) continue;
+      for (const one of sel.split(",")) {
+        const anchor = one.trim().split(/[\s>]+/).filter(Boolean)
+          .find((c) => /^(svg|figure|figcaption)\b/i.test(c) || /\.ch[\w-]/i.test(c));
+        for (const m of (anchor || "").matchAll(/\.(ch[\w-]*)/gi)) {
+          if (!carried.has(m[1])) throw new Error(`figure <style> anchors on .${m[1]}, which no element in the figure carries — those rules would style nothing`);
+        }
+      }
+    }
+  }
+  return [figClass, ...own.filter((c) => c !== figClass)].join(" ");
+}
+
 function renderBlocks(content, figClass) {
   const out = [];
   // preserve <figure> blocks verbatim (any attributes); everything else is draft-dialect markdown
@@ -203,7 +246,7 @@ function renderBlocks(content, figClass) {
   for (const chunk of chunks) {
     if (/^<figure\b/.test(chunk)) {
       assertFigureSafe(chunk);
-      out.push(chunk.replace(/^<figure\b[^>]*>/, `<figure class="${figClass}">`));
+      out.push(chunk.replace(/^<figure\b[^>]*>/, `<figure class="${figureClassList(chunk, figClass)}">`));
       continue;
     }
     for (const para of chunk.split(/\n\n+/)) {

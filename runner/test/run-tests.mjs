@@ -271,4 +271,43 @@ import { makeBudget, budgetMinutesFromEnv, BUDGET_MARGIN_MINUTES, DEFAULT_FLOORS
   assert.ok(selfTests > 0 && selfTests < produceJob.indexOf("id: prepare"), "self-tests step runs before Prepare");
 }
 
+
+// Figure classes (Thriller issue 003, run 37070763676): a figure whose <style>
+// anchors on its own .ch* class must keep that class on the page, beside the
+// chrome's panel class; a <style> anchored on a class nothing in the figure
+// carries is refused rather than shipped unstyled.
+import { figureClassList } from "../lib/pages.mjs";
+{
+  const own = '<figure class="chku"><style>.chku { --a: #000; } :root[data-theme="dark"] .chku { --a: #fff; } .chku .chs1 { fill: var(--a); }</style><svg viewBox="0 0 1 1"><rect class="chs1"/></svg><figcaption>x</figcaption></figure>';
+  assert.strictEqual(figureClassList(own, "slotshare"), "slotshare chku", "the draft figure's own .ch* class is kept beside the chrome class");
+  assert.strictEqual(figureClassList('<figure><svg viewBox="0 0 1 1"/></figure>', "databox"), "databox", "a classless figure gets the chrome class only");
+  assert.strictEqual(figureClassList('<figure class="chku"><style>.chku .chs1 { fill: red; } .chku .chs2 { fill: blue; } /* like .chart */</style><svg viewBox="0 0 1 1"><rect class="chs1"/></svg></figure>', "slotshare"), "slotshare chku", "an unused series rule under a carried anchor, and a comment, are not refused");
+  assert.throws(() => figureClassList('<figure class="chku"><style>svg.chpx rect { fill: red; }</style><svg viewBox="0 0 1 1"/></figure>', "slotshare"), /anchors on \.chpx/, "an anchor written as svg.chpx is checked too");
+  assert.strictEqual(figureClassList('<figure class="chx evil"><style>.chx svg { fill: red; }</style><svg viewBox="0 0 1 1"/></figure>', "slotshare"), "slotshare chx", "only .ch* tokens are carried over from the draft");
+  assert.throws(() => figureClassList('<figure class="chku"><style>.chpx svg { fill: red; }</style><svg viewBox="0 0 1 1"/></figure>', "slotshare"), /anchors on \.chpx/, "a style anchored on a class no element carries is refused");
+  {
+    const base = fs.readFileSync(path.join(ROOT, "runner/test/fixture-draft.md"), "utf8");
+    const mismatched = base.replace(/<figure>[\s\S]*?<\/figure>/, '<figure class="chku"><style>.chpx svg { fill: red; }</style><svg viewBox="0 0 1 1"/></figure>');
+    const vd = validateDraft(mismatched);
+    assert.ok(!vd.ok && vd.problems.some((m) => /anchors on \.chpx/.test(m)), "validateDraft reports the mismatch so the writer-repair pass sees it");
+  }
+  // the shipped issue's two figures, exactly as the writer produced them
+  const draft = fs.readFileSync(path.join(ROOT, "runner/test/fixtures/thriller-003-figures.md"), "utf8");
+  const figs = draft.match(/<figure\b[^>]*>[\s\S]*?<\/figure>/g) || [];
+  assert.strictEqual(figs.length, 2, "issue 003 fixture carries its two figures");
+  assert.deepStrictEqual(figs.map((f) => figureClassList(f, "slotshare")), ["slotshare chku", "slotshare chpx"], "issue 003 figures keep their own classes");
+  // end to end through the real page build: the fixture draft with issue
+  // 003's figures in place of its own, on the frozen thriller chrome
+  const baseDraft = fs.readFileSync(path.join(ROOT, "runner/test/fixture-draft.md"), "utf8");
+  const withFigs = baseDraft.replace(/<figure>[\s\S]*?<\/figure>/, figs.join("\n\n"));
+  assert.notStrictEqual(withFigs, baseDraft, "fixture draft carried a figure to replace");
+  const built = buildIssueHtml({
+    draftText: withFigs,
+    chromeHtml: fs.readFileSync(path.join(ROOT, "runner/test/fixtures/public-thriller-as-of-sep-2026/sep-2026/index.html"), "utf8"),
+    genreCfg: cfg.genres.find((g) => g.slug === "thriller"), monthDate: "2026-10-01", issueNumber: "003",
+  });
+  const classes = [...built.html.matchAll(/<figure class="([^"]*)">/g)].map((m) => m[1]);
+  assert.deepStrictEqual(classes, ["slotshare chku", "slotshare chpx"], "built page keeps each figure's own class");
+}
+
 console.log("all runner tests PASS");
