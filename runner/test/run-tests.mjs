@@ -43,6 +43,8 @@ assert.ok(out.html.indexOf('class="offer"') > out.html.indexOf("Money text"), "o
 assert.ok(/<figure class="(databox|slotshare)">/.test(out.html), "figure passthrough with chrome-derived class");
 assert.equal((out.html.match(/<main>/g) || []).length, 1, "single main");
 assert.ok(!out.html.includes("This is the permanent edition"), "chrome permanent-edition line stripped");
+// A built issue page carries the desk's signup redirect from the chrome (Steve, 2026-10-03).
+assert.ok(out.html.includes("location.replace('/thriller/check-your-inbox/')"), "built page sends a signup to the thriller confirmation page");
 
 // monthly desk must never default to "Quarterly" in the title tag
 import { defaultTitleTag, validateDraft } from "../lib/pages.mjs";
@@ -308,6 +310,44 @@ import { figureClassList } from "../lib/pages.mjs";
   });
   const classes = [...built.html.matchAll(/<figure class="([^"]*)">/g)].map((m) => m[1]);
   assert.deepStrictEqual(classes, ["slotshare chku", "slotshare chpx"], "built page keeps each figure's own class");
+}
+
+// Every live page with a signup form sends a successful signup to ITS OWN desk's confirmation page, and that page
+// exists with Steve's copy (2026-10-03). A page that only changed the button text would leave a new subscriber with no
+// instruction to confirm -- the gap The Dangle's ad testing exposed.
+{
+  const pub = path.join(ROOT, "public");
+  const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
+  const forms = walk(pub).filter((f) => f.endsWith(".html") && fs.readFileSync(f, "utf8").includes("/api/subscribe"));
+  assert.ok(forms.length >= 6, `signup forms found: ${forms.length}`);
+  for (const f of forms) {
+    const html = fs.readFileSync(f, "utf8");
+    const genre = (html.match(/genre: '([a-z-]+)'/) || [])[1];
+    assert.ok(genre, `${f}: form names its genre`);
+    assert.ok(/state === 'confirmation-sent'\) \{[^}]*location\.replace\('\/([a-z-]+)\/check-your-inbox\/'\)/.test(html)
+      && html.match(/state === 'confirmation-sent'\) \{[^}]*location\.replace\('\/([a-z-]+)\/check-your-inbox\/'\)/)[1] === genre,
+      `${f}: a confirmation-sent signup goes to /${genre}/check-your-inbox/`);
+    assert.ok(html.includes("fbc: (() => { try { return sessionStorage.getItem('gr_fbc')") && html.includes("sessionStorage.setItem('gr_fbc'"), `${f}: the signup sends the ad click's fbc`);
+    const page = path.join(pub, genre, "check-your-inbox", "index.html");
+    assert.ok(fs.existsSync(page), `${page} exists`);
+    const p = fs.readFileSync(page, "utf8");
+    assert.ok(p.includes("Almost there!") && p.includes("Please check your inbox to confirm your subscription to Steve Pieper's Genre Report.")
+      && p.includes("If the email doesn't arrive within 3 minutes, please check your spam folder(s).") && p.includes('content="noindex"') && !/rel="canonical"/.test(p), `${page} carries the approved copy, stays noindex and names no canonical`);
+  }
+}
+
+// The site Worker's Conversions API events (src/index.js), checked offline against a copy that loads its JSON config
+// with an import attribute (Wrangler bundles the bare import; Node needs the attribute).
+{
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "capi-"));
+  fs.mkdirSync(path.join(tmp, "src")); fs.mkdirSync(path.join(tmp, "config"));
+  fs.copyFileSync(path.join(ROOT, "config/genres.json"), path.join(tmp, "config/genres.json"));
+  const src = fs.readFileSync(path.join(ROOT, "src/index.js"), "utf8")
+    .replace('import genresConfig from "../config/genres.json";', 'import genresConfig from "../config/genres.json" with { type: "json" };');
+  assert.ok(src.includes('with { type: "json" }'), "worker config import found for the CAPI check");
+  fs.writeFileSync(path.join(tmp, "src/index.mjs"), src);
+  const out = execFileSync(process.execPath, [path.join(ROOT, "runner/test/worker-capi.mjs"), path.join(tmp, "src/index.mjs")]).toString();
+  assert.ok(out.includes("CAPI harness PASS"), "worker CAPI check passes");
 }
 
 console.log("all runner tests PASS");

@@ -241,6 +241,9 @@
 </footer>
 
 <script>
+  // Meta click ID for the Conversions API (server-side only; there is no browser pixel): an ad click lands with
+  // ?fbclid=..., kept for this visit so a signup on a later page still carries it.
+  try { const c = new URLSearchParams(location.search).get('fbclid'), o = sessionStorage.getItem('gr_fbc'); if (c && !(o && o.endsWith('.' + c))) sessionStorage.setItem('gr_fbc', 'fb.1.' + Date.now() + '.' + c); } catch {}
   document.getElementById('subform').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('subbtn');
@@ -250,10 +253,12 @@
     try {
       const r = await fetch('/api/subscribe', {
         method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({genre: 'fantasy', email, first_name: firstName, consent_source: 'fantasy-issue-001'})
+        body: JSON.stringify({genre: 'fantasy', email, first_name: firstName, consent_source: 'fantasy-issue-001', fbc: (() => { try { return sessionStorage.getItem('gr_fbc') || undefined; } catch { return undefined; } })()})
       });
       const j = await r.json();
-      if (j.ok && j.state === 'confirmation-sent') btn.textContent = 'Check your inbox ✓';
+      // A signup goes to a dedicated page that tells the reader to confirm by email (Steve, 2026-10-03,
+      // after The Dangle's ad testing). replace() keeps Back from returning to a spent form; the button text is the fallback.
+      if (j.ok && j.state === 'confirmation-sent') { btn.textContent = 'Check your inbox ✓'; location.replace('/fantasy/check-your-inbox/'); }
       else if (j.ok && j.state === 'already-subscribed') btn.textContent = 'Already aboard ✓';
       else { btn.textContent = 'Try again'; btn.disabled = false; }
     } catch { btn.textContent = 'Try again'; btn.disabled = false; }

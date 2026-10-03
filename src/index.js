@@ -190,11 +190,18 @@ async function subscribe(request, env, ctx) {
   await sendConfirmationEmail(env, { email, firstName, genre, token: row.doi_token });
   await sb(env, `subscribers?id=eq.${row.id}`, "PATCH", { doi_sent_at: new Date().toISOString() });
 
-  // Meta CAPI: subscribe-start (Lead). Fire-and-forget; never blocks the response.
+  // Meta CAPI: subscribe-start (Lead). Fire-and-forget; never blocks the response. Server-side only -- no browser
+  // pixel on the site (Steve, 2026-10-03: conversion data must not rest on browser events; mirrors dangle-subscribe,
+  // which takes fbp/fbc from the request body). The page sends fbc built from the ad click's fbclid when there is one.
   if (ctx) ctx.waitUntil(sendMetaEvent(env, request, {
     eventName: "Lead",
-    eventId: `${row.doi_token}-lead`,
+    // event_id is a hash of the DOI token, never the token: the token confirms and unsubscribes this address. Still
+    // stable per subscriber, so a resent Lead deduplicates.
+    eventId: await sha256Hex(`${row.doi_token}-lead`),
     email,
+    fbp: metaClickId(body.fbp, "fbp"),
+    fbc: metaClickId(body.fbc, "fbc"),
+    sourceUrl: pageUrl(request.headers.get("Referer"), genre.slug),
     customData: { genre: genre.slug, consent_source: consentSource },
   }));
 
@@ -238,10 +245,13 @@ async function confirm(url, request, env, ctx) {
       confirmed_at: new Date().toISOString(),
     });
     // Meta CAPI: confirmed double opt-in (CompleteRegistration).
+    // event_source_url is the desk's page, never this request's URL or its Referer: both carry the DOI token, which
+    // confirms and unsubscribes this address and must not leave our systems (mirrors dangle-subscribe's BLOG_URL).
     if (ctx) ctx.waitUntil(sendMetaEvent(env, request, {
       eventName: "CompleteRegistration",
-      eventId: `${token}-confirm`,
+      eventId: await sha256Hex(`${token}-confirm`),
       email: row.email,
+      sourceUrl: `https://${CANONICAL_HOST}/${g.slug || ""}/`,
       customData: { genre: g.slug, consent_source: row.consent_source },
     }));
   }
@@ -944,11 +954,32 @@ async function sb(env, path, method, body, extraHeaders = {}) {
 // ---------------------------------------------------------------------------
 // Meta Conversions API — server-side events from the Worker.
 // No-ops silently until META_PIXEL_ID and META_CAPI_TOKEN secrets are set.
-// event_id is derived from the DOI token so a future browser pixel firing the
-// same events deduplicates cleanly. _fbp/_fbc are read from the request's own
-// cookies (same-origin), so no client-side changes are needed.
+// SERVER-SIDE ONLY (Steve, 2026-10-03): the site runs no browser pixel, and
+// conversion data must not rest on browser events. Lead on signup,
+// CompleteRegistration on confirm -- the same pair dangle-subscribe sends.
+// event_id is a hash of the DOI token (stable, so a resend deduplicates; the
+// token itself never leaves our systems). fbc comes from the page (built from
+// the ad click's fbclid) or, failing that, a same-origin _fbc cookie.
 // ---------------------------------------------------------------------------
-async function sendMetaEvent(env, request, { eventName, eventId, email, customData }) {
+// The source page for a Lead: our own page only, and only its origin and path -- no query string, so no token, address
+// or click ID ever rides in event_source_url. Anything else falls back to the desk's home page.
+function pageUrl(referer, slug) {
+  try {
+    const u = new URL(String(referer || ""));
+    if (u.protocol === "https:" && u.hostname === CANONICAL_HOST && !u.pathname.startsWith("/api/")) return `https://${CANONICAL_HOST}${u.pathname}`;
+  } catch {}
+  return `https://${CANONICAL_HOST}/${slug || ""}/`;
+}
+
+// A Meta browser ID or click ID supplied by the page, in Meta's documented shape (fb.<subdomain index>.<time>.<value>);
+// anything else is dropped rather than sent.
+function metaClickId(v, kind) {
+  const s = String(v || "");
+  const re = kind === "fbc" ? /^fb\.[0-2]\.\d{10,13}\.[A-Za-z0-9_-]{10,500}$/ : /^fb\.[0-2]\.\d{10,13}\.\d{5,20}$/;
+  return re.test(s) ? s : undefined;
+}
+
+async function sendMetaEvent(env, request, { eventName, eventId, email, fbp, fbc, sourceUrl, customData }) {
   try {
     if (!env.META_PIXEL_ID || !env.META_CAPI_TOKEN) {
       console.log("meta_capi_skipped_no_secrets", eventName);
@@ -960,8 +991,8 @@ async function sendMetaEvent(env, request, { eventName, eventId, email, customDa
       em: [await sha256Hex(String(email || "").trim().toLowerCase())],
       client_ip_address: request.headers.get("CF-Connecting-IP") || undefined,
       client_user_agent: request.headers.get("User-Agent") || undefined,
-      fbp: cookies._fbp || undefined,
-      fbc: cookies._fbc || undefined,
+      fbp: fbp || cookies._fbp || undefined,
+      fbc: fbc || cookies._fbc || undefined,
     };
 
     const body = {
@@ -970,7 +1001,7 @@ async function sendMetaEvent(env, request, { eventName, eventId, email, customDa
         event_time: Math.floor(Date.now() / 1000),
         event_id: eventId,
         action_source: "website",
-        event_source_url: request.headers.get("Referer") || request.url,
+        event_source_url: sourceUrl || `https://${CANONICAL_HOST}/`,
         user_data: userData,
         custom_data: customData || {},
       }],
