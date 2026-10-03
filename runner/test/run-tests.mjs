@@ -357,6 +357,74 @@ import { figureClassList } from "../lib/pages.mjs";
   }
 }
 
+// The render check (runner/lib/render-check.mjs) replaced fixed-height screenshots that cut off the lower half of
+// Thriller Issue 003 while the layout seat reported a footer it could not see (2026-10-03). Its verdict is code, and
+// it is checked here with no browser: every fault class it exists for must FAIL, a sound page must PASS, and the run
+// must require BOTH the code check and the seat.
+import { layoutVerdict, MEASURE_SOURCE, VIEWPORTS } from "../lib/render-check.mjs";
+{
+  const page = (vw) => ({
+    viewportWidth: vw, scrollWidth: vw, pageHeight: 20000, masthead: true, h1: 1, h2: 9,
+    footer: { visible: true, textLength: 700 }, brokenImages: [],
+    figures: [{ index: 0, w: 600, h: 300, right: vw - 40, hasSvg: true, textsOutside: [], textOverlaps: [], unstyledBlackMarks: 0 }],
+  });
+  const good = () => Object.fromEntries(VIEWPORTS.map((v) => [v.name, page(v.width)]));
+  assert.ok(layoutVerdict(good()).pass, "a sound page passes the render check");
+  const failsWith = (mutate, re, what) => {
+    const m = good(); mutate(m);
+    const v = layoutVerdict(m);
+    assert.ok(!v.pass && v.failures.some((f) => re.test(f)), `render check fails on ${what}: ${JSON.stringify(v.failures)}`);
+  };
+  failsWith((m) => { m.desktop.footer = null; }, /footer missing/, "a missing footer");
+  failsWith((m) => { m.mobile.footer.visible = false; }, /footer missing, hidden/, "a hidden footer");
+  failsWith((m) => { m.desktop.masthead = false; }, /masthead/, "a missing masthead");
+  failsWith((m) => { m.desktop.h1 = 0; }, /headline/, "a missing headline");
+  failsWith((m) => { m.mobile.h2 = 2; }, /fewer than three/, "too few section headings");
+  failsWith((m) => { m.desktop.scrollWidth = 1801; }, /scrolls sideways/, "sideways scrolling");
+  failsWith((m) => { m.mobile.viewportWidth = 1620; }, /zoomed out/, "a phone zoomed out to fit a too-wide page");
+  failsWith((m) => { m.desktop.brokenImages = ["/x.png"]; }, /broken image/, "a broken image");
+  failsWith((m) => { m.mobile.figures[0].right = 900; }, /right edge/, "a figure off the right edge");
+  failsWith((m) => { m.desktop.figures[0].textOverlaps = [["a", "b"]]; }, /labels overlap/, "overlapping chart labels");
+  failsWith((m) => { m.desktop.figures[0].textsOutside = ["label"]; }, /outside the chart frame/, "chart text outside its frame");
+  failsWith((m) => { m.desktop.figures[0].unstyledBlackMarks = 6; }, /default black/, "chart marks that lost their colors (the Issue 003 fault)");
+  failsWith((m) => { m.desktop.figures[0].h = 10; }, /renders at/, "a collapsed figure");
+  failsWith((m) => { m.desktop.pageHeight = 200000; }, /over the/, "an absurdly tall page");
+  failsWith((m) => { delete m.mobile; }, /not measured/, "an unmeasured viewport");
+  // the in-page script must at least compile; the browser run is exercised by every production run
+  assert.doesNotThrow(() => new Function(`return ${MEASURE_SOURCE}`), "the render check's page script compiles");
+  // the seat prompt is filled with the tile list, and nothing else is left unfilled
+  const lp = fs.readFileSync(path.join(ROOT, "runner/prompts/layout-check.md"), "utf8");
+  const vars = [...new Set([...lp.matchAll(/\{\{([A-Za-z_]+)\}\}/g)].map((x) => x[1]))].sort();
+  assert.deepStrictEqual(vars, ["TILE_COUNT", "TILE_LIST"], "layout seat prompt takes exactly the tile count and list");
+  // the run requires both checks, and nothing still calls the fixed-height script
+  const prod = fs.readFileSync(path.join(ROOT, "runner/produce-issue.mjs"), "utf8");
+  assert.ok(prod.includes("const layoutPassed = render.verdict.pass && seatPassed;"), "the run passes layout only when the code check AND the seat pass");
+  assert.ok(!prod.includes("screenshot.sh") && !fs.existsSync(path.join(ROOT, "runner/lib/screenshot.sh")), "the fixed-height screenshot script is gone");
+  assert.ok(prod.includes("restoreTree(path.join(REPO_ROOT, \"public\"), publicSnapshot)"), "the run restores public/ before building the preview");
+}
+
+// public/ is put back exactly before the preview is built, whatever a seat wrote there (2026-10-03).
+import { snapshotTree, restoreTree } from "../lib/public-snapshot.mjs";
+{
+  const r = fs.mkdtempSync(path.join(os.tmpdir(), "snap-"));
+  fs.mkdirSync(path.join(r, "a", "b"), { recursive: true });
+  fs.writeFileSync(path.join(r, "a", "b", "x.html"), "X");
+  fs.writeFileSync(path.join(r, "top.css"), "C");
+  const snap = snapshotTree(r);
+  fs.writeFileSync(path.join(r, "top.css"), "CHANGED");
+  fs.rmSync(path.join(r, "a", "b", "x.html"));
+  fs.mkdirSync(path.join(r, "new", "deep"), { recursive: true });
+  fs.writeFileSync(path.join(r, "new", "deep", "z"), "z");
+  fs.symlinkSync("/etc/hostname", path.join(r, "a", "link"));
+  const res = restoreTree(r, snap);
+  assert.deepStrictEqual(res.rewritten.sort(), [path.join("a", "b", "x.html"), "top.css"].sort(), "changed and deleted files are rewritten");
+  assert.ok(res.removed.includes(path.join("a", "link")) && res.removed.some((x) => x.startsWith("new")), "added files, folders and links are removed");
+  assert.strictEqual(fs.readFileSync(path.join(r, "top.css"), "utf8"), "C");
+  assert.strictEqual(fs.readFileSync(path.join(r, "a", "b", "x.html"), "utf8"), "X");
+  assert.ok(!fs.existsSync(path.join(r, "new")) && !fs.existsSync(path.join(r, "a", "link")));
+  assert.deepStrictEqual(restoreTree(r, snap), { rewritten: [], removed: [] }, "an untouched tree needs nothing");
+}
+
 // The site Worker's Conversions API events (src/index.js), checked offline against a copy that loads its JSON config
 // with an import attribute (Wrangler bundles the bare import; Node needs the attribute).
 {

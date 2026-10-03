@@ -8,7 +8,7 @@ Checks, in order:
 5. K-LYTICS COMPLIANCE (when present): attribution + report month on every use; at most three discrete quotable figures as a reader counts them; no chart/table/series reproduction; no value-plus-index pairing; per-title and rank-measure semantics stated. Violations are severity-1.
 6. SOURCING BARS: publisher/imprint/mechanism facts asserted without a fetched source are severity-1; platform-mechanics claims (e.g. what a retailer's ranking is "built from") stated as fact rather than labeled observation are severity-1.
 7. TONE AND LANGUAGE: hype, unsupported superlatives, urgency, any "honest"-family qualifier, UK spellings in desk prose (cozy, not cosy — verbatim quotes exempt) — severity-2.
-8. SVG CHARTS: verify every bar/line geometry numerically AND render the page if a browser is available — numeric checks miss layout collisions; check labels, anchors, viewBox overflow, dark-palette guard, and that the caption's printed method reproduces the chart's numbers (implement it).
+8. SVG CHARTS: verify every bar/line geometry numerically AND render the page if a browser is available (work only on copies under `private/`; never write under `public/` — the run restores it before building, so edits there are lost) — numeric checks miss layout collisions; check labels, anchors, viewBox overflow, dark-palette guard, and that the caption's printed method reproduces the chart's numbers (implement it).
 9. FRONTMATTER AND TEASERS: each story line and teaser is checked against body and pack; teasers travel alone and need their own scope and attribution.
 10. Read the standfirst and any footer certification LAST: they must promise nothing the issue fails to deliver.
 

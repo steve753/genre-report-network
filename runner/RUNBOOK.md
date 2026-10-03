@@ -53,12 +53,31 @@ send approval. No other path exists.
    session before delivery. If no fresh row exists, the runner publishes
    without K-lytics and says so in production notes (ruled 2026-09-04).
 
+## Layout checks (2026-10-03)
+
+Two checks judge the built page, and BOTH must pass:
+- **Render check** (`runner/lib/render-check.mjs`, code): drives the runner's
+  Chrome, measures the page at 1100 px and 430 px wide, and fails on a missing
+  masthead, headline or footer; fewer than three section headings; sideways
+  scrolling or a phone zoomed out to fit; broken images; chart labels that
+  overlap or leave the chart frame; and chart marks drawn in default black
+  (their color rules did not apply — the Issue 003 fault). It saves the whole
+  page as tiles (`page-desktop-NN.png`, `page-mobile-NN.png`) plus
+  `layout-mechanical.md` and `.json` in the artifact.
+- **Layout seat** (a model): reads every tile; a fault it can see fails the
+  run even when the code passed.
+Before any seat spends, the render check runs on the desk's live page and the
+run stops if that fails (the check is miscalibrated or Chrome is missing).
+`public/` is held in memory when the seats phase starts and restored exactly
+before the preview is built; anything a seat changed there is logged and
+listed in `summary.json` as `public_reverted_before_build`.
+
 ## Shakedown (before the runner owns any cycle)
 
 Run `Produce Issue` via workflow_dispatch with `genre: thriller` for the next
 thriller month. The shakedown issue IS the runner's first production — its
 failure costs a re-run, not a desk's debut. Review the artifacts (draft,
-adversary reports, layout check, screenshots, summary.json) on the run page
+adversary reports, layout-mechanical.md, layout-check.md, page tiles, summary.json) on the run page
 before approving the `publish` job. Items the shakedown must confirm that could not be verified from the
 authoring environment (its egress proxy blocks the npm registry for this
 package):

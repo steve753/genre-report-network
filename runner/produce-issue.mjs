@@ -7,7 +7,8 @@
 //                     inaugurals) BEFORE any spend, write ground truth.
 //   --phase=seats     env: ANTHROPIC_API_KEY (+ model vars)
 //                     researcher → writer → adversary rounds (min 2, zero
-//                     sev-1, cap) → pages build → screenshots → layout seat.
+//                     sev-1, cap) → pages build → render check (code) →
+//                     layout seat (pictures).
 //                     Every exit path runs the K-lytics containment guard,
 //                     which QUARANTINES offending public artifacts before
 //                     throwing, so the always()-upload can never ship them.
@@ -23,12 +24,13 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
 import { fetchPack } from "./lib/pack.mjs";
 import { buildIssueHtml, writePages, validateDraft, chromeIsIssuePage, PERIOD_DIR } from "./lib/pages.mjs";
 import { readJson, writeFile, parseVerdict, permalinkFor, currentMonthDate, log } from "./lib/util.mjs";
 import { containmentHits, extractLines, quarantine } from "./lib/containment.mjs";
 import { makeBudget, budgetMinutesFromEnv } from "./lib/budget.mjs";
+import { renderCheck } from "./lib/render-check.mjs";
+import { snapshotTree, restoreTree } from "./lib/public-snapshot.mjs";
 
 // The seats step's GitHub time limit runs from roughly here; the time budget
 // counts from this instant, not from the first seat.
@@ -62,6 +64,10 @@ fs.mkdirSync(priv, { recursive: true });
 const ROUNDS_MIN = 2; // DR-0151: one-round publication is prohibited
 const ROUNDS_MAX = Number(process.env.ROUNDS_MAX || 6);
 const writtenPages = []; // repo-relative paths writePages produced (informational; shipping pages are rebuilt by the publish job)
+// The K-lytics extract as it stood when the seats phase began, held in memory:
+// every seat can Write in the workspace, so the containment guard must not
+// re-read a file a seat could have emptied (2026-10-03 adversary finding).
+let klyticsSnapshot = null;
 let genresConfig;
 let genreCfg;
 let permalink;
@@ -165,7 +171,24 @@ async function phaseSeats() {
   const M = models();
   const usage = [];
   const klyticsFresh = fs.existsSync(path.join(priv, "klytics-extract.txt"));
+  klyticsSnapshot = klyticsFresh ? fs.readFileSync(path.join(priv, "klytics-extract.txt"), "utf8") : "";
+  // The site as it stood before any seat ran; restored exactly before the
+  // preview is built (runner/lib/public-snapshot.mjs says why).
+  const publicSnapshot = snapshotTree(path.join(REPO_ROOT, "public"));
   const sdkVersion = readSdkVersion();
+
+  // Before any seat spends: the render check must work here, and must PASS
+  // this desk's live page. If it cannot run (no Chrome) or fails a page that
+  // is already published, the check is broken or miscalibrated on this
+  // machine -- stop now rather than after hours of seats. The tiles go to the
+  // private side and are never uploaded.
+  {
+    const canary = await renderCheck({ publicRoot: path.join(REPO_ROOT, "public"), rel: `/${genre}/`, outDir: path.join(priv, "render-check-live-page") });
+    if (!canary.verdict.pass) {
+      throw new Error(`render check FAILS the live /${genre}/ page before any spend (miscalibrated on this machine, or the live page is broken): ${canary.verdict.failures.join("; ")}`);
+    }
+    log(`render check passes the live /${genre}/ page (${canary.tiles.length} tiles)`);
+  }
 
   async function seat(name, model, promptText, tools) {
     const t0 = Date.now();
@@ -264,8 +287,16 @@ async function phaseSeats() {
     process.exit(2);
   }
 
-  // Pages (deterministic) from the genre home chrome, then screenshots and
-  // the mechanical layout seat.
+  // Pages (deterministic) from the genre home chrome, then the render check
+  // (code: measures the page and saves full-length tiles) and the layout seat
+  // (a model reading those tiles). BOTH must pass.
+  // Put the site back exactly as it was before any seat ran, so the preview is
+  // built and rendered from the files the run started with, whatever a seat
+  // wrote under public/. Anything reverted is logged and reported.
+  const publicReverted = restoreTree(path.join(REPO_ROOT, "public"), publicSnapshot);
+  if (publicReverted.rewritten.length || publicReverted.removed.length) {
+    log(`public/ was changed during the seats phase and has been restored: rewritten ${publicReverted.rewritten.join(", ") || "none"}; removed ${publicReverted.removed.join(", ") || "none"}`);
+  }
   const draftText = fs.readFileSync(path.join(priv, "draft.md"), "utf8");
   const issueNumber = String(args["issue-number"] || nextIssueNumber()).padStart(3, "0");
   // Snapshot the exact draft that is being built into the artifact NOW, from
@@ -283,13 +314,20 @@ async function phaseSeats() {
   writtenPages.push(...pages.repoRelative);
   log(`pages written: ${pages.repoRelative.join(", ")}`);
 
-  execFileSync("bash", [path.join(REPO_ROOT, "runner", "lib", "screenshot.sh"), path.join(REPO_ROOT, "public"), permalink, pub], { stdio: "inherit" });
-  await seat("layout-check", M.mechanical, prompt("layout-check", {}), ["Read", "Write", "Glob"]);
+  const render = await renderCheck({ publicRoot: path.join(REPO_ROOT, "public"), rel: permalink, outDir: pub });
+  log(`render check: ${render.verdict.pass ? "PASS" : `FAIL (${render.verdict.failures.length})`}, ${render.tiles.length} tiles`);
+  for (const f of render.verdict.failures) log(`  render check: ${f}`);
+  await seat("layout-check", M.mechanical, prompt("layout-check", { TILE_COUNT: String(render.tiles.length), TILE_LIST: render.tiles.join(", ") }), ["Read", "Write", "Glob"]);
   const layoutPath = path.join(priv, "layout-check.md");
   if (!fs.existsSync(layoutPath)) throw new Error("layout seat wrote no report");
   fs.copyFileSync(layoutPath, path.join(pub, "layout-check.md"));
   const layoutLines = fs.readFileSync(layoutPath, "utf8").trim().split("\n");
-  const layoutPassed = layoutLines[layoutLines.length - 1].trim() === "LAYOUT: PASS";
+  const seatPassed = layoutLines[layoutLines.length - 1].trim() === "LAYOUT: PASS";
+  const layoutPassed = render.verdict.pass && seatPassed;
+  const layoutReason = [
+    ...(render.verdict.pass ? [] : [`render check: ${render.verdict.failures.join("; ")}`]),
+    ...(seatPassed ? [] : [`layout seat: ${layoutLines[layoutLines.length - 1].trim()}`]),
+  ].join(" | ");
 
   // The artifact draft must be exactly what was built and screenshotted — a
   // layout seat that touched it invalidates the run.
@@ -298,7 +336,7 @@ async function phaseSeats() {
   }
   writeSummary({
     ok: layoutPassed,
-    ...(layoutPassed ? {} : { reason: "layout check failed" }),
+    ...(layoutPassed ? {} : { reason: `layout check failed: ${layoutReason}` }),
     genre,
     month: monthDate,
     permalink: built.canonical,
@@ -311,6 +349,7 @@ async function phaseSeats() {
     story_count: Array.isArray(built.frontmatter.stories) ? built.frontmatter.stories.length : null,
     klytics_used: klyticsFresh,
     written_pages: writtenPages,
+    public_reverted_before_build: publicReverted,
     send_payload: {
       genre,
       subject: built.frontmatter.email_subject,
@@ -364,15 +403,20 @@ function readSdkVersion() {
 // upload cannot ship them. This function itself never throws for any reason
 // other than a containment hit.
 function guardKlyticsQuarantine() {
-  let extractText;
-  try {
-    if (!fs.existsSync(path.join(priv, "klytics-extract.txt"))) return;
-    extractText = fs.readFileSync(path.join(priv, "klytics-extract.txt"), "utf8");
-  } catch {
-    return;
+  let extractText = klyticsSnapshot;
+  if (extractText === null) {
+    // Not yet snapshotted (a failure before the seats phase began): no seat
+    // has run, so the file on disk is still the one the prepare phase wrote.
+    try {
+      if (!fs.existsSync(path.join(priv, "klytics-extract.txt"))) return;
+      extractText = fs.readFileSync(path.join(priv, "klytics-extract.txt"), "utf8");
+    } catch {
+      return;
+    }
   }
   if (extractLines(extractText).length === 0) return;
   const targets = [];
+  const oddEntries = [];
   const walk = (dir) => {
     let entries = [];
     try {
@@ -384,6 +428,7 @@ function guardKlyticsQuarantine() {
       const p = path.join(dir, e.name);
       if (e.isDirectory()) walk(p);
       else if (e.isFile()) targets.push(p); // .png renders scan fine as utf8 and never false-positive
+      else oddEntries.push(p); // a link or device: its target could be anything, so it counts as a hit
     }
   };
   walk(pub);
@@ -391,7 +436,7 @@ function guardKlyticsQuarantine() {
     const p = path.join(REPO_ROOT, rel);
     if (fs.existsSync(p)) targets.push(p);
   }
-  const hits = containmentHits(extractText, targets);
+  const hits = [...containmentHits(extractText, targets), ...oddEntries];
   if (hits.length === 0) {
     log(`K-lytics containment check passed on ${targets.length} file(s)`);
     return;
