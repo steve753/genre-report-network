@@ -53,7 +53,7 @@ permissions:
 
 jobs:
   plan:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # pinned 2026-10-11 (OI-177): ubuntu-latest moves to 26.04 between 2026-10-19 and 2026-11-19; move on purpose, with a test run
     if: github.event_name == 'workflow_dispatch' || vars.RUNNER_SCHEDULE_ENABLED == 'true'
     outputs:
       genres: ${{ steps.plan.outputs.genres }}
@@ -100,7 +100,7 @@ jobs:
 
   produce:
     needs: plan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # pinned 2026-10-11 (OI-177): ubuntu-latest moves to 26.04 between 2026-10-19 and 2026-11-19; move on purpose, with a test run
     # Backstop only. The seats step has its own, shorter limit (below), and the
     # runner's time budget stops at a seat boundary before either is reached,
     # so a slow run fails through the normal path with a summary. GitHub
@@ -199,7 +199,7 @@ jobs:
     # A failed sibling desk must not block the desks that produced cleanly
     # (failure policy): run as long as the plan succeeded and produce ran.
     if: ${{ !cancelled() && needs.plan.result == 'success' && needs.produce.result != 'cancelled' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # pinned 2026-10-11 (OI-177): ubuntu-latest moves to 26.04 between 2026-10-19 and 2026-11-19; move on purpose, with a test run
     environment: production # REQUIRED REVIEWER: Steve. This pause IS the deploy gate (DR-0158).
     permissions:
       contents: write

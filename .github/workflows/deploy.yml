@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # pinned 2026-10-11 (OI-177): ubuntu-latest moves to 26.04 between 2026-10-19 and 2026-11-19; move on purpose, with a test run
     steps:
       - uses: actions/checkout@v4
 
